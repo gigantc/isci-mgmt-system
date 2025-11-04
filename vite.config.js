@@ -8,13 +8,12 @@
  */
 
 import { reactRouter } from "@react-router/dev/vite";
-import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
+import path from "path";
 
 export default defineConfig({
   // Plugins are like special powers we give to Vite
   plugins: [
-    tailwindcss(),      // Adds TailwindCSS support (utility-first CSS framework)
     reactRouter(),      // Adds React Router v7 support (handles our routes and SSR)
   ],
 
@@ -23,5 +22,17 @@ export default defineConfig({
   // Vite will try: ./Foo.jsx, then ./Foo.js
   resolve: {
     extensions: ['.jsx', '.js'],
+    alias: {
+      '@': path.resolve(__dirname, './app'),
+    },
+  },
+
+  // Configure Sass to support @ alias in @use/@import statements
+  css: {
+    preprocessorOptions: {
+      scss: {
+        includePaths: [path.resolve(__dirname, './app')],
+      },
+    },
   },
 });

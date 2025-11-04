@@ -1,0 +1,29 @@
+// Color Palette
+$black: #1C1C1C;
+$white: #FFFAE7;
+$gray: #c4c0bc;
+$yellow: #C2FF00;
+$pink: #ff00b7;
+$blue: #1405ff;
+$teal: #00DEB5;
+$red: #FF2300;
+
+// Theme Colors
+$bg-primary: $black;
+$text-primary: $white;
+$text-secondary: rgba($white, 0.7);
+$accent: $yellow;
+$accent-text: $black;
+$hover: $pink;
+$disabled: $gray;
+
+// Status Colors
+$status-pending: $yellow;
+$status-in-progress: $blue;
+$status-in-review: $teal;
+$status-completed: $teal;
+$status-archived: $gray;
+
+// Border Colors
+$border-color: rgba($white, 0.1);
+$border-color-light: rgba($white, 0.05);

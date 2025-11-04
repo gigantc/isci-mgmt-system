@@ -2,167 +2,96 @@ import { useState, useEffect } from "react";
 import { ISCIStatus } from "../../types/isci";
 import "./ISCIForm.scss";
 
-/**
- * ISCIForm Component
- *
- * The "let me create or edit an ISCI code" form.
- * This bad boy handles both creating NEW codes and editing EXISTING ones.
- * It's like a Swiss Army knife, but for forms! 🔪
- *
- * Props we're expecting:
- *   - code: An existing ISCI code object (if we're editing) or null (if we're creating)
- *   - onSubmit: Function to call when form is submitted (passes form data back up)
- *   - onCancel: Function to call when user chickens out and hits cancel
- */
 const ISCIForm = ({ code, onSubmit, onCancel }) => {
-  /**
-   * formData state
-   *
-   * This is where we store everything the user types into the form.
-   * Think of it as a clipboard that remembers what they wrote.
-   * We start with empty/default values and update as they type.
-   */
   const [formData, setFormData] = useState({
-    code: "",                              // The 8-character ISCI code
-    advertiser: "",                        // Company name (who's paying the bills)
-    title: "",                             // Campaign title
-    description: "",                       // Optional notes
-    duration: undefined,                   // Video length in seconds
-    format: "",                            // Video format (1080p, 4K, etc.)
-    assignedEditor: "",                    // Who's doing the work
-    status: ISCIStatus.PENDING,           // Default to "pending" (aka "I'll get to it eventually")
-    dueDate: "",                           // When is this due? (important for panic levels)
+    code: "",
+    assignedEditor: "",
+    brand: "",
+    campaignName: "",
+    spotTitle: "",
+    spotLength: "",
+    description: "",
+    language: "English",
+    closedCaptioning: "No",
+    audio: "Stereo LR",
+    airDate: "",
+    aspectRatio: "16:9",
+    version: "A",
+    channel: "Broadcast",
+    status: ISCIStatus.PENDING,
   });
 
-  /**
-   * errors state
-   *
-   * Stores validation errors for each field.
-   * If a field has an error, we show a red message under it.
-   * Empty object = everything's cool! 😎
-   */
   const [errors, setErrors] = useState({});
 
-  /**
-   * useEffect Hook
-   *
-   * This runs when the 'code' prop changes.
-   * If we're editing an existing code, this fills in the form with its data.
-   * It's like Auto-Fill but for our form! (Thanks, useEffect!)
-   *
-   * Dependencies: [code] means "run this whenever 'code' changes"
-   */
   useEffect(() => {
     if (code) {
-      // If there's a code to edit, populate the form with its data
       setFormData({
         code: code.code,
-        advertiser: code.advertiser,
-        title: code.title,
-        description: code.description || "",           // Use empty string if description is missing
-        duration: code.duration,
-        format: code.format || "",                     // Use empty string if format is missing
-        assignedEditor: code.assignedEditor || "",     // Use empty string if no editor assigned
+        assignedEditor: code.assignedEditor || "",
+        brand: code.brand,
+        campaignName: code.campaignName || "",
+        spotTitle: code.spotTitle,
+        spotLength: code.spotLength || "",
+        description: code.description || "",
+        language: code.language || "English",
+        closedCaptioning: code.closedCaptioning || "No",
+        audio: code.audio || "Stereo LR",
+        airDate: code.airDate ? code.airDate.split('T')[0] : "",
+        aspectRatio: code.aspectRatio || "16:9",
+        version: code.version || "A",
+        channel: code.channel || "Broadcast",
         status: code.status,
-        // Split the date string to get just the date part (remove time)
-        // "2024-01-15T10:00:00.000Z" becomes "2024-01-15"
-        dueDate: code.dueDate ? code.dueDate.split('T')[0] : "",
       });
     }
   }, [code]);
 
-  /**
-   * validateForm
-   *
-   * The bouncer at the club - checks if everything's valid before letting it through.
-   * Returns true if all good, false if something's wrong.
-   *
-   * Validation rules:
-   *   - ISCI code: Required, must be exactly 8 UPPERCASE alphanumeric characters
-   *   - Advertiser: Required, can't be empty
-   *   - Title: Required, can't be empty
-   */
   const validateForm = () => {
     const newErrors = {};
 
-    // Check the ISCI code
     if (!formData.code.trim()) {
-      // trim() removes whitespace - we don't count "   " as a valid code!
       newErrors.code = "ISCI code is required";
     } else if (!/^[A-Z0-9]{8}$/.test(formData.code)) {
-      // Regex check: Must be exactly 8 characters, only A-Z and 0-9
-      // Examples: NIKE0001 ✅  nike0001 ❌  NIKE01 ❌  NIKE00011 ❌
       newErrors.code = "ISCI code must be 8 alphanumeric characters (e.g., ABCD1234)";
     }
 
-    // Check the advertiser field
-    if (!formData.advertiser.trim()) {
-      newErrors.advertiser = "Advertiser is required";
+    if (!formData.brand.trim()) {
+      newErrors.brand = "Brand/Client is required";
     }
 
-    // Check the title field
-    if (!formData.title.trim()) {
-      newErrors.title = "Title is required";
+    if (!formData.spotTitle.trim()) {
+      newErrors.spotTitle = "Spot Title is required";
     }
 
-    // Store any errors we found
     setErrors(newErrors);
-
-    // Return true if no errors (empty object), false if we found problems
-    // Object.keys(newErrors).length === 0 means "no error messages"
     return Object.keys(newErrors).length === 0;
   };
 
-  /**
-   * handleChange
-   *
-   * This fires every time someone types in a field or changes a dropdown.
-   * It updates our formData state so React knows what the user entered.
-   *
-   * Fun fact: We have special handling for the "duration" field to convert it to a number!
-   */
   const handleChange = (e) => {
-    const { name, value } = e.target;  // Get the field name and what they typed
-
+    const { name, value } = e.target;
     setFormData(prev => ({
-      ...prev,  // Keep all the other fields the same (the "..." is called spread syntax)
-      // Special case: If it's duration, parse it as a number. Otherwise, just use the value.
-      [name]: name === "duration" ? (value ? parseInt(value) : undefined) : value,
+      ...prev,
+      [name]: value,
     }));
 
-    // If this field had an error before, clear it when they start typing
-    // Nobody likes staring at error messages while they're fixing things!
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
 
-  /**
-   * handleSubmit
-   *
-   * The big moment! User clicked "Create" or "Update" button.
-   * First we validate everything, then if it's all good, we send it up to the parent component.
-   */
   const handleSubmit = (e) => {
-    e.preventDefault();  // Stop the form from doing a page refresh (old-school HTML behavior)
-
-    // Check if everything's valid
+    e.preventDefault();
     if (validateForm()) {
-      // All good! Send the data back to the parent component
       onSubmit(formData);
     }
-    // If validation fails, the error messages will show up automatically
   };
 
   return (
     <div className="isci-form-container">
-      {/* Dynamic title: "Edit" if we have a code, "Create New" if we don't */}
       <h2>{code ? "Edit ISCI Code" : "Create New ISCI Code"}</h2>
 
       <form onSubmit={handleSubmit} className="isci-form">
-        {/* Row 1: ISCI Code and Advertiser side by side */}
+        {/* Row 1: ISCI Code and Assigned Editor */}
         <div className="form-row">
-          {/* ISCI Code Field - THE most important field! */}
           <div className="form-group">
             <label htmlFor="code">ISCI Code *</label>
             <input
@@ -172,90 +101,12 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
               value={formData.code}
               onChange={handleChange}
               placeholder="ABCD1234"
-              maxLength={8}  // Can't type more than 8 characters
-              className={errors.code ? "error" : ""}  // Add "error" class if there's an error
+              maxLength={8}
+              className={errors.code ? "error" : ""}
             />
-            {/* Show error message if there is one */}
             {errors.code && <span className="error-message">{errors.code}</span>}
           </div>
 
-          {/* Advertiser Field - Who's paying for this? */}
-          <div className="form-group">
-            <label htmlFor="advertiser">Advertiser *</label>
-            <input
-              type="text"
-              id="advertiser"
-              name="advertiser"
-              value={formData.advertiser}
-              onChange={handleChange}
-              placeholder="Company Name"
-              className={errors.advertiser ? "error" : ""}
-            />
-            {errors.advertiser && <span className="error-message">{errors.advertiser}</span>}
-          </div>
-        </div>
-
-        {/* Title Field - Full width, this one gets its own row */}
-        <div className="form-group">
-          <label htmlFor="title">Title *</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Campaign Title"
-            className={errors.title ? "error" : ""}
-          />
-          {errors.title && <span className="error-message">{errors.title}</span>}
-        </div>
-
-        {/* Description Field - Optional, multiline textarea for longer notes */}
-        <div className="form-group">
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Additional details about this project..."
-            rows={3}  // 3 rows tall by default
-          />
-        </div>
-
-        {/* Row 2: Duration and Format side by side */}
-        <div className="form-row">
-          {/* Duration Field - How long is the video? */}
-          <div className="form-group">
-            <label htmlFor="duration">Duration (seconds)</label>
-            <input
-              type="number"  // Only allows numbers
-              id="duration"
-              name="duration"
-              value={formData.duration || ""}  // Show empty if undefined
-              onChange={handleChange}
-              placeholder="30"
-              min="1"  // Can't be negative or zero (no videos that don't exist!)
-            />
-          </div>
-
-          {/* Format Field - Video quality/format */}
-          <div className="form-group">
-            <label htmlFor="format">Format</label>
-            <input
-              type="text"
-              id="format"
-              name="format"
-              value={formData.format}
-              onChange={handleChange}
-              placeholder="1080p, 4K, etc."
-            />
-          </div>
-        </div>
-
-        {/* Row 3: Assigned Editor and Status side by side */}
-        <div className="form-row">
-          {/* Assigned Editor Field - Who's working on this? */}
           <div className="form-group">
             <label htmlFor="assignedEditor">Assigned Editor</label>
             <input
@@ -267,8 +118,192 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
               placeholder="Editor Name"
             />
           </div>
+        </div>
 
-          {/* Status Field - Dropdown with all the status options */}
+        {/* Brand/Client - Full width */}
+        <div className="form-group">
+          <label htmlFor="brand">Brand / Client *</label>
+          <input
+            type="text"
+            id="brand"
+            name="brand"
+            value={formData.brand}
+            onChange={handleChange}
+            placeholder="Company or Brand Name"
+            className={errors.brand ? "error" : ""}
+          />
+          {errors.brand && <span className="error-message">{errors.brand}</span>}
+        </div>
+
+        {/* Row 2: Campaign Name and Spot Length */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="campaignName">Campaign Name</label>
+            <input
+              type="text"
+              id="campaignName"
+              name="campaignName"
+              value={formData.campaignName}
+              onChange={handleChange}
+              placeholder="Campaign Name"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="spotLength">Spot Length (seconds)</label>
+            <select
+              id="spotLength"
+              name="spotLength"
+              value={formData.spotLength}
+              onChange={handleChange}
+            >
+              <option value="">Select length</option>
+              <option value="6">06</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="30">30</option>
+              <option value="45">45</option>
+              <option value="60">60</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Spot Title - Full width */}
+        <div className="form-group">
+          <label htmlFor="spotTitle">Spot Title *</label>
+          <input
+            type="text"
+            id="spotTitle"
+            name="spotTitle"
+            value={formData.spotTitle}
+            onChange={handleChange}
+            placeholder="e.g., LVCVA_New Fab Trailer_30s_Hartbeat_No Disclaimer"
+            className={errors.spotTitle ? "error" : ""}
+          />
+          {errors.spotTitle && <span className="error-message">{errors.spotTitle}</span>}
+        </div>
+
+        {/* Description/Notes */}
+        <div className="form-group">
+          <label htmlFor="description">Description / Notes</label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="Additional details about this project..."
+            rows={3}
+          />
+        </div>
+
+        {/* Row 3: Language and Closed Captioning */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="language">Language</label>
+            <input
+              type="text"
+              id="language"
+              name="language"
+              value={formData.language}
+              onChange={handleChange}
+              placeholder="English"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="closedCaptioning">Closed Captioning</label>
+            <select
+              id="closedCaptioning"
+              name="closedCaptioning"
+              value={formData.closedCaptioning}
+              onChange={handleChange}
+            >
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Row 4: Audio and Air Date */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="audio">Audio</label>
+            <input
+              type="text"
+              id="audio"
+              name="audio"
+              value={formData.audio}
+              onChange={handleChange}
+              placeholder="Stereo LR"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="airDate">Date (Air/Start Date)</label>
+            <input
+              type="date"
+              id="airDate"
+              name="airDate"
+              value={formData.airDate}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        {/* Row 5: Aspect Ratio and Version/Cut */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="aspectRatio">Aspect Ratio</label>
+            <select
+              id="aspectRatio"
+              name="aspectRatio"
+              value={formData.aspectRatio}
+              onChange={handleChange}
+            >
+              <option value="16:9">16:9</option>
+              <option value="9:16">9:16</option>
+              <option value="4:3">4:3</option>
+              <option value="1:1">1:1</option>
+              <option value="2.39:1">2.39:1</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="version">Version / Cut</label>
+            <select
+              id="version"
+              name="version"
+              value={formData.version}
+              onChange={handleChange}
+            >
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Row 6: Channel and Status */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="channel">Output: Channel</label>
+            <select
+              id="channel"
+              name="channel"
+              value={formData.channel}
+              onChange={handleChange}
+            >
+              <option value="Broadcast">Broadcast</option>
+              <option value="CTV">CTV</option>
+              <option value="Digital">Digital</option>
+              <option value="Social">Social</option>
+              <option value="OLV">OLV</option>
+              <option value="Radio">Radio</option>
+            </select>
+          </div>
+
           <div className="form-group">
             <label htmlFor="status">Status</label>
             <select
@@ -277,7 +312,6 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
               value={formData.status}
               onChange={handleChange}
             >
-              {/* Each status gets an option in the dropdown */}
               <option value={ISCIStatus.PENDING}>Pending</option>
               <option value={ISCIStatus.IN_PROGRESS}>In Progress</option>
               <option value={ISCIStatus.IN_REVIEW}>In Review</option>
@@ -287,26 +321,11 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
           </div>
         </div>
 
-        {/* Due Date Field - When does this need to be done? */}
-        <div className="form-group">
-          <label htmlFor="dueDate">Due Date</label>
-          <input
-            type="date"  // Shows a nice calendar picker!
-            id="dueDate"
-            name="dueDate"
-            value={formData.dueDate}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* Action Buttons - Cancel or Submit */}
+        {/* Action Buttons */}
         <div className="form-actions">
-          {/* Cancel Button - "Nevermind, I changed my mind!" */}
           <button type="button" className="btn-cancel" onClick={onCancel}>
             Cancel
           </button>
-
-          {/* Submit Button - Text changes based on create vs edit mode */}
           <button type="submit" className="btn-submit">
             {code ? "Update" : "Create"} ISCI Code
           </button>

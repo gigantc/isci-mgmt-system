@@ -1,10 +1,12 @@
+@use "@/styles/variables" as v;
+
 .isci-form-container {
   max-width: 800px;
 
   h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1f2937;
+    color: v.$text-primary;
     margin-bottom: 1.5rem;
   }
 }
@@ -32,7 +34,7 @@
     label {
       font-size: 0.875rem;
       font-weight: 600;
-      color: #374151;
+      color: v.$text-primary;
     }
 
     input,
@@ -40,28 +42,30 @@
     select {
       padding: 0.625rem 0.75rem;
       font-size: 0.9375rem;
-      border: 1px solid #d1d5db;
+      border: 1px solid v.$border-color;
       border-radius: 6px;
       transition: all 0.2s;
       font-family: inherit;
+      background-color: rgba(v.$white, 0.05);
+      color: v.$text-primary;
 
       &:focus {
         outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: v.$accent;
+        box-shadow: 0 0 0 3px rgba(v.$accent, 0.2);
       }
 
       &.error {
-        border-color: #ef4444;
+        border-color: v.$red;
 
         &:focus {
-          border-color: #ef4444;
-          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+          border-color: v.$red;
+          box-shadow: 0 0 0 3px rgba(v.$red, 0.2);
         }
       }
 
       &::placeholder {
-        color: #9ca3af;
+        color: v.$text-secondary;
       }
     }
 
@@ -72,12 +76,16 @@
 
     select {
       cursor: pointer;
-      background-color: white;
+
+      option {
+        background-color: v.$bg-primary;
+        color: v.$text-primary;
+      }
     }
 
     .error-message {
       font-size: 0.8125rem;
-      color: #ef4444;
+      color: v.$red;
       margin-top: -0.25rem;
     }
   }
@@ -88,7 +96,7 @@
     gap: 1rem;
     margin-top: 1rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid v.$border-color;
 
     button {
       padding: 0.625rem 1.5rem;
@@ -101,24 +109,32 @@
     }
 
     .btn-cancel {
-      color: #4b5563;
-      background-color: #f3f4f6;
+      color: v.$text-primary;
+      background-color: rgba(v.$white, 0.05);
+      border: 1px solid v.$border-color;
 
       &:hover {
-        background-color: #e5e7eb;
+        background-color: rgba(v.$white, 0.1);
       }
     }
 
     .btn-submit {
-      color: white;
-      background-color: #3b82f6;
+      color: v.$accent-text;
+      background-color: v.$accent;
 
       &:hover {
-        background-color: #2563eb;
+        background-color: v.$hover;
+        color: v.$white;
       }
 
       &:active {
-        background-color: #1d4ed8;
+        transform: scale(0.98);
+      }
+
+      &:disabled {
+        background-color: v.$disabled;
+        cursor: not-allowed;
+        opacity: 0.5;
       }
     }
   }

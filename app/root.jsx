@@ -8,7 +8,7 @@ import {
 } from "react-router";
 
 
-import "./app.css";
+import "./styles/app.scss";
 
 export const links = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,7 +23,7 @@ export const links = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }) {
   return (
     <html lang="en">
       <head>
@@ -48,7 +48,7 @@ export default function App() {
 export function ErrorBoundary({ error }) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
-  let stack: string | undefined;
+  let stack;
 
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? "404" : "Error";
@@ -62,11 +62,11 @@ export function ErrorBoundary({ error }) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
+    <main className="error-container">
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre className="error-stack">
           <code>{stack}</code>
         </pre>
       )}

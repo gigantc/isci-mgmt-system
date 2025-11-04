@@ -1,23 +1,29 @@
+@use "@/styles/variables" as v;
+
 .isci-list {
-  overflow-x: auto;
+  .table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+  }
 
   table {
     width: 100%;
+    min-width: 1400px;
     border-collapse: collapse;
     font-size: 0.9rem;
 
     thead {
-      background-color: #f9fafb;
+      background-color: rgba(v.$white, 0.03);
 
       tr {
-        border-bottom: 2px solid #e5e7eb;
+        border-bottom: 2px solid v.$border-color;
       }
 
       th {
         padding: 0.75rem 1rem;
         text-align: left;
         font-weight: 600;
-        color: #374151;
+        color: v.$text-primary;
         text-transform: uppercase;
         font-size: 0.75rem;
         letter-spacing: 0.05em;
@@ -26,27 +32,37 @@
 
     tbody {
       tr {
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid v.$border-color-light;
         transition: background-color 0.15s;
 
         &:hover {
-          background-color: #f9fafb;
+          background-color: rgba(v.$white, 0.03);
         }
       }
 
       td {
         padding: 1rem;
-        color: #4b5563;
+        color: v.$text-secondary;
 
         &.code-cell {
           font-family: 'Courier New', monospace;
           font-weight: 600;
-          color: #1f2937;
+          color: v.$accent;
+          white-space: nowrap;
+        }
+
+        &.spot-title-cell {
+          max-width: 300px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: v.$text-primary;
         }
 
         &.actions-cell {
           display: flex;
           gap: 0.5rem;
+          white-space: nowrap;
         }
       }
     }
@@ -61,28 +77,33 @@
     text-transform: capitalize;
 
     &.status-pending {
-      background-color: #fef3c7;
-      color: #92400e;
+      background-color: rgba(v.$yellow, 0.15);
+      color: v.$yellow;
+      border: 1px solid rgba(v.$yellow, 0.3);
     }
 
     &.status-in-progress {
-      background-color: #dbeafe;
-      color: #1e40af;
+      background-color: rgba(v.$blue, 0.15);
+      color: v.$blue;
+      border: 1px solid rgba(v.$blue, 0.3);
     }
 
     &.status-in-review {
-      background-color: #e0e7ff;
-      color: #3730a3;
+      background-color: rgba(v.$teal, 0.15);
+      color: v.$teal;
+      border: 1px solid rgba(v.$teal, 0.3);
     }
 
     &.status-completed {
-      background-color: #d1fae5;
-      color: #065f46;
+      background-color: rgba(v.$teal, 0.15);
+      color: v.$teal;
+      border: 1px solid rgba(v.$teal, 0.3);
     }
 
     &.status-archived {
-      background-color: #f3f4f6;
-      color: #4b5563;
+      background-color: rgba(v.$gray, 0.15);
+      color: v.$gray;
+      border: 1px solid rgba(v.$gray, 0.3);
     }
   }
 
@@ -98,20 +119,23 @@
   }
 
   .btn-edit {
-    color: #1f2937;
-    background-color: #f3f4f6;
+    color: v.$accent-text;
+    background-color: v.$accent;
 
     &:hover {
-      background-color: #e5e7eb;
+      background-color: v.$hover;
+      color: v.$white;
     }
   }
 
   .btn-delete {
-    color: #dc2626;
-    background-color: #fee2e2;
+    color: v.$white;
+    background-color: rgba(v.$red, 0.2);
+    border: 1px solid rgba(v.$red, 0.4);
 
     &:hover {
-      background-color: #fecaca;
+      background-color: v.$red;
+      border-color: v.$red;
     }
   }
 }
@@ -119,7 +143,7 @@
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
-  color: #6b7280;
+  color: v.$text-secondary;
 
   p {
     font-size: 1.125rem;
