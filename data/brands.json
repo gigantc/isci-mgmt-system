@@ -1,11 +1,11 @@
 [
   {
     "id": "1",
-    "name": "Las Vegas Convention and Visitors Authority",
+    "name": "LVCVA",
     "code": "LVCI",
     "active": true,
     "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
+    "updatedAt": "2025-11-04T18:08:19.063Z"
   },
   {
     "id": "2",
@@ -93,7 +93,7 @@
     "code": "FORD",
     "active": true,
     "createdAt": "2024-02-10T00:00:00.000Z",
-    "updatedAt": "2024-02-10T00:00:00.000Z"
+    "updatedAt": "2025-11-04T18:09:51.091Z"
   },
   {
     "id": "13",

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { ISCIStatus } from "../../types/isci";
-import ISCIList from "../../components/ISCIList";
-import ISCIForm from "../../components/ISCIForm";
-import "./ISCIDashboard.scss";
+import { ISCIStatus } from "@/types/isci";
+import ISCIList from "@/components/ISCIList";
+import ISCIForm from "@/components/ISCIForm";
+import Header from "@/containers/Header";
+import styles from "./Dashboard.module.scss";
 
 /**
  * ISCIDashboard Container
@@ -17,7 +18,7 @@ import "./ISCIDashboard.scss";
  * Think of this as the conductor of an orchestra, except the orchestra is made
  * of React components and the music is... ISCI codes? (The metaphor got weird, but you get it!)
  */
-const ISCIDashboard = () => {
+const Dashboard = () => {
   /**
    * STATE VARIABLES
    * These are like the component's memory - they remember stuff between renders.
@@ -223,36 +224,16 @@ const ISCIDashboard = () => {
 
   // TIME TO RENDER! 🎨
   return (
-    <div className="isci-dashboard">
-      {/* Top header with title and action buttons */}
-      <header className="dashboard-header">
-        <h1>ISCI Management System</h1>
+    <div className={styles.isciDashboard}>
 
-        <div className="header-actions">
-          {/* Admin Panel Link */}
-          <a href="/admin" className="btn-secondary">
-            Admin Panel
-          </a>
-
-          {/* Create button (disabled while loading so people don't click it too early) */}
-          <button
-            className="btn-primary"
-            onClick={() => {
-              console.log("Create button clicked, current showForm:", showForm);
-              setShowForm(true);
-            }}
-            disabled={isLoading}
-          >
-            Create New ISCI Code
-          </button>
-        </div>
-      </header>
+      <Header isLoading={isLoading} setShowForm={setShowForm} />
 
       {/* Main content area - shows different things based on the current state */}
-      <div className="dashboard-content">
+      <div className={styles.dashboardContent}>
+        <h2>Dashboard</h2>
         {isLoading ? (
           // LOADING STATE: Show a loading message while we fetch data
-          <div className="loading-state">Loading ISCI codes...</div>
+          <div className={styles.loadingState}>Loading ISCI codes...</div>
         ) : showForm ? (
           // FORM STATE: Show the create/edit form
           <ISCIForm
@@ -265,7 +246,7 @@ const ISCIDashboard = () => {
           // LIST STATE: Show the search bar and the list of codes
           <>
             {/* Search bar */}
-            <div className="search-bar">
+            <div className={styles.searchBar}>
               <input
                 type="text"
                 placeholder="Search by code, brand, spot title, or editor..."
@@ -287,4 +268,4 @@ const ISCIDashboard = () => {
   );
 };
 
-export default ISCIDashboard;
+export default Dashboard;

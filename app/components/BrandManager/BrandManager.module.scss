@@ -1,11 +1,11 @@
 @use "@/styles/variables" as v;
 
-.brand-manager {
+.brandManager {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
 
-  .brand-form-section {
+  .brandFormSection {
     background: rgba(v.$white, 0.02);
     border-radius: 8px;
     border: 1px solid v.$border-color;
@@ -20,8 +20,8 @@
     }
   }
 
-  .brand-form {
-    .form-row {
+  .brandForm {
+    .formRow {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 1rem;
@@ -31,7 +31,7 @@
       }
     }
 
-    .form-group {
+    .formGroup {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -72,14 +72,14 @@
         }
       }
 
-      .error-message {
+      .errorMessage {
         font-size: 0.8125rem;
         color: v.$red;
         margin-top: -0.25rem;
       }
     }
 
-    .form-actions {
+    .formActions {
       display: flex;
       justify-content: flex-end;
       gap: 1rem;
@@ -95,7 +95,7 @@
         transition: all 0.2s;
       }
 
-      .btn-cancel {
+      .btnCancel {
         color: v.$text-primary;
         background-color: rgba(v.$white, 0.05);
         border: 1px solid v.$border-color;
@@ -105,7 +105,7 @@
         }
       }
 
-      .btn-submit {
+      .btnSubmit {
         color: v.$accent-text;
         background-color: v.$accent;
 
@@ -121,7 +121,7 @@
     }
   }
 
-  .brands-list-section {
+  .brandsListSection {
     h2 {
       font-size: 1.5rem;
       font-weight: 700;
@@ -129,7 +129,7 @@
       margin: 0 0 1.5rem 0;
     }
 
-    .empty-state {
+    .emptyState {
       text-align: center;
       padding: 3rem 1rem;
       color: v.$text-secondary;
@@ -139,7 +139,7 @@
     }
   }
 
-  .brands-table-wrapper {
+  .brandsTableWrapper {
     overflow-x: auto;
     background: rgba(v.$white, 0.02);
     border-radius: 8px;
@@ -186,14 +186,14 @@
           padding: 1rem;
           color: v.$text-secondary;
 
-          &.code-cell {
+          &.codeCell {
             font-family: 'Courier New', monospace;
             font-weight: 600;
             color: v.$accent;
             font-size: 1.1rem;
           }
 
-          &.actions-cell {
+          &.actionsCell {
             display: flex;
             gap: 0.5rem;
             white-space: nowrap;
@@ -202,7 +202,7 @@
       }
     }
 
-    .status-badge {
+    .statusBadge {
       display: inline-block;
       padding: 0.25rem 0.75rem;
       border-radius: 9999px;
@@ -223,9 +223,9 @@
       }
     }
 
-    .btn-edit,
-    .btn-delete,
-    .btn-toggle {
+    .btnEdit,
+    .btnDelete,
+    .btnToggle {
       padding: 0.375rem 0.75rem;
       font-size: 0.875rem;
       font-weight: 500;
@@ -235,7 +235,7 @@
       transition: all 0.2s;
     }
 
-    .btn-edit {
+    .btnEdit {
       color: v.$accent-text;
       background-color: v.$accent;
 
@@ -245,7 +245,7 @@
       }
     }
 
-    .btn-toggle {
+    .btnToggle {
       color: v.$white;
       background-color: rgba(v.$blue, 0.3);
       border: 1px solid rgba(v.$blue, 0.5);
@@ -255,7 +255,7 @@
       }
     }
 
-    .btn-delete {
+    .btnDelete {
       color: v.$white;
       background-color: rgba(v.$red, 0.2);
       border: 1px solid rgba(v.$red, 0.4);
@@ -267,7 +267,7 @@
     }
   }
 
-  .loading-state {
+  .loadingState {
     text-align: center;
     padding: 3rem 1rem;
     color: v.$text-secondary;

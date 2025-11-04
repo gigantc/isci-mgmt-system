@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./BrandManager.scss";
+import styles from "./BrandManager.module.scss";
 
 const BrandManager = () => {
   const [brands, setBrands] = useState([]);
@@ -146,16 +146,16 @@ const BrandManager = () => {
   };
 
   if (isLoading) {
-    return <div className="loading-state">Loading brands...</div>;
+    return <div className={styles.loadingState}>Loading brands...</div>;
   }
 
   return (
-    <div className="brand-manager">
-      <div className="brand-form-section">
+    <div className={styles.brandManager}>
+      <div className={styles.brandFormSection}>
         <h2>{editingBrand ? "Edit Brand" : "Add New Brand"}</h2>
-        <form onSubmit={handleSubmit} className="brand-form">
-          <div className="form-row">
-            <div className="form-group">
+        <form onSubmit={handleSubmit} className={styles.brandForm}>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
               <label htmlFor="name">Brand Name *</label>
               <input
                 type="text"
@@ -166,10 +166,10 @@ const BrandManager = () => {
                 placeholder="e.g., Las Vegas Convention and Visitors Authority"
                 className={errors.name ? "error" : ""}
               />
-              {errors.name && <span className="error-message">{errors.name}</span>}
+              {errors.name && <span className={styles.errorMessage}>{errors.name}</span>}
             </div>
 
-            <div className="form-group">
+            <div className={styles.formGroup}>
               <label htmlFor="code">Brand Code (4 letters) *</label>
               <input
                 type="text"
@@ -182,29 +182,29 @@ const BrandManager = () => {
                 style={{ textTransform: "uppercase" }}
                 className={errors.code ? "error" : ""}
               />
-              {errors.code && <span className="error-message">{errors.code}</span>}
+              {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
             </div>
           </div>
 
-          <div className="form-actions">
+          <div className={styles.formActions}>
             {editingBrand && (
-              <button type="button" className="btn-cancel" onClick={resetForm}>
+              <button type="button" className={styles.btnCancel} onClick={resetForm}>
                 Cancel
               </button>
             )}
-            <button type="submit" className="btn-submit">
+            <button type="submit" className={styles.btnSubmit}>
               {editingBrand ? "Update" : "Add"} Brand
             </button>
           </div>
         </form>
       </div>
 
-      <div className="brands-list-section">
+      <div className={styles.brandsListSection}>
         <h2>All Brands ({brands.length})</h2>
         {brands.length === 0 ? (
-          <p className="empty-state">No brands yet. Add your first one above!</p>
+          <p className={styles.emptyState}>No brands yet. Add your first one above!</p>
         ) : (
-          <div className="brands-table-wrapper">
+          <div className={styles.brandsTableWrapper}>
             <table>
               <thead>
                 <tr>
@@ -219,30 +219,30 @@ const BrandManager = () => {
                 {brands.map(brand => (
                   <tr key={brand.id} className={!brand.active ? "inactive" : ""}>
                     <td>{brand.name}</td>
-                    <td className="code-cell">{brand.code}</td>
+                    <td className={styles.codeCell}>{brand.code}</td>
                     <td>
-                      <span className={`status-badge ${brand.active ? "active" : "inactive"}`}>
+                      <span className={`${styles.statusBadge} ${brand.active ? styles.active : styles.inactive}`}>
                         {brand.active ? "Active" : "Inactive"}
                       </span>
                     </td>
                     <td>{new Date(brand.createdAt).toLocaleDateString()}</td>
-                    <td className="actions-cell">
+                    <td className={styles.actionsCell}>
                       <button
-                        className="btn-edit"
+                        className={styles.btnEdit}
                         onClick={() => handleEdit(brand)}
                         title="Edit"
                       >
                         Edit
                       </button>
                       <button
-                        className="btn-toggle"
+                        className={styles.btnToggle}
                         onClick={() => handleToggleActive(brand)}
                         title={brand.active ? "Deactivate" : "Activate"}
                       >
                         {brand.active ? "Deactivate" : "Activate"}
                       </button>
                       <button
-                        className="btn-delete"
+                        className={styles.btnDelete}
                         onClick={() => handleDelete(brand.id)}
                         title="Delete"
                       >

@@ -1,0 +1,43 @@
+@use "@/styles/variables" as v;
+
+
+.header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem 2rem;
+  border-bottom: 2px solid v.$border-color;
+  background-color:v.$black;
+
+  .title{
+    display:flex;
+    .logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 1rem;
+      display: inline-block;
+      path{
+        fill: v.$gray;
+      }
+    }
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: v.$text-primary;
+    margin: 0;
+    span{
+      font-size:0.8rem;
+    }
+  }
+
+  .headerActions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  
+}

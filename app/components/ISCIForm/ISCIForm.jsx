@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { ISCIStatus } from "../../types/isci";
-import "./ISCIForm.scss";
+import { ISCIStatus } from "@/types/isci";
+import styles from "./ISCIForm.module.scss";
 
 const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
   const [brands, setBrands] = useState([]);
@@ -157,13 +157,13 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
   };
 
   return (
-    <div className="isci-form-container">
+    <div className={styles.isciFormContainer}>
       <h2>{code ? "Edit ISCI Code" : "Create New ISCI Code"}</h2>
 
-      <form onSubmit={handleSubmit} className="isci-form">
+      <form onSubmit={handleSubmit} className={styles.isciForm}>
 
         {/* Brand/Client - Full width */}
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label htmlFor="brand">Brand / Client *</label>
           {code ? (
             // When editing, show brand as text (can't change brand)
@@ -171,7 +171,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
               type="text"
               value={formData.brand}
               disabled
-              className="disabled-input"
+              className={styles.disabledInput}
             />
           ) : (
             // When creating, show dropdown
@@ -190,15 +190,15 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
               ))}
             </select>
           )}
-          {errors.brand && <span className="error-message">{errors.brand}</span>}
+          {errors.brand && <span className={styles.errorMessage}>{errors.brand}</span>}
           {!code && brands.length === 0 && (
-            <span className="help-text">No brands available. <a href="/admin">Add brands in Admin Panel</a></span>
+            <span className={styles.helpText}>No brands available. <a href="/admin">Add brands in Admin Panel</a></span>
           )}
         </div>
 
         {/* Row 1: ISCI Code and Assigned Editor */}
-        <div className="form-row">
-          <div className="form-group">
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
             <label htmlFor="code">ISCI Code *</label>
             <input
               type="text"
@@ -209,16 +209,16 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
               placeholder="Auto-generated"
               maxLength={12}
               readOnly={!code}
-              className={`${errors.code ? "error" : ""} ${!code ? "readonly-input" : ""}`}
+              className={`${errors.code ? "error" : ""} ${!code ? styles.readonlyInput : ""}`}
               title={!code ? "Auto-generated based on brand selection" : ""}
             />
-            {errors.code && <span className="error-message">{errors.code}</span>}
+            {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
             {!code && (
-              <span className="help-text">Auto-generated: [BRAND][YEAR][NUMBER]</span>
+              <span className={styles.helpText}>Auto-generated: [BRAND][YEAR][NUMBER]</span>
             )}
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="assignedEditor">Assigned Editor</label>
             <input
               type="text"
@@ -232,8 +232,8 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         </div>
 
         {/* Row 2: Campaign Name and Spot Length */}
-        <div className="form-row">
-          <div className="form-group">
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
             <label htmlFor="campaignName">Campaign Name</label>
             <input
               type="text"
@@ -245,7 +245,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
             />
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="spotLength">Spot Length (seconds)</label>
             <select
               id="spotLength"
@@ -265,7 +265,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         </div>
 
         {/* Spot Title - Full width */}
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label htmlFor="spotTitle">Spot Title *</label>
           <input
             type="text"
@@ -280,7 +280,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         </div>
 
         {/* Description/Notes */}
-        <div className="form-group">
+        <div className={styles.formGroup}>
           <label htmlFor="description">Description / Notes</label>
           <textarea
             id="description"
@@ -293,8 +293,8 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         </div>
 
         {/* Row 3: Language and Closed Captioning */}
-        <div className="form-row">
-          <div className="form-group">
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
             <label htmlFor="language">Language</label>
             <input
               type="text"
@@ -306,7 +306,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
             />
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="closedCaptioning">Closed Captioning</label>
             <select
               id="closedCaptioning"
@@ -321,8 +321,8 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         </div>
 
         {/* Row 4: Audio and Air Date */}
-        <div className="form-row">
-          <div className="form-group">
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
             <label htmlFor="audio">Audio</label>
             <input
               type="text"
@@ -334,7 +334,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
             />
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="airDate">Date (Air/Start Date)</label>
             <input
               type="date"
@@ -347,8 +347,8 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         </div>
 
         {/* Row 5: Aspect Ratio and Version/Cut */}
-        <div className="form-row">
-          <div className="form-group">
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
             <label htmlFor="aspectRatio">Aspect Ratio</label>
             <select
               id="aspectRatio"
@@ -364,7 +364,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
             </select>
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="version">Version / Cut</label>
             <select
               id="version"
@@ -382,8 +382,8 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         </div>
 
         {/* Row 6: Channel and Status */}
-        <div className="form-row">
-          <div className="form-group">
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
             <label htmlFor="channel">Output: Channel</label>
             <select
               id="channel"
@@ -400,7 +400,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
             </select>
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label htmlFor="status">Status</label>
             <select
               id="status"
@@ -418,11 +418,11 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="form-actions">
-          <button type="button" className="btn-cancel" onClick={onCancel}>
+        <div className={styles.formActions}>
+          <button type="button" className={styles.btnCancel} onClick={onCancel}>
             Cancel
           </button>
-          <button type="submit" className="btn-submit">
+          <button type="submit" className={styles.btnSubmit}>
             {code ? "Update" : "Create"} ISCI Code
           </button>
         </div>

@@ -1,8 +1,9 @@
-import "./ISCIList.scss";
+import styles from "./ISCIList.module.scss";
 
 const ISCIList = ({ codes, onEdit, onDelete }) => {
   const getStatusBadgeClass = (status) => {
-    return `status-badge status-${status.replace('_', '-')}`;
+    const statusKey = `status${status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('')}`;
+    return `${styles.statusBadge} ${styles[statusKey] || ''}`;
   };
 
   const formatDate = (dateString) => {
@@ -12,15 +13,15 @@ const ISCIList = ({ codes, onEdit, onDelete }) => {
 
   if (codes.length === 0) {
     return (
-      <div className="empty-state">
+      <div className={styles.emptyState}>
         <p>No ISCI codes found. Create your first one to get started!</p>
       </div>
     );
   }
 
   return (
-    <div className="isci-list">
-      <div className="table-wrapper">
+    <div className={styles.isciList}>
+      <div className={styles.tableWrapper}>
         <table>
           <thead>
             <tr>
@@ -44,11 +45,11 @@ const ISCIList = ({ codes, onEdit, onDelete }) => {
           <tbody>
             {codes.map((code) => (
               <tr key={code.id}>
-                <td className="code-cell">{code.code}</td>
+                <td className={styles.codeCell}>{code.code}</td>
                 <td>{code.assignedEditor || "Unassigned"}</td>
                 <td>{code.brand}</td>
                 <td>{code.campaignName || "N/A"}</td>
-                <td className="spot-title-cell">{code.spotTitle}</td>
+                <td className={styles.spotTitleCell}>{code.spotTitle}</td>
                 <td>{code.spotLength ? `${code.spotLength}s` : "N/A"}</td>
                 <td>{code.language || "N/A"}</td>
                 <td>{code.closedCaptioning || "N/A"}</td>
@@ -62,16 +63,16 @@ const ISCIList = ({ codes, onEdit, onDelete }) => {
                     {code.status.replace('_', ' ')}
                   </span>
                 </td>
-                <td className="actions-cell">
+                <td className={styles.actionsCell}>
                   <button
-                    className="btn-edit"
+                    className={styles.btnEdit}
                     onClick={() => onEdit(code)}
                     title="Edit"
                   >
                     Edit
                   </button>
                   <button
-                    className="btn-delete"
+                    className={styles.btnDelete}
                     onClick={() => onDelete(code.id)}
                     title="Delete"
                   >

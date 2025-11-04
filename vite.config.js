@@ -10,10 +10,20 @@
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import path from "path";
+import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
   // Plugins are like special powers we give to Vite
   plugins: [
+    svgr({
+      // Process plain `.svg` imports as React components
+      include: "**/*.svg",
+      // Export the component as a named export `ReactComponent`
+      svgrOptions: {
+        exportType: "named",
+        namedExport: "ReactComponent",
+      },
+    }),
     reactRouter(),      // Adds React Router v7 support (handles our routes and SSR)
   ],
 
