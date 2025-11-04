@@ -38,5 +38,85 @@
     "active": true,
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "6",
+    "name": "Microsoft",
+    "code": "MSFT",
+    "active": true,
+    "createdAt": "2024-01-05T00:00:00.000Z",
+    "updatedAt": "2024-01-05T00:00:00.000Z"
+  },
+  {
+    "id": "7",
+    "name": "Amazon",
+    "code": "AMZN",
+    "active": true,
+    "createdAt": "2024-01-10T00:00:00.000Z",
+    "updatedAt": "2024-01-10T00:00:00.000Z"
+  },
+  {
+    "id": "8",
+    "name": "Netflix",
+    "code": "NFLX",
+    "active": true,
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z"
+  },
+  {
+    "id": "9",
+    "name": "Starbucks",
+    "code": "STBK",
+    "active": true,
+    "createdAt": "2024-01-20T00:00:00.000Z",
+    "updatedAt": "2024-01-20T00:00:00.000Z"
+  },
+  {
+    "id": "10",
+    "name": "McDonald's",
+    "code": "MCDO",
+    "active": true,
+    "createdAt": "2024-02-01T00:00:00.000Z",
+    "updatedAt": "2024-02-01T00:00:00.000Z"
+  },
+  {
+    "id": "11",
+    "name": "PepsiCo",
+    "code": "PEPS",
+    "active": true,
+    "createdAt": "2024-02-05T00:00:00.000Z",
+    "updatedAt": "2024-02-05T00:00:00.000Z"
+  },
+  {
+    "id": "12",
+    "name": "Ford",
+    "code": "FORD",
+    "active": true,
+    "createdAt": "2024-02-10T00:00:00.000Z",
+    "updatedAt": "2024-02-10T00:00:00.000Z"
+  },
+  {
+    "id": "13",
+    "name": "BMW",
+    "code": "BMWW",
+    "active": true,
+    "createdAt": "2024-02-15T00:00:00.000Z",
+    "updatedAt": "2024-02-15T00:00:00.000Z"
+  },
+  {
+    "id": "14",
+    "name": "Adidas",
+    "code": "ADID",
+    "active": true,
+    "createdAt": "2024-02-20T00:00:00.000Z",
+    "updatedAt": "2024-02-20T00:00:00.000Z"
+  },
+  {
+    "id": "15",
+    "name": "Tesla",
+    "code": "TLSA",
+    "active": true,
+    "createdAt": "2024-02-25T00:00:00.000Z",
+    "updatedAt": "2024-02-25T00:00:00.000Z"
   }
 ]
