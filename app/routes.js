@@ -16,12 +16,14 @@ export default [
   // index() means "the root path" (/)
   index("routes/home.jsx"),
 
+  // Admin panel - manages brands/clients
+  route("admin", "routes/admin.jsx"),
+
   // API endpoint for ISCI codes
   // Handles GET (load codes) and POST (save codes) requests
   route("api/isci", "routes/api.isci.js"),
 
-  // Want to add more routes? Just add them here!
-  // Example:
-  // route("about", "routes/about.jsx"),
-  // route("settings", "routes/settings.jsx"),
+  // API endpoint for brands
+  // Handles GET (load brands) and POST (save brands) requests
+  route("api/brands", "routes/api.brands.js"),
 ];

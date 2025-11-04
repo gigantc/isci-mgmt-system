@@ -209,36 +209,43 @@ const ISCIDashboard = () => {
    *
    * This is where the search magic happens! ✨
    * We filter the codes based on what's in the search box.
-   * Searches in: ISCI code, advertiser, title, and assigned editor.
+   * Searches in: ISCI code, brand, spot title, and assigned editor.
    *
    * The "?." is called optional chaining - it means "only try to call toLowerCase()
    * if assignedEditor exists" (prevents errors if someone isn't assigned yet)
    */
   const filteredCodes = codes.filter(code =>
     code.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.advertiser.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    code.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    code.spotTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
     code.assignedEditor?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // TIME TO RENDER! 🎨
   return (
     <div className="isci-dashboard">
-      {/* Top header with title and create button */}
+      {/* Top header with title and action buttons */}
       <header className="dashboard-header">
         <h1>ISCI Management System</h1>
 
-        {/* Create button (disabled while loading so people don't click it too early) */}
-        <button
-          className="btn-primary"
-          onClick={() => {
-            console.log("Create button clicked, current showForm:", showForm);
-            setShowForm(true);
-          }}
-          disabled={isLoading}
-        >
-          Create New ISCI Code
-        </button>
+        <div className="header-actions">
+          {/* Admin Panel Link */}
+          <a href="/admin" className="btn-secondary">
+            Admin Panel
+          </a>
+
+          {/* Create button (disabled while loading so people don't click it too early) */}
+          <button
+            className="btn-primary"
+            onClick={() => {
+              console.log("Create button clicked, current showForm:", showForm);
+              setShowForm(true);
+            }}
+            disabled={isLoading}
+          >
+            Create New ISCI Code
+          </button>
+        </div>
       </header>
 
       {/* Main content area - shows different things based on the current state */}
@@ -252,6 +259,7 @@ const ISCIDashboard = () => {
             code={selectedCode}                                       // Pass the code being edited (or null for create)
             onSubmit={selectedCode ? handleUpdateCode : handleCreateCode}  // Different handlers for create vs update
             onCancel={handleCancelForm}                               // What to do if they cancel
+            allCodes={codes}                                          // Pass all codes for auto-generation logic
           />
         ) : (
           // LIST STATE: Show the search bar and the list of codes
@@ -260,7 +268,7 @@ const ISCIDashboard = () => {
             <div className="search-bar">
               <input
                 type="text"
-                placeholder="Search by code, advertiser, title, or editor..."
+                placeholder="Search by code, brand, spot title, or editor..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}  // Update search term as they type
               />

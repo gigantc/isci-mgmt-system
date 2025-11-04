@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { ISCIStatus } from "../../types/isci";
 import "./ISCIForm.scss";
 
-const ISCIForm = ({ code, onSubmit, onCancel }) => {
+const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
+  const [brands, setBrands] = useState([]);
   const [formData, setFormData] = useState({
     code: "",
+    brandId: "",
     assignedEditor: "",
     brand: "",
     campaignName: "",
@@ -24,9 +26,15 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
+    loadBrands();
+  }, []);
+
+  useEffect(() => {
     if (code) {
+      // Editing existing code
       setFormData({
         code: code.code,
+        brandId: code.brandId || "",
         assignedEditor: code.assignedEditor || "",
         brand: code.brand,
         campaignName: code.campaignName || "",
@@ -45,13 +53,50 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
     }
   }, [code]);
 
+  const loadBrands = async () => {
+    try {
+      const response = await fetch("/api/brands");
+      const data = await response.json();
+      // Only show active brands
+      setBrands(data.filter(b => b.active));
+    } catch (error) {
+      console.error("Error loading brands:", error);
+    }
+  };
+
+  const generateISCICode = (brandCode) => {
+    const currentYear = new Date().getFullYear().toString().slice(-2); // Last 2 digits of year
+
+    // Find all codes for this brand in the current year
+    const brandCodes = allCodes.filter(c => {
+      const codeStart = `${brandCode}${currentYear}`;
+      return c.code.startsWith(codeStart);
+    });
+
+    // Extract the numbers and find the highest
+    let highestNumber = 0;
+    brandCodes.forEach(c => {
+      const match = c.code.match(new RegExp(`${brandCode}${currentYear}(\\d+)`));
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > highestNumber) {
+          highestNumber = num;
+        }
+      }
+    });
+
+    // Increment and pad with zeros (2 or 3 digits)
+    const nextNumber = highestNumber + 1;
+    const paddedNumber = nextNumber < 100 ? nextNumber.toString().padStart(2, '0') : nextNumber.toString();
+
+    return `${brandCode}${currentYear}${paddedNumber}`;
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
     if (!formData.code.trim()) {
       newErrors.code = "ISCI code is required";
-    } else if (!/^[A-Z0-9]{8}$/.test(formData.code)) {
-      newErrors.code = "ISCI code must be 8 alphanumeric characters (e.g., ABCD1234)";
     }
 
     if (!formData.brand.trim()) {
@@ -64,6 +109,32 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleBrandChange = (e) => {
+    const brandId = e.target.value;
+    const selectedBrand = brands.find(b => b.id === brandId);
+
+    if (selectedBrand) {
+      const generatedCode = generateISCICode(selectedBrand.code);
+      setFormData(prev => ({
+        ...prev,
+        brandId: brandId,
+        brand: selectedBrand.name,
+        code: generatedCode,
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        brandId: "",
+        brand: "",
+        code: "",
+      }));
+    }
+
+    if (errors.brand) {
+      setErrors(prev => ({ ...prev, brand: "" }));
+    }
   };
 
   const handleChange = (e) => {
@@ -90,6 +161,41 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
       <h2>{code ? "Edit ISCI Code" : "Create New ISCI Code"}</h2>
 
       <form onSubmit={handleSubmit} className="isci-form">
+
+        {/* Brand/Client - Full width */}
+        <div className="form-group">
+          <label htmlFor="brand">Brand / Client *</label>
+          {code ? (
+            // When editing, show brand as text (can't change brand)
+            <input
+              type="text"
+              value={formData.brand}
+              disabled
+              className="disabled-input"
+            />
+          ) : (
+            // When creating, show dropdown
+            <select
+              id="brand"
+              name="brand"
+              value={formData.brandId}
+              onChange={handleBrandChange}
+              className={errors.brand ? "error" : ""}
+            >
+              <option value="">Select a brand...</option>
+              {brands.map(brand => (
+                <option key={brand.id} value={brand.id}>
+                  {brand.name} ({brand.code})
+                </option>
+              ))}
+            </select>
+          )}
+          {errors.brand && <span className="error-message">{errors.brand}</span>}
+          {!code && brands.length === 0 && (
+            <span className="help-text">No brands available. <a href="/admin">Add brands in Admin Panel</a></span>
+          )}
+        </div>
+
         {/* Row 1: ISCI Code and Assigned Editor */}
         <div className="form-row">
           <div className="form-group">
@@ -100,11 +206,16 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
               name="code"
               value={formData.code}
               onChange={handleChange}
-              placeholder="ABCD1234"
-              maxLength={8}
-              className={errors.code ? "error" : ""}
+              placeholder="Auto-generated"
+              maxLength={12}
+              readOnly={!code}
+              className={`${errors.code ? "error" : ""} ${!code ? "readonly-input" : ""}`}
+              title={!code ? "Auto-generated based on brand selection" : ""}
             />
             {errors.code && <span className="error-message">{errors.code}</span>}
+            {!code && (
+              <span className="help-text">Auto-generated: [BRAND][YEAR][NUMBER]</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -118,21 +229,6 @@ const ISCIForm = ({ code, onSubmit, onCancel }) => {
               placeholder="Editor Name"
             />
           </div>
-        </div>
-
-        {/* Brand/Client - Full width */}
-        <div className="form-group">
-          <label htmlFor="brand">Brand / Client *</label>
-          <input
-            type="text"
-            id="brand"
-            name="brand"
-            value={formData.brand}
-            onChange={handleChange}
-            placeholder="Company or Brand Name"
-            className={errors.brand ? "error" : ""}
-          />
-          {errors.brand && <span className="error-message">{errors.brand}</span>}
         </div>
 
         {/* Row 2: Campaign Name and Spot Length */}

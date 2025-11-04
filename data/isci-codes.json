@@ -1,7 +1,8 @@
 [
   {
     "id": "1",
-    "code": "LVCVA001",
+    "code": "LVCI2501",
+    "brandId": "1",
     "assignedEditor": "Sarah Johnson",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "New Fab",
@@ -22,7 +23,8 @@
   },
   {
     "id": "2",
-    "code": "NIKE0001",
+    "code": "NIKE2501",
+    "brandId": "2",
     "assignedEditor": "Mike Chen",
     "brand": "Nike",
     "campaignName": "Just Do It Spring 2024",
@@ -42,7 +44,8 @@
   },
   {
     "id": "3",
-    "code": "APPL0023",
+    "code": "APPL2501",
+    "brandId": "3",
     "assignedEditor": "Lisa Park",
     "brand": "Apple",
     "campaignName": "Think Different",
@@ -62,7 +65,8 @@
   },
   {
     "id": "4",
-    "code": "COCA0045",
+    "code": "COCA2501",
+    "brandId": "4",
     "assignedEditor": "David Lee",
     "brand": "Coca-Cola",
     "campaignName": "Share a Coke",
@@ -82,7 +86,8 @@
   },
   {
     "id": "5",
-    "code": "TOYT0012",
+    "code": "TOYT2501",
+    "brandId": "5",
     "assignedEditor": "Sarah Johnson",
     "brand": "Toyota",
     "campaignName": "Let's Go Places",

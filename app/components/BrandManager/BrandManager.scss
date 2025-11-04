@@ -1,0 +1,276 @@
+@use "@/styles/variables" as v;
+
+.brand-manager {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  .brand-form-section {
+    background: rgba(v.$white, 0.02);
+    border-radius: 8px;
+    border: 1px solid v.$border-color;
+    padding: 2rem;
+    margin-bottom: 2rem;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: v.$text-primary;
+      margin: 0 0 1.5rem 0;
+    }
+  }
+
+  .brand-form {
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: v.$text-primary;
+      }
+
+      input {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.9375rem;
+        border: 1px solid v.$border-color;
+        border-radius: 6px;
+        transition: all 0.2s;
+        font-family: inherit;
+        background-color: rgba(v.$white, 0.05);
+        color: v.$text-primary;
+
+        &:focus {
+          outline: none;
+          border-color: v.$accent;
+          box-shadow: 0 0 0 3px rgba(v.$accent, 0.2);
+        }
+
+        &.error {
+          border-color: v.$red;
+
+          &:focus {
+            border-color: v.$red;
+            box-shadow: 0 0 0 3px rgba(v.$red, 0.2);
+          }
+        }
+
+        &::placeholder {
+          color: v.$text-secondary;
+        }
+      }
+
+      .error-message {
+        font-size: 0.8125rem;
+        color: v.$red;
+        margin-top: -0.25rem;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1.5rem;
+
+      button {
+        padding: 0.625rem 1.5rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-cancel {
+        color: v.$text-primary;
+        background-color: rgba(v.$white, 0.05);
+        border: 1px solid v.$border-color;
+
+        &:hover {
+          background-color: rgba(v.$white, 0.1);
+        }
+      }
+
+      .btn-submit {
+        color: v.$accent-text;
+        background-color: v.$accent;
+
+        &:hover {
+          background-color: v.$hover;
+          color: v.$white;
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+    }
+  }
+
+  .brands-list-section {
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: v.$text-primary;
+      margin: 0 0 1.5rem 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: v.$text-secondary;
+      background: rgba(v.$white, 0.02);
+      border-radius: 8px;
+      border: 1px solid v.$border-color;
+    }
+  }
+
+  .brands-table-wrapper {
+    overflow-x: auto;
+    background: rgba(v.$white, 0.02);
+    border-radius: 8px;
+    border: 1px solid v.$border-color;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+
+      thead {
+        background-color: rgba(v.$white, 0.03);
+
+        tr {
+          border-bottom: 2px solid v.$border-color;
+        }
+
+        th {
+          padding: 0.75rem 1rem;
+          text-align: left;
+          font-weight: 600;
+          color: v.$text-primary;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 0.05em;
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid v.$border-color-light;
+          transition: background-color 0.15s;
+
+          &:hover {
+            background-color: rgba(v.$white, 0.03);
+          }
+
+          &.inactive {
+            opacity: 0.6;
+          }
+        }
+
+        td {
+          padding: 1rem;
+          color: v.$text-secondary;
+
+          &.code-cell {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: v.$accent;
+            font-size: 1.1rem;
+          }
+
+          &.actions-cell {
+            display: flex;
+            gap: 0.5rem;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+
+      &.active {
+        background-color: rgba(v.$teal, 0.15);
+        color: v.$teal;
+        border: 1px solid rgba(v.$teal, 0.3);
+      }
+
+      &.inactive {
+        background-color: rgba(v.$gray, 0.15);
+        color: v.$gray;
+        border: 1px solid rgba(v.$gray, 0.3);
+      }
+    }
+
+    .btn-edit,
+    .btn-delete,
+    .btn-toggle {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-edit {
+      color: v.$accent-text;
+      background-color: v.$accent;
+
+      &:hover {
+        background-color: v.$hover;
+        color: v.$white;
+      }
+    }
+
+    .btn-toggle {
+      color: v.$white;
+      background-color: rgba(v.$blue, 0.3);
+      border: 1px solid rgba(v.$blue, 0.5);
+
+      &:hover {
+        background-color: v.$blue;
+      }
+    }
+
+    .btn-delete {
+      color: v.$white;
+      background-color: rgba(v.$red, 0.2);
+      border: 1px solid rgba(v.$red, 0.4);
+
+      &:hover {
+        background-color: v.$red;
+        border-color: v.$red;
+      }
+    }
+  }
+
+  .loading-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: v.$text-secondary;
+    font-size: 1.125rem;
+  }
+}
