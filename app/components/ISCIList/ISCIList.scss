@@ -1,0 +1,128 @@
+.isci-list {
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+
+    thead {
+      background-color: #f9fafb;
+
+      tr {
+        border-bottom: 2px solid #e5e7eb;
+      }
+
+      th {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #374151;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid #e5e7eb;
+        transition: background-color 0.15s;
+
+        &:hover {
+          background-color: #f9fafb;
+        }
+      }
+
+      td {
+        padding: 1rem;
+        color: #4b5563;
+
+        &.code-cell {
+          font-family: 'Courier New', monospace;
+          font-weight: 600;
+          color: #1f2937;
+        }
+
+        &.actions-cell {
+          display: flex;
+          gap: 0.5rem;
+        }
+      }
+    }
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+
+    &.status-pending {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    &.status-in-progress {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+
+    &.status-in-review {
+      background-color: #e0e7ff;
+      color: #3730a3;
+    }
+
+    &.status-completed {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    &.status-archived {
+      background-color: #f3f4f6;
+      color: #4b5563;
+    }
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-edit {
+    color: #1f2937;
+    background-color: #f3f4f6;
+
+    &:hover {
+      background-color: #e5e7eb;
+    }
+  }
+
+  .btn-delete {
+    color: #dc2626;
+    background-color: #fee2e2;
+
+    &:hover {
+      background-color: #fecaca;
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+
+  p {
+    font-size: 1.125rem;
+    margin: 0;
+  }
+}

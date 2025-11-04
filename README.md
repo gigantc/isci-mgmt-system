@@ -1,24 +1,51 @@
-# Welcome to React Router!
+# ISCI Management System
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A web application for managing ISCI (Industry Standard Coding Identification) codes for video editing projects.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- **Create & Edit ISCI Codes**: Generate and manage ISCI codes with validation
+- **Track Projects**: Monitor status (Pending, In Progress, In Review, Completed, Archived)
+- **Assign Editors**: Assign video editors to specific ISCI codes
+- **Search & Filter**: Quick search across codes, advertisers, titles, and editors
+- **Project Details**: Track duration, format, due dates, and completion status
+- **Data Persistence**: JSON file-based storage (ready for database migration)
+
+## Tech Stack
+
+- **Frontend**: React 19 + TypeScript
+- **Routing**: React Router v7
+- **Styling**: Sass + TailwindCSS
+- **Build Tool**: Vite
+- **Data Storage**: JSON file (upgradeable to PostgreSQL/MySQL)
+
+## Project Structure
+
+```
+app/
+├── components/          # Reusable UI components
+│   ├── ISCIForm/       # Create/Edit form component
+│   └── ISCIList/       # Table view component
+├── containers/         # Container components
+│   └── ISCIDashboard/  # Main dashboard container
+├── routes/             # Route handlers
+│   ├── home.tsx        # Home route
+│   └── api.isci.ts     # API endpoint for ISCI data
+├── types/              # TypeScript type definitions
+│   └── isci.ts         # ISCI code types and enums
+├── app.css             # Global styles
+├── root.tsx            # Root component
+└── routes.ts           # Route configuration
+
+data/
+└── isci-codes.json     # Data storage file
+```
 
 ## Getting Started
 
 ### Installation
 
-Install the dependencies:
+Install dependencies:
 
 ```bash
 npm install
@@ -26,7 +53,7 @@ npm install
 
 ### Development
 
-Start the development server with HMR:
+Start the development server:
 
 ```bash
 npm run dev
@@ -34,7 +61,7 @@ npm run dev
 
 Your application will be available at `http://localhost:5173`.
 
-## Building for Production
+### Building for Production
 
 Create a production build:
 
@@ -42,46 +69,33 @@ Create a production build:
 npm run build
 ```
 
-## Deployment
+## ISCI Code Format
 
-### Docker Deployment
+ISCI codes must follow the standard 8-character alphanumeric format (e.g., `NIKE0001`, `APPL0123`).
 
-To build and run using Docker:
+## Status Types
 
-```bash
-docker build -t my-app .
+- **Pending**: Not yet started
+- **In Progress**: Currently being worked on
+- **In Review**: Under review
+- **Completed**: Finished and approved
+- **Archived**: Completed and archived
 
-# Run the container
-docker run -p 3000:3000 my-app
-```
+## API Endpoints
 
-The containerized application can be deployed to any platform that supports Docker, including:
+- `GET /api/isci` - Retrieve all ISCI codes
+- `POST /api/isci` - Save ISCI codes
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+## Future Enhancements
 
-### DIY Deployment
+- [ ] Database integration (PostgreSQL/MySQL)
+- [ ] User authentication and authorization
+- [ ] Multi-user collaboration features
+- [ ] File attachment support
+- [ ] Export to CSV/Excel
+- [ ] Advanced filtering and sorting
+- [ ] Dashboard analytics and reporting
 
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
+## License
 
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+MIT
