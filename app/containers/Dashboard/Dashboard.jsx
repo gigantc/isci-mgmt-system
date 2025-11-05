@@ -28,9 +28,6 @@ const Dashboard = () => {
   // All the ISCI codes we've loaded from the server
   const [codes, setCodes] = useState([]);
 
-  // The code we're currently editing (null if we're creating a new one)
-  const [selectedCode, setSelectedCode] = useState(null);
-
   // Are we showing the form right now? (true) Or the list? (false)
   const [showForm, setShowForm] = useState(false);
 
@@ -130,41 +127,6 @@ const Dashboard = () => {
     setShowForm(false);
   };
 
-  /**
-   * handleUpdateCode
-   *
-   * Called when the user submits the form to UPDATE an existing ISCI code.
-   * We merge the new data with the old data, update the timestamp, and save!
-   */
-  const handleUpdateCode = (formData) => {
-    // Safety check: If somehow there's no selected code, bail out
-    if (!selectedCode) return;
-
-    // Build the updated code object
-    const updatedCode = {
-      ...selectedCode,                          // Start with all the old data
-      ...formData,                              // Overwrite with new data from the form
-      updatedAt: new Date().toISOString(),      // Update the "last modified" timestamp
-
-      // Special case: If they just marked it as completed, set the completedAt timestamp
-      // Otherwise, keep the old completedAt value (or undefined if it was never completed)
-      completedAt: formData.status === ISCIStatus.COMPLETED
-        ? new Date().toISOString()
-        : selectedCode.completedAt,
-    };
-
-    // Replace the old code with the updated one in the array
-    // .map() loops through and replaces the matching ID
-    const updatedCodes = codes.map(code =>
-      code.id === selectedCode.id ? updatedCode : code
-    );
-
-    saveCodes(updatedCodes);
-
-    // Clean up and hide the form
-    setSelectedCode(null);
-    setShowForm(false);
-  };
 
   /**
    * handleDeleteCode
@@ -183,25 +145,14 @@ const Dashboard = () => {
     // If they clicked "Cancel", nothing happens! Crisis averted.
   };
 
-  /**
-   * handleEditCode
-   *
-   * User clicked the "Edit" button on a code.
-   * Remember which code they want to edit and show the form!
-   */
-  const handleEditCode = (code) => {
-    setSelectedCode(code);   // "Remember this code, we're editing it!"
-    setShowForm(true);        // "Show me the form!"
-  };
 
   /**
    * handleCancelForm
    *
    * User clicked "Cancel" on the form. No harm, no foul!
-   * Just forget what we were doing and go back to the list.
+   * Just go back to the list.
    */
   const handleCancelForm = () => {
-    setSelectedCode(null);   // "Forget which code we were editing"
     setShowForm(false);       // "Hide the form, show the list"
   };
 
@@ -222,6 +173,13 @@ const Dashboard = () => {
     code.assignedEditor?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Determine the dynamic section title based on current view
+  const getSectionTitle = () => {
+    if (isLoading) return "Loading...";
+    if (showForm) return "Create New ISCI Code";
+    return "All ISCI Codes";
+  };
+
   // TIME TO RENDER! 🎨
   return (
     <div className={styles.isciDashboard}>
@@ -230,40 +188,48 @@ const Dashboard = () => {
 
       {/* Main content area - shows different things based on the current state */}
       <div className={styles.dashboardContent}>
-        <h2>Dashboard</h2>
-        {isLoading ? (
-          // LOADING STATE: Show a loading message while we fetch data
-          <div className={styles.loadingState}>Loading ISCI codes...</div>
-        ) : showForm ? (
-          // FORM STATE: Show the create/edit form
-          <ISCIForm
-            code={selectedCode}                                       // Pass the code being edited (or null for create)
-            onSubmit={selectedCode ? handleUpdateCode : handleCreateCode}  // Different handlers for create vs update
-            onCancel={handleCancelForm}                               // What to do if they cancel
-            allCodes={codes}                                          // Pass all codes for auto-generation logic
-          />
-        ) : (
-          // LIST STATE: Show the search bar and the list of codes
-          <>
-            {/* Search bar */}
+        {/* Sticky header section with title and search */}
+        <div className={styles.stickyHeader}>
+          <h2>{getSectionTitle()}</h2>
+          {!isLoading && !showForm && (
             <div className={styles.searchBar}>
               <input
                 type="text"
                 placeholder="Search by code, brand, spot title, or editor..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}  // Update search term as they type
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+          )}
+        </div>
 
-            {/* The list of ISCI codes (filtered by search term) */}
-            <ISCIList
-              codes={filteredCodes}           // Pass the filtered codes
-              onEdit={handleEditCode}          // What to do when they click Edit
-              onDelete={handleDeleteCode}      // What to do when they click Delete
+        {/* Scrollable content area */}
+        <div className={styles.scrollableContent}>
+          {isLoading ? (
+            // LOADING STATE: Show a loading message while we fetch data
+            <div className={styles.loadingState}>Loading ISCI codes...</div>
+          ) : showForm ? (
+            // FORM STATE: Show the create form
+            <ISCIForm
+              code={null}
+              onSubmit={handleCreateCode}
+              onCancel={handleCancelForm}
+              allCodes={codes}
             />
-          </>
-        )}
+          ) : (
+            // LIST STATE: Show the list of codes
+            <ISCIList
+              codes={filteredCodes}
+              onDelete={handleDeleteCode}
+            />
+          )}
+        </div>
       </div>
+
+      <div className={styles.bentoBox}>
+        1
+      </div>
+      
     </div>
   );
 };

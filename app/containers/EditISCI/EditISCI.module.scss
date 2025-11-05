@@ -1,0 +1,48 @@
+@use "@/styles/variables" as v;
+
+.editISCI {
+  min-height: 100vh;
+  background-color: v.$bg-primary;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: 2rem;
+    color: v.$text-primary;
+    margin: 0;
+  }
+}
+
+.formContainer {
+  background-color: rgba(v.$white, 0.02);
+  border: 1px solid v.$border-color-light;
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.loadingState,
+.errorState {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: v.$text-secondary;
+}
+
+.errorState {
+  h2 {
+    color: v.$red;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
+  }
+}

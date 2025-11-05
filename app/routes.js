@@ -19,6 +19,10 @@ export default [
   // Admin panel - manages brands/clients
   route("admin", "routes/admin.jsx"),
 
+  // Edit ISCI code page
+  // :code parameter captures the ISCI code from the URL (e.g., LVCI2501)
+  route("edit/:code", "routes/edit.jsx"),
+
   // API endpoint for ISCI codes
   // Handles GET (load codes) and POST (save codes) requests
   route("api/isci", "routes/api.isci.js"),

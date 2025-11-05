@@ -1,6 +1,7 @@
 
 import styles from "./Header.module.scss";
 import { ReactComponent as Logo } from "./assets/Logo.svg";
+import ProfileTemp from "./assets/profile.jpg";
 
 const Header = ({
   isLoading,
@@ -11,6 +12,7 @@ const Header = ({
 }) => {
   return(
     <header className={styles.header}>
+      
       <div className={styles.title}>
         <Logo className={styles.logo} aria-hidden="true" focusable="false" />
         <h1>ISCIz <span>alpha</span></h1>
@@ -22,6 +24,14 @@ const Header = ({
            Dashboard
           </a>
         )}
+
+        <a href="/admin" className="btn-text">
+         Assets
+        </a>
+
+        <a href="/admin" className="btn-text">
+          Exports
+        </a>
 
         {showAdminButton && (
           <a href="/admin" className="btn-text">
@@ -37,9 +47,18 @@ const Header = ({
             }}
             disabled={isLoading}
           >
-            New ISCI Code
+            + New ISCI Code
           </button>
         )}
+
+      </div>
+
+      <div className={styles.profile}>
+        <div className={styles.name}>
+          <p>Steve McVideo</p>
+          <p>Superadmin</p>
+        </div>
+        <img src={ProfileTemp} />
       </div>
     </header>
   )

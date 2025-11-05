@@ -3,22 +3,24 @@
 
 .header{
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  margin-bottom: 2rem;
-  padding: 1rem 2rem;
-  border-bottom: 2px solid v.$border-color;
+  padding: 2rem 2rem;
+  margin: 2rem auto 0;
   background-color:v.$black;
+  width: calc(100% - 4rem);
+  border-radius: 32px 32px 0px 0px;
 
   .title{
     display:flex;
+    margin-right:auto;
     .logo {
       width: 40px;
       height: 40px;
       margin-right: 1rem;
       display: inline-block;
       path{
-        fill: v.$gray;
+        fill: v.$red;
       }
     }
   }
@@ -37,6 +39,32 @@
     display: flex;
     gap: 1rem;
     align-items: center;
+  }
+
+  .profile{
+    height:100%;
+    display:flex;
+    align-items:center;
+    margin:0px 0px 0px 100px;
+    img{
+      height:50px; width:50px;
+      border-radius:50px;
+    }
+    .name{
+      margin:0px 20px 0px 0px;
+      p:first-of-type{
+        font-size:1.2rem;
+        margin:0px 0px .1rem 0px;
+        text-align:right;
+      }
+      p:last-of-type{
+        font-size:.75rem;
+        margin:0;
+        text-align:right;
+        color: v.$text-secondary;
+      }
+    }
+    
   }
 
   

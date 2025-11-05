@@ -1,30 +1,31 @@
 // Color Palette
-$black: #1C1C1C;
+$black: #212529;
 $white: #FFFAE7;
-$gray: #c4c0bc;
-$gray_dark: #2c2b2b;
+$gray: #3d434b;
+$gray_dark: #272b2f;
 $yellow: #C2FF00;
 $pink: #ff00b7;
 $blue: #1405ff;
 $teal: #00DEB5;
 $red: #FF2300;
+$orange: #febc2c;
 
 // Theme Colors
 $bg-primary: $black;
 $text-primary: $white;
 $text-secondary: rgba($white, 0.7);
-$accent: $yellow;
+$accent: #febc2c;
 $accent-text: $black;
-$hover: $pink;
+$hover: $red;
 $disabled: $gray;
 
 // Status Colors
-$status-pending: $yellow;
-$status-in-progress: $blue;
+$status-pending: $orange;
+$status-in-progress: $yellow;
 $status-in-review: $teal;
 $status-completed: $teal;
 $status-archived: $gray;
 
 // Border Colors
-$border-color: rgba($white, 0.1);
+$border-color: #3a3f43;
 $border-color-light: rgba($white, 0.05);

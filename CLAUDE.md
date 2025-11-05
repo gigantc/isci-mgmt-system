@@ -29,14 +29,18 @@ isci-mgmt-system/
 │   │   │   ├── ISCIForm.jsx
 │   │   │   ├── ISCIForm.module.scss
 │   │   │   └── index.js
-│   │   └── ISCIList/           # Table view for listing codes
+│   │   └── ISCIList/           # CSS Grid view for listing codes
 │   │       ├── ISCIList.jsx
 │   │       ├── ISCIList.module.scss
 │   │       └── index.js
 │   ├── containers/             # Container components with logic
-│   │   ├── Dashboard/          # Main dashboard container
+│   │   ├── Dashboard/          # Main dashboard container (create & list)
 │   │   │   ├── Dashboard.jsx
 │   │   │   ├── Dashboard.module.scss
+│   │   │   └── index.js
+│   │   ├── EditISCI/           # Edit ISCI code container
+│   │   │   ├── EditISCI.jsx
+│   │   │   ├── EditISCI.module.scss
 │   │   │   └── index.js
 │   │   └── Header/             # Global header component
 │   │       ├── Header.jsx
@@ -48,6 +52,7 @@ isci-mgmt-system/
 │   │   ├── admin.jsx           # Admin panel route
 │   │   ├── api.brands.js       # Brand API endpoints
 │   │   ├── api.isci.js         # ISCI code API endpoints
+│   │   ├── edit.jsx            # Edit ISCI code route
 │   │   └── home.jsx            # Home page route
 │   ├── styles/                 # Global styles and variables
 │   │   ├── _variables.scss     # Sass variables (colors, theme)
@@ -257,30 +262,38 @@ The application uses a custom dark mode theme with the following color palette:
 
 ```scss
 // Color Palette (defined in app/styles/_variables.scss)
-$black: #1C1C1C;      // Background
+$black: #212529;      // Background
 $white: #FFFAE7;      // Text
-$gray: #c4c0bc;       // Disabled states
-$yellow: #C2FF00;     // Accent/buttons
-$pink: #ff00b7;       // Hover states
-$blue: #1405ff;       // In Progress status
-$teal: #00DEB5;       // Review/Completed status
+$gray: #3d434b;       // UI elements/borders
+$yellow: #C2FF00;     // Primary accent
+$pink: #ff00b7;       // Secondary accent
+$blue: #1405ff;       // Secondary accent
+$teal: #00DEB5;       // Status colors
 $red: #FF2300;        // Delete/Error states
+$orange: #febc2c;     // Pending/Warning states
 ```
 
 **Theme Variables:**
-- Background: `$bg-primary` (#1C1C1C)
+- Background: `$bg-primary` (#212529)
 - Text: `$text-primary` (#FFFAE7)
-- Accent: `$accent` (#C2FF00)
-- Hover: `$hover` (#ff00b7)
-- Disabled: `$disabled` (#c4c0bc)
+- Accent: `$accent` (#febc2c - orange)
+- Hover: `$hover` (#FF2300 - red)
+- Disabled: `$disabled` (#3d434b)
 
 ## Routes
 
 ### Public Routes
 
-- **`/` (Home)**: Main dashboard with ISCI code list and create/edit functionality
+- **`/` (Home)**: Main dashboard with ISCI code list and create functionality
   - Handler: `app/routes/home.jsx`
   - Component: `Dashboard` container
+  - Features: List view, search, create new codes
+
+- **`/edit/:code` (Edit ISCI Code)**: Dedicated edit page for a specific ISCI code
+  - Handler: `app/routes/edit.jsx`
+  - Component: `EditISCI` container
+  - URL Parameter: `:code` - The ISCI code (e.g., `/edit/LVCI2501`)
+  - Features: Edit form pre-filled with existing data
 
 - **`/admin` (Admin Panel)**: Brand/client management interface
   - Handler: `app/routes/admin.jsx`
@@ -495,6 +508,12 @@ npm run preview
 
 12. **Header Component**: The Header component is flexible and reusable across routes. Configure button visibility using props: `showAdminButton`, `showCreateButton`, `showBackButton`.
 
+13. **CSS Grid Layout**: ISCIList uses CSS Grid instead of HTML tables for better flexibility and modern styling. The grid header uses `position: sticky` for a fixed header while content scrolls.
+
+14. **Edit Workflow**: Edit functionality is decoupled from Dashboard - it has its own route (`/edit/:code`) and container (`EditISCI`). This allows editing from multiple entry points in the future.
+
+15. **URL Structure**: ISCI codes are used in URLs instead of UUIDs (e.g., `/edit/LVCI2501`). This makes URLs more readable and shareable.
+
 ## Workflow
 
 ### Creating a New ISCI Code
@@ -517,11 +536,13 @@ npm run preview
 
 ### Editing an ISCI Code
 
-1. User clicks "Edit" on an existing code
-2. Form pre-fills with existing data
-3. Brand is shown as disabled (cannot change brand)
-4. Code can be edited if needed
-5. Updates are saved with new `updatedAt` timestamp
+1. User clicks "Edit" on an existing code in the list
+2. Navigates to `/edit/[ISCI-CODE]` (e.g., `/edit/LVCI2501`)
+3. Form pre-fills with existing data
+4. Brand is shown as disabled (cannot change brand)
+5. Code can be edited if needed
+6. Updates are saved with new `updatedAt` timestamp
+7. Returns to dashboard (`/`) after saving or canceling
 
 ## Troubleshooting
 
@@ -577,5 +598,24 @@ This project is maintained for internal video editing workflow management. When 
 
 ---
 
-**Last Updated**: November 4, 2025
-**Version**: 3.1.0 - CSS Modules & Header Component
+**Last Updated**: January 5, 2025
+**Version**: 3.2.0 - Grid Layout & Decoupled Edit Workflow
+
+## Changelog
+
+### v3.2.0 - Grid Layout & Decoupled Edit Workflow (January 5, 2025)
+- Refactored ISCIList from HTML table to CSS Grid layout
+- Created dedicated EditISCI container and route (`/edit/:code`)
+- Decoupled edit functionality from Dashboard component
+- Changed URLs to use ISCI code instead of UUID for better readability
+- Implemented sticky grid header with internal scrolling
+- Updated color scheme and theme variables
+- Enhanced Header component with profile section and navigation
+
+### v3.1.0 - CSS Modules & Header Component (November 4, 2025)
+- Converted all component styles to CSS Modules for scoped styling
+- Enhanced Header component with flexible props
+
+### v3.0.0 - Brand Management System (Previous)
+- Implemented brand management and auto-generation system
+- Added 100 test ISCI codes and 15 brands
