@@ -1,5 +1,8 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 import BrandManager from "@/components/BrandManager";
 import Header from "@/containers/Header";
+import { isAuthenticated, isAdmin } from "@/utils/auth";
 import styles from "./admin.module.scss";
 
 export const meta = () => {
@@ -10,6 +13,16 @@ export const meta = () => {
 };
 
 export default function Admin() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login");
+    } else if (!isAdmin()) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   return (
     <div className={styles.adminPage}>
       <Header

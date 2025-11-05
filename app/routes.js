@@ -12,6 +12,9 @@
 import { index, route } from "@react-router/dev/routes";
 
 export default [
+  // Login page
+  route("login", "routes/login.jsx"),
+
   // Home page - shows the ISCIDashboard
   // index() means "the root path" (/)
   index("routes/home.jsx"),
@@ -25,6 +28,9 @@ export default [
   // Edit ISCI code page
   // :code parameter captures the ISCI code from the URL (e.g., LVCI2501)
   route("edit/:code", "routes/edit.jsx"),
+
+  // API endpoint for authentication
+  route("api/auth", "routes/api.auth.js"),
 
   // API endpoint for ISCI codes
   // Handles GET (load codes) and POST (save codes) requests

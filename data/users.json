@@ -1,0 +1,83 @@
+[
+  {
+    "id": "1",
+    "email": "steve@isciz.com",
+    "password": "admin123",
+    "firstName": "Steve",
+    "lastName": "McVideo",
+    "userType": "admin",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "email": "sarah.johnson@isciz.com",
+    "password": "editor123",
+    "firstName": "Sarah",
+    "lastName": "Johnson",
+    "userType": "editor",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "3",
+    "email": "james.wilson@isciz.com",
+    "password": "editor123",
+    "firstName": "James",
+    "lastName": "Wilson",
+    "userType": "editor",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "email": "mike.chen@isciz.com",
+    "password": "editor123",
+    "firstName": "Mike",
+    "lastName": "Chen",
+    "userType": "editor",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "5",
+    "email": "kevin.nguyen@isciz.com",
+    "password": "editor123",
+    "firstName": "Kevin",
+    "lastName": "Nguyen",
+    "userType": "editor",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "6",
+    "email": "maria.garcia@isciz.com",
+    "password": "editor123",
+    "firstName": "Maria",
+    "lastName": "Garcia",
+    "userType": "editor",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "7",
+    "email": "david.lee@isciz.com",
+    "password": "editor123",
+    "firstName": "David",
+    "lastName": "Lee",
+    "userType": "editor",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "8",
+    "email": "lisa.park@isciz.com",
+    "password": "editor123",
+    "firstName": "Lisa",
+    "lastName": "Park",
+    "userType": "editor",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "9",
+    "email": "emily.rodriguez@isciz.com",
+    "password": "editor123",
+    "firstName": "Emily",
+    "lastName": "Rodriguez",
+    "userType": "editor",
+    "createdAt": "2025-01-01T00:00:00.000Z"
+  }
+]

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
 import Header from "@/containers/Header";
+import { isAuthenticated } from "@/utils/auth";
 import styles from "./Dashboard.module.scss";
 
 /**
@@ -17,6 +19,8 @@ import styles from "./Dashboard.module.scss";
  * of React components and the music is... ISCI codes? (The metaphor got weird, but you get it!)
  */
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   /**
    * STATE VARIABLES
    * These are like the component's memory - they remember stuff between renders.
@@ -31,6 +35,15 @@ const Dashboard = () => {
 
   // Are we still loading data from the server? (shows a loading message)
   const [isLoading, setIsLoading] = useState(true);
+
+  /**
+   * useEffect Hook - Check authentication
+   */
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   /**
    * useEffect Hook - Runs when the component first loads

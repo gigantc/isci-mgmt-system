@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
 import Header from "@/containers/Header";
+import { isAuthenticated } from "@/utils/auth";
 import styles from "./CreateISCI.module.scss";
 
 /**
@@ -16,6 +17,12 @@ const CreateISCI = () => {
 
   const [codes, setCodes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     loadCodes();

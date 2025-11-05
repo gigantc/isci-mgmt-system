@@ -1,0 +1,142 @@
+@use "@/styles/variables" as v;
+
+.loginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: v.$gray;
+  padding: 2rem;
+}
+
+.loginContainer {
+  width: 100%;
+  max-width: 420px;
+  background-color: v.$black;
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.loginHeader {
+  text-align: center;
+  margin-bottom: 2.5rem;
+
+  .logo {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+
+    path {
+      fill: v.$red;
+    }
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+    color: v.$text-primary;
+  }
+
+  p {
+    color: v.$text-secondary;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+}
+
+.loginForm {
+  .errorMessage {
+    background-color: rgba(v.$red, 0.15);
+    border: 1px solid rgba(v.$red, 0.4);
+    color: v.$red;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .formGroup {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: v.$text-primary;
+      margin-bottom: 0.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      font-size: 1rem;
+      border: 1px solid v.$border-color;
+      border-radius: 8px;
+      background-color: rgba(v.$white, 0.05);
+      color: v.$text-primary;
+      transition: all 0.2s;
+      font-family: inherit;
+
+      &:focus {
+        outline: none;
+        border-color: v.$accent;
+        box-shadow: 0 0 0 3px rgba(v.$accent, 0.2);
+      }
+
+      &::placeholder {
+        color: v.$text-secondary;
+      }
+    }
+  }
+
+  .loginButton {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: v.$accent;
+    color: v.$black;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+
+    &:hover:not(:disabled) {
+      background-color: v.$hover;
+      color: v.$white;
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.loginFooter {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid v.$border-color;
+
+  .demoNote {
+    font-size: 0.8rem;
+    color: v.$text-secondary;
+    text-align: center;
+    line-height: 1.6;
+    margin: 0;
+
+    strong {
+      color: v.$text-primary;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
