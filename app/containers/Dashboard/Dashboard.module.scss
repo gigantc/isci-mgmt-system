@@ -66,4 +66,20 @@
     color: v.$text-secondary;
     font-size: 1.125rem;
   }
+
+  .dashBoxes{
+    display:flex;
+    flex-wrap:wrap;
+    height:15vh;
+    justify-content:center;
+    align-items:flex-start;
+    margin:1rem auto 0;
+    width: calc(100% - 4rem);
+    gap:1rem;
+    div{
+      height:100%; width:calc(33.33% - .8rem);
+      background-color:v.$black;
+      border-radius:32px;
+    }
+  }
 }

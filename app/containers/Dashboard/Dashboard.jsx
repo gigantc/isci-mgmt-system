@@ -177,7 +177,7 @@ const Dashboard = () => {
   const getSectionTitle = () => {
     if (isLoading) return "Loading...";
     if (showForm) return "Create New ISCI Code";
-    return "All ISCI Codes";
+    return "Dashboard";
   };
 
   // TIME TO RENDER! 🎨
@@ -207,7 +207,7 @@ const Dashboard = () => {
         <div className={styles.scrollableContent}>
           {isLoading ? (
             // LOADING STATE: Show a loading message while we fetch data
-            <div className={styles.loadingState}>Loading ISCI codes...</div>
+            <div className={styles.loadingState}>Loading Dashboard...</div>
           ) : showForm ? (
             // FORM STATE: Show the create form
             <ISCIForm
@@ -226,8 +226,10 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className={styles.bentoBox}>
-        1
+      <div className={styles.dashBoxes}>
+        <div></div>
+        <div></div>
+        <div></div>
       </div>
       
     </div>
