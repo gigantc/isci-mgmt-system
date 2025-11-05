@@ -10,7 +10,7 @@ The ISCI Management System is a web application for managing ISCI (Industry Stan
 
 - **Framework**: React 19 with React Router v7
 - **Language**: JavaScript (JSX) - No TypeScript
-- **Styling**: Sass (SCSS) with modern `@use` syntax
+- **Styling**: Sass (SCSS) with CSS Modules and modern `@use` syntax
 - **Build Tool**: Vite
 - **Server**: React Router SSR
 - **Data Storage**: JSON files (`data/isci-codes.json`, `data/brands.json`)
@@ -23,20 +23,26 @@ isci-mgmt-system/
 │   ├── components/              # Reusable UI components
 │   │   ├── BrandManager/       # Brand/client management component
 │   │   │   ├── BrandManager.jsx
-│   │   │   ├── BrandManager.scss
+│   │   │   ├── BrandManager.module.scss
 │   │   │   └── index.js
 │   │   ├── ISCIForm/           # Form for creating/editing ISCI codes
 │   │   │   ├── ISCIForm.jsx
-│   │   │   ├── ISCIForm.scss
+│   │   │   ├── ISCIForm.module.scss
 │   │   │   └── index.js
 │   │   └── ISCIList/           # Table view for listing codes
 │   │       ├── ISCIList.jsx
-│   │       ├── ISCIList.scss
+│   │       ├── ISCIList.module.scss
 │   │       └── index.js
 │   ├── containers/             # Container components with logic
-│   │   └── ISCIDashboard/      # Main dashboard container
-│   │       ├── ISCIDashboard.jsx
-│   │       ├── ISCIDashboard.scss
+│   │   ├── Dashboard/          # Main dashboard container
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Dashboard.module.scss
+│   │   │   └── index.js
+│   │   └── Header/             # Global header component
+│   │       ├── Header.jsx
+│   │       ├── Header.module.scss
+│   │       ├── assets/
+│   │       │   └── Logo.svg
 │   │       └── index.js
 │   ├── routes/                 # Route handlers
 │   │   ├── admin.jsx           # Admin panel route
@@ -45,14 +51,14 @@ isci-mgmt-system/
 │   │   └── home.jsx            # Home page route
 │   ├── styles/                 # Global styles and variables
 │   │   ├── _variables.scss     # Sass variables (colors, theme)
-│   │   └── app.scss            # Global application styles
+│   │   └── app.scss            # Global application styles + button classes
 │   ├── types/                  # Type definitions (as constants)
 │   │   └── isci.js             # ISCI status constants
 │   ├── root.jsx                # Root component with layout
 │   └── routes.js               # Route configuration
 ├── data/
-│   ├── brands.json             # Brand/client data (5 initial brands)
-│   └── isci-codes.json         # ISCI code data (5 test records)
+│   ├── brands.json             # Brand/client data (15 brands)
+│   └── isci-codes.json         # ISCI code data (100 test records)
 ├── public/                     # Static assets
 ├── package.json
 ├── vite.config.js
@@ -206,15 +212,22 @@ This project uses **pure JavaScript**. Do not add:
 
 Use extensionless imports (Vite resolves them):
 ```javascript
-import ISCIForm from "../components/ISCIForm";  // ✅ Correct
+import ISCIForm from "@/components/ISCIForm";  // ✅ Correct (using @ alias)
 import ISCIForm from "../components/ISCIForm.jsx";  // ❌ Don't add extension
 ```
 
-For styles, use the `@/` alias:
+For CSS Modules:
+```javascript
+import styles from "./Component.module.scss";
+
+<div className={styles.myComponent}>
+```
+
+For SCSS variables, use the `@/` alias:
 ```scss
 @use "@/styles/variables" as v;
 
-.my-component {
+.myComponent {
   background-color: v.$black;
   color: v.$white;
 }
@@ -267,7 +280,7 @@ $red: #FF2300;        // Delete/Error states
 
 - **`/` (Home)**: Main dashboard with ISCI code list and create/edit functionality
   - Handler: `app/routes/home.jsx`
-  - Component: `ISCIDashboard` container
+  - Component: `Dashboard` container
 
 - **`/admin` (Admin Panel)**: Brand/client management interface
   - Handler: `app/routes/admin.jsx`
@@ -337,13 +350,42 @@ $red: #FF2300;        // Delete/Error states
 
 ### Styling Guidelines
 
-- Use Sass (SCSS) for component-specific styles
-- Use modern `@use` syntax instead of deprecated `@import`
-- Import variables using: `@use "@/styles/variables" as v;`
-- Access variables with namespace: `v.$variable-name`
-- Component styles are scoped to their SCSS files
-- Global styles in `app/styles/app.scss`
-- All color variables defined in `app/styles/_variables.scss`
+- **CSS Modules**: All component styles use `.module.scss` files for scoped styling
+- **Naming Convention**: Use camelCase for CSS Module class names (e.g., `.myComponent`, `.headerActions`)
+- **Modern Sass**: Use `@use` syntax instead of deprecated `@import`
+- **Variables**: Import with `@use "@/styles/variables" as v;` and access as `v.$variable-name`
+- **Global Styles**: Located in `app/styles/app.scss` (includes button classes: `.btn-primary`, `.btn-secondary`, `.btn-text`)
+- **Color Variables**: Defined in `app/styles/_variables.scss`
+
+**CSS Modules Pattern:**
+```javascript
+// Import styles
+import styles from "./Component.module.scss";
+
+// Use in JSX
+<div className={styles.myComponent}>
+  <button className={styles.primaryButton}>Click me</button>
+</div>
+```
+
+**SCSS Structure:**
+```scss
+// Component.module.scss
+@use "@/styles/variables" as v;
+
+.myComponent {
+  background-color: v.$black;
+
+  .primaryButton {
+    color: v.$accent;
+  }
+}
+```
+
+**Global Button Classes** (non-modular, available everywhere):
+- `.btn-primary` - Primary action button (yellow background)
+- `.btn-secondary` - Secondary action button (subtle background)
+- `.btn-text` - Text-only button (transparent background)
 
 ### Path Aliasing
 
@@ -389,32 +431,35 @@ npm run preview
 - **Quotes**: Double quotes for strings
 - **Semicolons**: Yes, use semicolons
 - **Component naming**: PascalCase for components
-- **File naming**: PascalCase for component files
+- **File naming**: PascalCase for component files, `.module.scss` for CSS Modules
 - **Constants**: UPPER_SNAKE_CASE
 - **Functions**: camelCase
+- **CSS class names**: camelCase for CSS Module classes
 - **SCSS**: Use `@use` instead of `@import`, namespace variables with `v.$`
 
 ## Testing Data
 
 ### Brands (`data/brands.json`)
 
-5 initial brands:
+15 brands including:
 - **LVCI**: Las Vegas Convention and Visitors Authority
 - **NIKE**: Nike
 - **APPL**: Apple
 - **COCA**: Coca-Cola
 - **TOYT**: Toyota
+- And 10 more...
 
 ### ISCI Codes (`data/isci-codes.json`)
 
-5 test ISCI codes with:
-- Auto-generated codes in new format (LVCI2501, NIKE2501, etc.)
+100 test ISCI codes with:
+- Auto-generated codes in new format (LVCI2501, NIKE2502, etc.)
 - Various brands with brandId references
-- Different editors (Sarah Johnson, Mike Chen, Lisa Park, David Lee)
+- Different editors
 - All status types represented
-- Various spot lengths (6s, 15s, 30s, 60s)
-- Different channels (Broadcast, Digital, CTV, Social, OLV)
-- Multiple aspect ratios (16:9, 9:16)
+- Various spot lengths (6s, 10s, 15s, 30s, 45s, 60s)
+- Different channels (Broadcast, Digital, CTV, Social, OLV, Radio)
+- Multiple aspect ratios (16:9, 9:16, 4:3, 1:1, 2.39:1)
+- Multiple versions (A, B, C, D, E)
 
 ## Important Notes
 
@@ -422,29 +467,33 @@ npm run preview
 
 2. **No Tailwind**: Tailwind CSS has been removed. All styling is done with custom SCSS and the defined color palette.
 
-3. **Modern Sass**: Use `@use` syntax instead of deprecated `@import`. All variables are namespaced with `v.$`.
+3. **CSS Modules**: All component styles use `.module.scss` files for scoped styling. Use camelCase for class names and import as `import styles from "./Component.module.scss"`.
 
-4. **Auto-Generation**: ISCI codes are auto-generated based on brand selection. Users cannot manually enter codes when creating (only when editing).
+4. **Modern Sass**: Use `@use` syntax instead of deprecated `@import`. All variables are namespaced with `v.$`.
 
-5. **Brand Codes**: Brand codes must be exactly 4 uppercase letters and unique. This is enforced in the BrandManager component.
+5. **Auto-Generation**: ISCI codes are auto-generated based on brand selection. Users cannot manually enter codes when creating (only when editing).
 
-6. **Data Storage**: Currently uses JSON files. When migrating to a database:
+6. **Brand Codes**: Brand codes must be exactly 4 uppercase letters and unique. This is enforced in the BrandManager component.
+
+7. **Data Storage**: Currently uses JSON files. When migrating to a database:
    - Keep the API endpoints the same
    - Only modify route handler files (`app/routes/api.*.js`)
    - Consider adding foreign key relationships (brandId → brands.id)
    - Add proper error handling and validation
 
-7. **ISCI Code Format**: The new format `[BRAND][YEAR][NUMBER]` is enforced. Do not revert to the old 8-character format.
+8. **ISCI Code Format**: The new format `[BRAND][YEAR][NUMBER]` is enforced. Do not revert to the old 8-character format.
 
-8. **Component Structure**: Maintain the components/containers separation:
+9. **Component Structure**: Maintain the components/containers separation:
    - **Components**: Presentational, reusable UI elements
    - **Containers**: Business logic, data fetching, state management
 
-9. **Dark Mode**: The application uses a fixed dark mode theme. Do not add light mode or theme switching functionality.
+10. **Dark Mode**: The application uses a fixed dark mode theme. Do not add light mode or theme switching functionality.
 
-10. **Form Behavior**: ISCIForm behaves differently in create vs edit mode:
+11. **Form Behavior**: ISCIForm behaves differently in create vs edit mode:
     - **Create**: Brand dropdown shown, code field is read-only and auto-generated
     - **Edit**: Brand shown as disabled text (can't change), code field is editable
+
+12. **Header Component**: The Header component is flexible and reusable across routes. Configure button visibility using props: `showAdminButton`, `showCreateButton`, `showBackButton`.
 
 ## Workflow
 
@@ -529,4 +578,4 @@ This project is maintained for internal video editing workflow management. When 
 ---
 
 **Last Updated**: November 4, 2025
-**Version**: 3.0.0
+**Version**: 3.1.0 - CSS Modules & Header Component
