@@ -55,7 +55,7 @@
   .scrollableContent {
     flex: 1;
     padding: 0 3rem 2rem 3rem;
-    overflow: hidden;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
   }

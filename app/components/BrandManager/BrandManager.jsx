@@ -145,12 +145,12 @@ const BrandManager = () => {
     }
   };
 
-  if (isLoading) {
-    return <div className={styles.loadingState}>Loading brands...</div>;
-  }
-
   return (
     <div className={styles.brandManager}>
+      {isLoading ? (
+        <div className={styles.loadingState}>Loading brands...</div>
+      ) : (
+        <>
       <div className={styles.brandFormSection}>
         <h2>{editingBrand ? "Edit Brand" : "Add New Brand"}</h2>
         <form onSubmit={handleSubmit} className={styles.brandForm}>
@@ -256,6 +256,8 @@ const BrandManager = () => {
           </div>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 };

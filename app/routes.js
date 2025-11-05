@@ -19,6 +19,9 @@ export default [
   // Admin panel - manages brands/clients
   route("admin", "routes/admin.jsx"),
 
+  // Create ISCI code page
+  route("create", "routes/create.jsx"),
+
   // Edit ISCI code page
   // :code parameter captures the ISCI code from the URL (e.g., LVCI2501)
   route("edit/:code", "routes/edit.jsx"),

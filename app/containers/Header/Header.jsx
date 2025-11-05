@@ -4,8 +4,6 @@ import { ReactComponent as Logo } from "./assets/Logo.svg";
 import ProfileTemp from "./assets/profile.jpg";
 
 const Header = ({
-  isLoading,
-  setShowForm,
   showAdminButton = true,
   showCreateButton = true,
   showBackButton = false
@@ -40,15 +38,9 @@ const Header = ({
         )}
 
         {showCreateButton && (
-          <button
-            className="btn-primary"
-            onClick={() => {
-              setShowForm(true);
-            }}
-            disabled={isLoading}
-          >
+          <a href="/create" className="btn-primary">
             + New ISCI Code
-          </button>
+          </a>
         )}
 
       </div>

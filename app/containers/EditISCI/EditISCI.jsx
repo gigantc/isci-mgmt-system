@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ISCIStatus } from "@/types/isci";
 import ISCIForm from "@/components/ISCIForm";
@@ -15,6 +15,7 @@ import styles from "./EditISCI.module.scss";
 const EditISCI = () => {
   const navigate = useNavigate();
   const { code: isciCode } = useParams();
+  const formRef = useRef(null);
 
   const [code, setCode] = useState(null);
   const [allCodes, setAllCodes] = useState([]);
@@ -105,51 +106,61 @@ const EditISCI = () => {
     navigate("/");
   };
 
-  // Render loading state
-  if (isLoading) {
-    return (
-      <div className={styles.editISCI}>
-        <Header showBackButton={true} />
-        <div className={styles.content}>
-          <div className={styles.loadingState}>Loading...</div>
-        </div>
-      </div>
-    );
-  }
+  /**
+   * Trigger form submission from header button
+   */
+  const handleSubmitClick = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  };
 
-  // Render error state
-  if (error) {
-    return (
-      <div className={styles.editISCI}>
-        <Header showBackButton={true} />
-        <div className={styles.content}>
-          <div className={styles.errorState}>
-            <h2>Error</h2>
-            <p>{error}</p>
-            <button className="btn-primary" onClick={() => navigate("/")}>
-              Back to Dashboard
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Render edit form
+  // Render page
   return (
     <div className={styles.editISCI}>
       <Header showBackButton={true} />
-      <div className={styles.content}>
-        <div className={styles.header}>
-          <h2>Edit ISCI Code</h2>
+
+      <div className={styles.pageContent}>
+        {/* Sticky header section */}
+        <div className={styles.stickyHeader}>
+          <div className={styles.headerContent}>
+            <h2>Edit ISCI Code</h2>
+            {!isLoading && !error && (
+              <div className={styles.headerActions}>
+                <button type="button" className="btn-text" onClick={handleCancel}>
+                  Cancel
+                </button>
+                <button type="button" className="btn-primary" onClick={handleSubmitClick}>
+                  Update ISCI
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        <div className={styles.formContainer}>
-          <ISCIForm
-            code={code}
-            onSubmit={handleUpdateCode}
-            onCancel={handleCancel}
-            allCodes={allCodes}
-          />
+
+        {/* Scrollable content area */}
+        <div className={styles.scrollableContent}>
+          {isLoading ? (
+            <div className={styles.loadingState}>Loading ISCI code...</div>
+          ) : error ? (
+            <div className={styles.errorState}>
+              <h3>Error</h3>
+              <p>{error}</p>
+              <button className="btn-primary" onClick={() => navigate("/")}>
+                Back to Dashboard
+              </button>
+            </div>
+          ) : (
+            <ISCIForm
+              code={code}
+              onSubmit={handleUpdateCode}
+              onCancel={handleCancel}
+              allCodes={allCodes}
+              hideActions={true}
+              hideTitle={true}
+              formRef={formRef}
+            />
+          )}
         </div>
       </div>
     </div>

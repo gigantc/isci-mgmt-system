@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ISCIStatus } from "@/types/isci";
 import styles from "./ISCIForm.module.scss";
 
-const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
+const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef }) => {
   const [brands, setBrands] = useState([]);
   const [formData, setFormData] = useState({
     code: "",
@@ -158,9 +158,11 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
 
   return (
     <div className={styles.isciFormContainer}>
-      <h2>{code ? "Edit ISCI Code" : "Create New ISCI Code"}</h2>
+      {!hideTitle && (
+        <h2>{code ? "Edit ISCI Code" : "Create New ISCI Code"}</h2>
+      )}
 
-      <form onSubmit={handleSubmit} className={styles.isciForm}>
+      <form onSubmit={handleSubmit} className={styles.isciForm} ref={formRef}>
 
         {/* Brand/Client - Full width */}
         <div className={styles.formGroup}>
@@ -200,21 +202,33 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label htmlFor="code">ISCI Code *</label>
-            <input
-              type="text"
-              id="code"
-              name="code"
-              value={formData.code}
-              onChange={handleChange}
-              placeholder="Auto-generated"
-              maxLength={12}
-              readOnly={!code}
-              className={`${errors.code ? "error" : ""} ${!code ? styles.readonlyInput : ""}`}
-              title={!code ? "Auto-generated based on brand selection" : ""}
-            />
-            {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
-            {!code && (
-              <span className={styles.helpText}>Auto-generated: [BRAND][YEAR][NUMBER]</span>
+            {code ? (
+              // When editing, show ISCI code as text (can't change code)
+              <input
+                type="text"
+                value={formData.code}
+                disabled
+                className={styles.disabledInput}
+                title="ISCI codes cannot be changed after creation"
+              />
+            ) : (
+              // When creating, show as read-only auto-generated field
+              <>
+                <input
+                  type="text"
+                  id="code"
+                  name="code"
+                  value={formData.code}
+                  onChange={handleChange}
+                  placeholder="Auto-generated"
+                  maxLength={12}
+                  readOnly
+                  className={`${errors.code ? "error" : ""} ${styles.readonlyInput}`}
+                  title="Auto-generated based on brand selection"
+                />
+                {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
+                <span className={styles.helpText}>Auto-generated: [BRAND][YEAR][NUMBER]</span>
+              </>
             )}
           </div>
 
@@ -418,14 +432,16 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className={styles.formActions}>
-          <button type="button" className={styles.btnCancel} onClick={onCancel}>
-            Cancel
-          </button>
-          <button type="submit" className={styles.btnSubmit}>
-            {code ? "Update" : "Create"} ISCI Code
-          </button>
-        </div>
+        {!hideActions && (
+          <div className={styles.formActions}>
+            <button type="button" className={styles.btnCancel} onClick={onCancel}>
+              Cancel
+            </button>
+            <button type="submit" className={styles.btnSubmit}>
+              {code ? "Update" : "Create"} ISCI Code
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

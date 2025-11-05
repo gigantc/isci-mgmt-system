@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { ISCIStatus } from "@/types/isci";
 import ISCIList from "@/components/ISCIList";
-import ISCIForm from "@/components/ISCIForm";
 import Header from "@/containers/Header";
 import styles from "./Dashboard.module.scss";
 
@@ -27,9 +25,6 @@ const Dashboard = () => {
 
   // All the ISCI codes we've loaded from the server
   const [codes, setCodes] = useState([]);
-
-  // Are we showing the form right now? (true) Or the list? (false)
-  const [showForm, setShowForm] = useState(false);
 
   // What's the user typing in the search box?
   const [searchTerm, setSearchTerm] = useState("");
@@ -105,30 +100,6 @@ const Dashboard = () => {
   };
 
   /**
-   * handleCreateCode
-   *
-   * Called when the user submits the form to CREATE a new ISCI code.
-   * We generate a unique ID and timestamps, then add it to the list!
-   */
-  const handleCreateCode = (formData) => {
-    // Build the new code object
-    const newCode = {
-      id: crypto.randomUUID(),                  // Generate a unique ID (looks like: "a1b2c3d4-...")
-      ...formData,                              // Spread all the form data into this object
-      createdAt: new Date().toISOString(),      // Right now! (ISO format: "2024-01-15T10:00:00.000Z")
-      updatedAt: new Date().toISOString(),      // Also right now!
-    };
-
-    // Add it to the array and save
-    const updatedCodes = [...codes, newCode];   // [...codes, newCode] = "copy all existing codes, then add the new one"
-    saveCodes(updatedCodes);
-
-    // Hide the form (back to the list view)
-    setShowForm(false);
-  };
-
-
-  /**
    * handleDeleteCode
    *
    * DANGER ZONE! 🚨 Permanently deletes an ISCI code.
@@ -143,17 +114,6 @@ const Dashboard = () => {
       saveCodes(updatedCodes);
     }
     // If they clicked "Cancel", nothing happens! Crisis averted.
-  };
-
-
-  /**
-   * handleCancelForm
-   *
-   * User clicked "Cancel" on the form. No harm, no foul!
-   * Just go back to the list.
-   */
-  const handleCancelForm = () => {
-    setShowForm(false);       // "Hide the form, show the list"
   };
 
   /**
@@ -176,7 +136,6 @@ const Dashboard = () => {
   // Determine the dynamic section title based on current view
   const getSectionTitle = () => {
     if (isLoading) return "Loading...";
-    if (showForm) return "Create New ISCI Code";
     return "Dashboard";
   };
 
@@ -184,14 +143,14 @@ const Dashboard = () => {
   return (
     <div className={styles.isciDashboard}>
 
-      <Header isLoading={isLoading} setShowForm={setShowForm} />
+      <Header />
 
       {/* Main content area - shows different things based on the current state */}
       <div className={styles.dashboardContent}>
         {/* Sticky header section with title and search */}
         <div className={styles.stickyHeader}>
           <h2>{getSectionTitle()}</h2>
-          {!isLoading && !showForm && (
+          {!isLoading && (
             <div className={styles.searchBar}>
               <input
                 type="text"
@@ -208,14 +167,6 @@ const Dashboard = () => {
           {isLoading ? (
             // LOADING STATE: Show a loading message while we fetch data
             <div className={styles.loadingState}>Loading Dashboard...</div>
-          ) : showForm ? (
-            // FORM STATE: Show the create form
-            <ISCIForm
-              code={null}
-              onSubmit={handleCreateCode}
-              onCancel={handleCancelForm}
-              allCodes={codes}
-            />
           ) : (
             // LIST STATE: Show the list of codes
             <ISCIList

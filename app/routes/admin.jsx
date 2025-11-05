@@ -1,5 +1,6 @@
 import BrandManager from "@/components/BrandManager";
 import Header from "@/containers/Header";
+import styles from "./admin.module.scss";
 
 export const meta = () => {
   return [
@@ -10,14 +11,23 @@ export const meta = () => {
 
 export default function Admin() {
   return (
-    <div>
+    <div className={styles.adminPage}>
       <Header
         showAdminButton={false}
         showCreateButton={false}
         showBackButton={true}
       />
-      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "2rem" }}>
-        <BrandManager />
+
+      <div className={styles.pageContent}>
+        {/* Sticky header section */}
+        <div className={styles.stickyHeader}>
+          <h2>Brand Management</h2>
+        </div>
+
+        {/* Scrollable content area */}
+        <div className={styles.scrollableContent}>
+          <BrandManager />
+        </div>
       </div>
     </div>
   );
