@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router";
-import { getUserSession } from "@/utils/auth";
+import { getUserSession, isAdmin } from "@/utils/auth";
 import ProfileMenu from "@/components/ProfileMenu";
 import styles from "./Header.module.scss";
 import { ReactComponent as Logo } from "./assets/Logo.svg";
 import DefaultProfileImage from "./assets/default_profile_image.jpg";
 
-const Header = ({
-  showAdminButton = true
-}) => {
+const Header = () => {
   const [user, setUser] = useState(null);
   const location = useLocation();
 
@@ -54,22 +52,24 @@ const Header = ({
           Dashboard
         </a>
 
-        <a
-          href="/reports"
-          className={`${styles.navLink} ${isActive("/reports") ? styles.active : ""}`}
-          onClick={(e) => handleNavClick(e, "/reports")}
-        >
-          Reports
-        </a>
+        {isAdmin() && (
+          <>
+            <a
+              href="/reports"
+              className={`${styles.navLink} ${isActive("/reports") ? styles.active : ""}`}
+              onClick={(e) => handleNavClick(e, "/reports")}
+            >
+              Reports
+            </a>
 
-        {showAdminButton && (
-          <a
-            href="/admin"
-            className={`${styles.navLink} ${isActive("/admin") ? styles.active : ""}`}
-            onClick={(e) => handleNavClick(e, "/admin")}
-          >
-            Admin
-          </a>
+            <a
+              href="/admin"
+              className={`${styles.navLink} ${isActive("/admin") ? styles.active : ""}`}
+              onClick={(e) => handleNavClick(e, "/admin")}
+            >
+              Admin
+            </a>
+          </>
         )}
       </div>
 
