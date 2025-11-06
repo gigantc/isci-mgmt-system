@@ -10,7 +10,9 @@
   background-color:v.$black;
   width: calc(100% - 4rem);
   border-radius: 32px 32px 0px 0px;
-
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  //border-bottom:1px solid rgba(v.$white, 0.1);
+  z-index:2;
   .title{
     display:flex;
     margin-right:auto;
@@ -39,6 +41,29 @@
     display: flex;
     gap: 1rem;
     align-items: center;
+  }
+
+  .navLink {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: v.$text-primary;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+
+    &:hover {
+      color: v.$accent;
+    }
+
+    &.active {
+      color: v.$accent;
+      border-bottom-color: v.$accent;
+      cursor: default;
+    }
   }
 
   .profile{
