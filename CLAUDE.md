@@ -13,7 +13,8 @@ The ISCI Management System is a web application for managing ISCI (Industry Stan
 - **Styling**: Sass (SCSS) with CSS Modules and modern `@use` syntax
 - **Build Tool**: Vite
 - **Server**: React Router SSR
-- **Data Storage**: JSON files (`data/isci-codes.json`, `data/brands.json`)
+- **Data Storage**: JSON files (`data/isci-codes.json`, `data/brands.json`, `data/users.json`)
+- **Authentication**: Simple session-based auth using sessionStorage (POC only)
 
 ## Project Structure
 
@@ -24,6 +25,14 @@ isci-mgmt-system/
 │   │   ├── BrandManager/       # Brand/client management component
 │   │   │   ├── BrandManager.jsx
 │   │   │   ├── BrandManager.module.scss
+│   │   │   └── index.js
+│   │   ├── UserManager/        # User management component
+│   │   │   ├── UserManager.jsx
+│   │   │   ├── UserManager.module.scss
+│   │   │   └── index.js
+│   │   ├── ProfileMenu/        # Profile dropdown menu
+│   │   │   ├── ProfileMenu.jsx
+│   │   │   ├── ProfileMenu.module.scss
 │   │   │   └── index.js
 │   │   ├── ISCIForm/           # Form for creating/editing ISCI codes
 │   │   │   ├── ISCIForm.jsx
@@ -42,18 +51,31 @@ isci-mgmt-system/
 │   │   │   ├── EditISCI.jsx
 │   │   │   ├── EditISCI.module.scss
 │   │   │   └── index.js
+│   │   ├── Profile/            # User profile management container
+│   │   │   ├── Profile.jsx
+│   │   │   ├── Profile.module.scss
+│   │   │   └── index.js
 │   │   └── Header/             # Global header component
 │   │       ├── Header.jsx
 │   │       ├── Header.module.scss
 │   │       ├── assets/
-│   │       │   └── Logo.svg
+│   │       │   ├── Logo.svg
+│   │       │   └── default_profile_image.jpg
 │   │       └── index.js
 │   ├── routes/                 # Route handlers
-│   │   ├── admin.jsx           # Admin panel route
-│   │   ├── api.brands.js       # Brand API endpoints
-│   │   ├── api.isci.js         # ISCI code API endpoints
+│   │   ├── admin.jsx           # Admin panel route (brands & users)
+│   │   ├── login.jsx           # Login page route
+│   │   ├── profile.jsx         # User profile page route
+│   │   ├── create.jsx          # Create ISCI code route
 │   │   ├── edit.jsx            # Edit ISCI code route
-│   │   └── home.jsx            # Home page route
+│   │   ├── home.jsx            # Home page route
+│   │   ├── api.auth.js         # Authentication API endpoints
+│   │   ├── api.user.js         # User profile update API
+│   │   ├── api.users.js        # User management API endpoints
+│   │   ├── api.brands.js       # Brand API endpoints
+│   │   └── api.isci.js         # ISCI code API endpoints
+│   ├── utils/                  # Utility functions
+│   │   └── auth.js             # Authentication helper functions
 │   ├── styles/                 # Global styles and variables
 │   │   ├── _variables.scss     # Sass variables (colors, theme)
 │   │   └── app.scss            # Global application styles + button classes
@@ -63,7 +85,11 @@ isci-mgmt-system/
 │   └── routes.js               # Route configuration
 ├── data/
 │   ├── brands.json             # Brand/client data (15 brands)
+│   ├── users.json              # User accounts (9 users: 1 admin, 8 editors)
 │   └── isci-codes.json         # ISCI code data (100 test records)
+├── public/
+│   └── uploads/
+│       └── profiles/           # User profile images
 ├── public/                     # Static assets
 ├── package.json
 ├── vite.config.js
@@ -134,6 +160,53 @@ const generateISCICode = (brandCode) => {
   return `${brandCode}${currentYear}${paddedNumber}`;
 };
 ```
+
+### User Management & Authentication
+
+**WARNING**: The current authentication system is a POC (Proof of Concept) only and NOT production-ready. It uses sessionStorage and plain-text passwords stored in JSON files.
+
+**User Data Structure**:
+```javascript
+{
+  id: string,                  // UUID
+  email: string,               // Email address (unique, required)
+  password: string,            // Plain text password (NOT SECURE - POC only)
+  firstName: string,           // First name (required)
+  lastName: string,            // Last name (required)
+  userType: string,            // "admin" or "editor"
+  createdAt: string,           // ISO timestamp
+  profileUpdatedAt: string,    // ISO timestamp (null if never updated)
+  profileImage: string         // Path to uploaded image (null if no image)
+}
+```
+
+**User Types**:
+- `admin`: Full access - can manage brands, users, and ISCI codes
+- `editor`: Limited access - can only manage ISCI codes
+
+**Authentication Flow**:
+1. User enters email/password on `/login`
+2. System checks credentials against `data/users.json`
+3. On success, user object stored in sessionStorage
+4. Session persists until browser tab closed or logout
+5. Protected routes check authentication via `isAuthenticated()` helper
+
+**Profile Management**:
+- Users can update their own profile at `/profile`
+- Supports profile image upload (JPEG, PNG, GIF, WebP, max 5MB)
+- Password change requires current password verification
+- Images stored in `public/uploads/profiles/`
+- Default profile image used if no custom image uploaded
+
+**Session Management** (`app/utils/auth.js`):
+- `saveUserSession(user)` - Store user in sessionStorage
+- `getUserSession()` - Retrieve current user
+- `clearUserSession()` - Logout (clear session)
+- `isAuthenticated()` - Check if user logged in
+- `isAdmin()` - Check if current user is admin
+- `getCurrentUserName()` - Get user's full name
+
+**Storage**: `data/users.json`
 
 ### Brand/Client Management
 
@@ -254,7 +327,12 @@ Currently uses JSON file storage:
 - **Brands**: `data/brands.json`
   - Read: `GET /api/brands` - Returns all brands
   - Write: `POST /api/brands` - Saves entire array
+- **Users**: `data/users.json`
+  - Read: `GET /api/users` - Returns all users
+  - Write: `POST /api/users` - Saves entire array
+  - Profile Update: `PUT /api/user` - Updates individual user with file upload support
 - Uses Node.js `fs/promises` for file operations
+- Profile images stored in `public/uploads/profiles/`
 
 ## Dark Mode Theme
 
@@ -295,11 +373,31 @@ $orange: #febc2c;     // Pending/Warning states
   - URL Parameter: `:code` - The ISCI code (e.g., `/edit/LVCI2501`)
   - Features: Edit form pre-filled with existing data
 
-- **`/admin` (Admin Panel)**: Brand/client management interface
+- **`/login` (Login)**: User authentication page
+  - Handler: `app/routes/login.jsx`
+  - Features: Email/password login, session creation
+
+- **`/profile` (User Profile)**: User profile management page (protected)
+  - Handler: `app/routes/profile.jsx`
+  - Component: `Profile` container
+  - Features: Edit name, email, password, upload profile image
+  - Protected: Requires authentication
+
+- **`/admin` (Admin Panel)**: Brand and user management interface (protected)
   - Handler: `app/routes/admin.jsx`
-  - Component: `BrandManager`
+  - Components: `BrandManager`, `UserManager`
+  - Features: Tabbed interface for managing brands and users
+  - Protected: Admin only (redirects editors to home)
 
 ### API Endpoints
+
+#### Authentication
+
+**POST /api/auth**
+- Authenticates user with email/password
+- Handler: `app/routes/api.auth.js` - `action()` function
+- Request Body: `{ email: string, password: string }`
+- Response: `{ success: boolean, user?: object, message?: string }`
 
 #### ISCI Codes
 
@@ -322,6 +420,26 @@ $orange: #febc2c;     // Pending/Warning states
 - Saves brands (full array replacement)
 - Handler: `app/routes/api.brands.js` - `action()` function
 - Request Body: Array of brand objects
+
+#### Users
+
+**GET /api/users**
+- Returns all users as JSON array
+- Handler: `app/routes/api.users.js` - `loader()` function
+- Used by: UserManager component (admin only)
+
+**POST /api/users**
+- Saves users (full array replacement)
+- Handler: `app/routes/api.users.js` - `action()` function
+- Request Body: Array of user objects
+- Used by: UserManager component (admin only)
+
+**PUT /api/user**
+- Updates individual user profile
+- Handler: `app/routes/api.user.js` - `action()` function
+- Request Body: FormData with user fields and optional profileImage file
+- Supports: Name, email, password updates, profile image upload
+- Used by: Profile component (self-service)
 
 ## Common Tasks
 
@@ -514,6 +632,12 @@ npm run preview
 
 15. **URL Structure**: ISCI codes are used in URLs instead of UUIDs (e.g., `/edit/LVCI2501`). This makes URLs more readable and shareable.
 
+16. **SSR Hydration**: When using auth functions like `getUserSession()` in components, always use `useState` and `useEffect` to avoid hydration mismatches. Never call these functions during render - they must run only on the client side after hydration completes.
+
+17. **ProfileMenu Component**: Dropdown menu in header provides access to "Edit Profile" and "Logout" actions. Uses click-outside detection to auto-close.
+
+18. **User Management Access**: Only admins can access the User Management tab in the admin panel. The tab interface makes it easy to switch between Brand and User management.
+
 ## Workflow
 
 ### Creating a New ISCI Code
@@ -529,10 +653,34 @@ npm run preview
 ### Managing Brands
 
 1. User navigates to Admin Panel (`/admin`)
-2. Can add, edit, activate/deactivate, or delete brands
-3. Brand code validation ensures 4 uppercase letters
-4. Duplicate codes are prevented
-5. Changes are saved to `data/brands.json`
+2. Selects "Brand Management" tab
+3. Can add, edit, activate/deactivate, or delete brands
+4. Brand code validation ensures 4 uppercase letters
+5. Duplicate codes are prevented
+6. Changes are saved to `data/brands.json`
+
+### Managing Users
+
+1. Admin navigates to Admin Panel (`/admin`)
+2. Selects "User Management" tab
+3. Can add new users with email, name, password, and user type (Admin/Editor)
+4. Can edit existing users (password optional when editing)
+5. Email validation and duplicate checking enforced
+6. Can delete users (with confirmation prompt)
+7. Changes are saved to `data/users.json`
+
+### Managing User Profile
+
+1. User clicks profile dropdown in header
+2. Selects "Edit Profile"
+3. Navigates to `/profile`
+4. Can update:
+   - First name, last name, email
+   - Profile image (JPEG, PNG, GIF, WebP, max 5MB)
+   - Password (requires current password for verification)
+5. Changes saved to `data/users.json`
+6. Profile image saved to `public/uploads/profiles/`
+7. Returns to dashboard after successful update
 
 ### Editing an ISCI Code
 
@@ -598,10 +746,24 @@ This project is maintained for internal video editing workflow management. When 
 
 ---
 
-**Last Updated**: January 5, 2025
-**Version**: 3.2.0 - Grid Layout & Decoupled Edit Workflow
+**Last Updated**: January 6, 2025
+**Version**: 3.3.0 - User Management & Authentication System
 
 ## Changelog
+
+### v3.3.0 - User Management & Authentication System (January 6, 2025)
+- Implemented user authentication system with login and session management
+- Added UserManager component for admin user CRUD operations
+- Created tabbed admin panel interface (Brand Management / User Management)
+- Added user profile page with profile image upload and password change
+- Created ProfileMenu dropdown component in header
+- Added API endpoints for authentication (`/api/auth`), user management (`/api/users`), and profile updates (`/api/user`)
+- Fixed SSR hydration issues in Header component
+- Added default profile image fallback system
+- Updated user data structure with `profileImage` and `profileUpdatedAt` fields
+- Added session-based authentication with `app/utils/auth.js` helper functions
+- Created 9 test users (1 admin, 8 editors)
+- **Note**: Current auth is POC only - uses sessionStorage and plain-text passwords
 
 ### v3.2.0 - Grid Layout & Decoupled Edit Workflow (January 5, 2025)
 - Refactored ISCIList from HTML table to CSS Grid layout
