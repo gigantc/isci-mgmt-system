@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
 import Header from "@/containers/Header";
-import { isAuthenticated } from "@/utils/auth";
+import { isAuthenticated, getUserSession } from "@/utils/auth";
 import styles from "./Dashboard.module.scss";
 
 /**
@@ -27,6 +27,9 @@ const Dashboard = () => {
    * When any of these change, React re-renders the component to show the new data.
    */
 
+  // Current logged in user
+  const [currentUser, setCurrentUser] = useState(null);
+
   // All the ISCI codes we've loaded from the server
   const [codes, setCodes] = useState([]);
 
@@ -37,11 +40,13 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   /**
-   * useEffect Hook - Check authentication
+   * useEffect Hook - Check authentication and load user
    */
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login");
+    } else {
+      setCurrentUser(getUserSession());
     }
   }, [navigate]);
 
@@ -53,6 +58,43 @@ const Dashboard = () => {
    */
   useEffect(() => {
     loadCodes();
+  }, []);
+
+  /**
+   * useEffect Hook - Reload codes and user data when returning to the page
+   *
+   * This listens for when the page becomes visible again (e.g., after navigating back from edit)
+   * and reloads the codes and user data to show the latest changes
+   */
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadCodes();
+        // Reload user session to get updated recentlyViewed
+        const updatedUser = getUserSession();
+        if (updatedUser) {
+          setCurrentUser(updatedUser);
+        }
+      }
+    };
+
+    const handleFocus = () => {
+      loadCodes();
+      // Reload user session to get updated recentlyViewed
+      const updatedUser = getUserSession();
+      if (updatedUser) {
+        setCurrentUser(updatedUser);
+      }
+    };
+
+    // Listen for visibility changes and window focus
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, []);
 
   /**
@@ -156,7 +198,7 @@ const Dashboard = () => {
   return (
     <div className={styles.isciDashboard}>
 
-      <Header />
+      <Header showCreateButton={false} />
 
       {/* Main content area - shows different things based on the current state */}
       <div className={styles.dashboardContent}>
@@ -164,13 +206,21 @@ const Dashboard = () => {
         <div className={styles.stickyHeader}>
           <h2>{getSectionTitle()}</h2>
           {!isLoading && (
-            <div className={styles.searchBar}>
-              <input
-                type="text"
-                placeholder="Search by code, brand, spot title, or editor..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className={styles.searchBarRow}>
+              <div className={styles.searchBar}>
+                <input
+                  type="text"
+                  placeholder="Search by code, brand, spot title, or editor..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <button
+                className={styles.btnCreateNew}
+                onClick={() => navigate("/create")}
+              >
+                + New ISCI Code
+              </button>
             </div>
           )}
         </div>
@@ -191,9 +241,76 @@ const Dashboard = () => {
       </div>
 
       <div className={styles.dashBoxes}>
-        <div></div>
-        <div></div>
-        <div></div>
+        <div className={styles.recentBox}>
+          <h3>Recently Viewed</h3>
+          <div className={styles.recentItems}>
+            {currentUser && currentUser.recentlyViewed && currentUser.recentlyViewed.length > 0 ? (
+              currentUser.recentlyViewed
+                .slice(0, 2)
+                .map(isciCode => {
+                  const code = codes.find(c => c.code === isciCode);
+                  if (!code) return null;
+                  return (
+                    <div key={code.id} className={styles.recentItem}>
+                      <div className={styles.recentItemInfo}>
+                        <span className={styles.recentCode}>{code.code}</span>
+                        {/* <span className={styles.recentCampaign}>{code.campaignName || 'No campaign'}</span> */}
+                        <span className={styles.recentTitle}>{code.spotTitle}</span>
+                      </div>
+                      <a href={`/edit/${code.code}`} className={styles.recentEditBtn}>
+                        Edit
+                      </a>
+                    </div>
+                  );
+                })
+                .filter(item => item !== null)
+            ) : (
+              <p className={styles.emptyState}>No recent items</p>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.recentBox}>
+          <h3>Assigned Projects</h3>
+          <div className={styles.recentItems}>
+            {currentUser && codes.length > 0 ? (
+              (() => {
+                const assignedCodes = codes
+                  .filter(code => code.assignedEditor === `${currentUser.firstName} ${currentUser.lastName}`)
+                  .sort((a, b) => {
+                    // Sort by Air Date (most recent first)
+                    if (!a.airDate && !b.airDate) return 0;
+                    if (!a.airDate) return 1;
+                    if (!b.airDate) return -1;
+                    return new Date(b.airDate) - new Date(a.airDate);
+                  })
+                  .slice(0, 2);
+
+                if (assignedCodes.length === 0) {
+                  return <p className={styles.emptyState}>No assigned projects</p>;
+                }
+
+                return assignedCodes.map(code => (
+                  <div key={code.id} className={styles.recentItem}>
+                    <div className={styles.recentItemInfo}>
+                      <span className={styles.recentCode}>{code.code}</span>
+                      <span className={styles.recentTitle}>{code.spotTitle}</span>
+                    </div>
+                    <a href={`/edit/${code.code}`} className={styles.recentEditBtn}>
+                      Edit
+                    </a>
+                  </div>
+                ));
+              })()
+            ) : (
+              <p className={styles.emptyState}>No assigned projects</p>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.recentBox}>
+          <h3>Recently Created</h3>
+        </div>
       </div>
       
     </div>

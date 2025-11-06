@@ -11,6 +11,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   }
 
   .stickyHeader {
@@ -26,9 +27,15 @@
     }
   }
 
-  .searchBar {
+  .searchBarRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1.5rem;
-    width: 50%;
+  }
+
+  .searchBar {
+    flex: 1;
 
     input {
       width: 100%;
@@ -52,9 +59,32 @@
     }
   }
 
+  .btnCreateNew {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 26px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: v.$accent-text;
+    background-color: v.$accent;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: v.$hover;
+      color: v.$white;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
   .scrollableContent {
     flex: 1;
     padding: 0 3rem 2rem 3rem;
+    margin:1rem 0 0 0;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -76,10 +106,106 @@
     margin:1rem auto 0;
     width: calc(100% - 4rem);
     gap:1rem;
-    div{
+
+    .recentBox {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding:2rem;
       height:100%; width:calc(33.33% - .8rem);
       background-color:v.$black;
       border-radius:32px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+      h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: v.$text-primary;
+        margin: 0;
+        text-transform:uppercase;
+      }
+
+      .recentItems {
+        display: flex;
+        flex-wrap:wrap;
+        gap: 0.15rem;
+        overflow-y: auto;
+        width:100%;
+        padding:0px;
+        border-radius:0;
+      }
+
+      .recentItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.2s;
+        width:100%; height: 50px;
+        padding:0px;
+      }
+
+      .recentItemInfo {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+        min-width: 0;
+        padding:0px;
+        height: 50px;
+
+        .recentCode {
+          font-family: 'Courier New', monospace;
+          font-weight: 600;
+          font-size: 0.875rem;
+          color: v.$accent;
+        }
+
+        .recentCampaign {
+          font-size: 0.75rem;
+          color: v.$text-secondary;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .recentTitle {
+          font-size: 0.8125rem;
+          color: v.$text-primary;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      .recentEditBtn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        background-color: transparent;
+        color: v.$white;
+        border: none;
+        outline: none;
+        box-shadow:none;
+        text-transform:uppercase;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        white-space: nowrap;
+        &:hover {
+          color: v.$red;
+        }
+      }
+
+      .emptyState {
+        text-align: center;
+        color: v.$text-secondary;
+        font-size: 0.875rem;
+        padding: 1rem 0;
+        margin: 0;
+      }
     }
+
+
+
   }
 }
