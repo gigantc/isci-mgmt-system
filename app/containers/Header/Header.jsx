@@ -7,13 +7,23 @@ import { ReactComponent as Logo } from "./assets/Logo.svg";
 import DefaultProfileImage from "./assets/default_profile_image.jpg";
 
 const Header = () => {
-  const [user, setUser] = useState(null);
+  // Initialize user immediately to prevent flash
+  const [user, setUser] = useState(() => {
+    // Check if we're on the client side
+    if (typeof window !== "undefined") {
+      return getUserSession();
+    }
+    return null;
+  });
   const location = useLocation();
 
   useEffect(() => {
-    // Only run on client side after hydration
-    setUser(getUserSession());
-  }, []);
+    // Update user if it changes (e.g., after profile update)
+    const currentUser = getUserSession();
+    if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
+      setUser(currentUser);
+    }
+  }, [location.pathname]); // Re-check when navigating
 
   // Determine if a path is active
   const isActive = (path) => {
