@@ -22,6 +22,9 @@ export default [
   // Admin panel - manages brands/clients
   route("admin", "routes/admin.jsx"),
 
+  // User profile page
+  route("profile", "routes/profile.jsx"),
+
   // Create ISCI code page
   route("create", "routes/create.jsx"),
 
@@ -32,6 +35,9 @@ export default [
   // API endpoint for authentication
   route("api/auth", "routes/api.auth.js"),
 
+  // API endpoint for user profile updates
+  route("api/user", "routes/api.user.js"),
+
   // API endpoint for ISCI codes
   // Handles GET (load codes) and POST (save codes) requests
   route("api/isci", "routes/api.isci.js"),
@@ -39,4 +45,8 @@ export default [
   // API endpoint for brands
   // Handles GET (load brands) and POST (save brands) requests
   route("api/brands", "routes/api.brands.js"),
+
+  // API endpoint for users
+  // Handles GET (load users) and POST (save users) requests
+  route("api/users", "routes/api.users.js"),
 ];

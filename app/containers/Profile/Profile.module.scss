@@ -1,0 +1,210 @@
+@use "@/styles/variables" as v;
+
+.profilePage {
+  
+  background-color: v.$gray;
+  padding-bottom: 2rem;
+}
+
+.pageContent {
+  margin: 0 auto;
+  width: calc(100% - 4rem);
+  max-width: 1600px;
+  background-color: v.$black;
+  border-radius: 0 0 32px 32px;
+  // min-height: calc(100vh - 140px);
+  height: calc(100vh - 114px - 4rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.stickyHeader {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: v.$black;
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 1px solid v.$border-color;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: v.$text-primary;
+    margin: 0;
+  }
+
+  .headerActions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+.scrollableContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.profileContainer {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.profileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .errorMessage {
+    background-color: rgba(v.$red, 0.15);
+    border: 1px solid rgba(v.$red, 0.4);
+    color: v.$red;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  .successMessage {
+    background-color: rgba(v.$teal, 0.15);
+    border: 1px solid rgba(v.$teal, 0.4);
+    color: v.$teal;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  .formSection {
+    background-color: rgba(v.$white, 0.03);
+    border: 1px solid v.$border-color;
+    border-radius: 12px;
+    padding: 1.5rem;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: v.$text-primary;
+      margin: 0 0 1rem 0;
+    }
+
+    .sectionNote {
+      font-size: 0.875rem;
+      color: v.$text-secondary;
+      margin: -0.5rem 0 1rem 0;
+      font-style: italic;
+    }
+  }
+
+  .formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .formGroup {
+    margin-bottom: 1.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: v.$text-primary;
+      margin-bottom: 0.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      font-size: 1rem;
+      border: 1px solid v.$border-color;
+      border-radius: 8px;
+      background-color: rgba(v.$white, 0.05);
+      color: v.$text-primary;
+      transition: all 0.2s;
+      font-family: inherit;
+
+      &:focus {
+        outline: none;
+        border-color: v.$accent;
+        box-shadow: 0 0 0 3px rgba(v.$accent, 0.2);
+      }
+
+      &::placeholder {
+        color: v.$text-secondary;
+      }
+    }
+  }
+
+  .imageUploadSection {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    .currentImage {
+      img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid v.$border-color;
+      }
+    }
+
+    .formGroup {
+      flex: 1;
+      margin-bottom: 0;
+
+      input[type="file"] {
+        padding: 0.75rem;
+        cursor: pointer;
+
+        &::file-selector-button {
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          background-color: v.$accent;
+          color: v.$black;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          margin-right: 1rem;
+          transition: all 0.2s;
+
+          &:hover {
+            background-color: v.$hover;
+            color: v.$white;
+          }
+        }
+      }
+    }
+  }
+
+  .profileMeta {
+    background-color: rgba(v.$white, 0.03);
+    border: 1px solid v.$border-color;
+    border-radius: 12px;
+    padding: 1.5rem;
+
+    p {
+      margin: 0 0 0.75rem 0;
+      font-size: 0.9rem;
+      color: v.$text-secondary;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      strong {
+        color: v.$text-primary;
+        font-weight: 600;
+      }
+    }
+  }
+}

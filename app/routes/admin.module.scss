@@ -1,14 +1,13 @@
 @use "@/styles/variables" as v;
 
 .adminPage {
-  min-height: 100vh;
 
   .pageContent {
     background: v.$black;
     border-radius: 0px 0px 32px 32px;
     margin: 0 auto;
     width: calc(100% - 4rem);
-    height: 70vh;
+    height: calc(100vh - 114px - 4rem);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -23,7 +22,38 @@
 
     h2 {
       text-transform: uppercase;
-      margin: 0 0 2rem 0;
+      margin: 0 0 1.5rem 0;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid v.$border-color;
+      margin-bottom: 2rem;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: v.$text-secondary;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+
+      &:hover {
+        color: v.$text-primary;
+        background: rgba(v.$white, 0.03);
+      }
+
+      &.active {
+        color: v.$accent;
+        border-bottom-color: v.$accent;
+        background: rgba(v.$accent, 0.05);
+      }
     }
   }
 

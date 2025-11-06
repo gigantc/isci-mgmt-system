@@ -1,0 +1,79 @@
+@use "@/styles/variables" as v;
+
+.profileMenu {
+  position: relative;
+}
+
+.menuButton {
+  padding: 0.5rem;
+  background-color: transparent;
+  color: v.$text-secondary;
+  // border: 1px solid v.$border-color;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  border:none;
+  outline:none;
+  box-shadow:none;
+  &:hover {
+    background-color: rgba(v.$accent, 0.1);
+    border-color: v.$accent;
+    color: v.$accent;
+  }
+
+  &[aria-expanded="true"] {
+    background-color: rgba(v.$accent, 0.15);
+    border-color: v.$accent;
+    color: v.$accent;
+  }
+}
+
+.arrowIcon {
+  display: block;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 160px;
+  background-color: v.$black;
+  border: 1px solid v.$border-color;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.menuItem {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+  color: v.$text-primary;
+  border: none;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  border-bottom: 1px solid v.$border-color;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: rgba(v.$accent, 0.1);
+    color: v.$accent;
+  }
+
+  &:last-child:hover {
+    background-color: rgba(v.$red, 0.1);
+    color: v.$red;
+  }
+}

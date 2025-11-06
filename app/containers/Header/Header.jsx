@@ -1,24 +1,25 @@
-
-import { useNavigate } from "react-router";
-import { getUserSession, clearUserSession } from "@/utils/auth";
+import { useState, useEffect } from "react";
+import { getUserSession } from "@/utils/auth";
+import ProfileMenu from "@/components/ProfileMenu";
 import styles from "./Header.module.scss";
 import { ReactComponent as Logo } from "./assets/Logo.svg";
-import ProfileTemp from "./assets/profile.jpg";
+import DefaultProfileImage from "./assets/default_profile_image.jpg";
 
 const Header = ({
   showAdminButton = true,
   showCreateButton = true,
   showBackButton = false
 }) => {
-  const navigate = useNavigate();
-  const user = getUserSession();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Only run on client side after hydration
+    setUser(getUserSession());
+  }, []);
+
   const displayName = user ? `${user.firstName} ${user.lastName}` : "Guest";
   const displayRole = user ? (user.userType === "admin" ? "Admin" : "Editor") : "Guest";
-
-  const handleLogout = () => {
-    clearUserSession();
-    navigate("/login");
-  };
+  const profileImage = user?.profileImage || DefaultProfileImage;
 
   return(
     <header className={styles.header}>
@@ -36,11 +37,7 @@ const Header = ({
         )}
 
         <a href="/admin" className="btn-text">
-         Assets
-        </a>
-
-        <a href="/admin" className="btn-text">
-          Exports
+          Reports
         </a>
 
         {showAdminButton && (
@@ -62,14 +59,8 @@ const Header = ({
           <p>{displayName}</p>
           <p>{displayRole}</p>
         </div>
-        <img src={ProfileTemp} alt="Profile" />
-        <button
-          onClick={handleLogout}
-          className={styles.logoutButton}
-          title="Logout"
-        >
-          Logout
-        </button>
+        <img src={profileImage} alt="Profile" />
+        <ProfileMenu />
       </div>
     </header>
   )
