@@ -310,9 +310,39 @@ const Dashboard = () => {
 
         <div className={styles.recentBox}>
           <h3>Recently Created</h3>
+          <div className={styles.recentItems}>
+            {codes.length > 0 ? (
+              (() => {
+                const recentlyCoded = [...codes]
+                  .sort((a, b) => {
+                    // Sort by createdAt (most recent first)
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                  })
+                  .slice(0, 2);
+
+                if (recentlyCoded.length === 0) {
+                  return <p className={styles.emptyState}>No codes created yet</p>;
+                }
+
+                return recentlyCoded.map(code => (
+                  <div key={code.id} className={styles.recentItem}>
+                    <div className={styles.recentItemInfo}>
+                      <span className={styles.recentCode}>{code.code}</span>
+                      <span className={styles.recentTitle}>{code.spotTitle}</span>
+                    </div>
+                    <a href={`/edit/${code.code}`} className={styles.recentEditBtn}>
+                      Edit
+                    </a>
+                  </div>
+                ));
+              })()
+            ) : (
+              <p className={styles.emptyState}>No codes created yet</p>
+            )}
+          </div>
         </div>
       </div>
-      
+
     </div>
   );
 };
