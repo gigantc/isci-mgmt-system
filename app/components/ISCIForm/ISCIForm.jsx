@@ -3,7 +3,7 @@ import { ISCIStatus } from "@/types/isci";
 import { getUserSession } from "@/utils/auth";
 import styles from "./ISCIForm.module.scss";
 
-const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef }) => {
+const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef, viewOnly = false }) => {
   const [brands, setBrands] = useState([]);
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -279,6 +279,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               name="assignedEditor"
               value={formData.assignedEditor}
               onChange={handleChange}
+              disabled={viewOnly}
             >
               <option value="">Select Editor</option>
               {getSortedUsers().map(user => {
@@ -305,6 +306,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               value={formData.campaignName}
               onChange={handleChange}
               placeholder="Campaign Name"
+              disabled={viewOnly}
             />
           </div>
 
@@ -315,6 +317,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               name="spotLength"
               value={formData.spotLength}
               onChange={handleChange}
+              disabled={viewOnly}
             >
               <option value="">Select length</option>
               <option value="6">06</option>
@@ -338,6 +341,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
             onChange={handleChange}
             placeholder="e.g., LVCVA_New Fab Trailer_30s_Hartbeat_No Disclaimer"
             className={errors.spotTitle ? "error" : ""}
+            disabled={viewOnly}
           />
           {errors.spotTitle && <span className="error-message">{errors.spotTitle}</span>}
         </div>
@@ -352,6 +356,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
             onChange={handleChange}
             placeholder="Additional details about this project..."
             rows={3}
+            disabled={viewOnly}
           />
         </div>
 
@@ -366,6 +371,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               value={formData.language}
               onChange={handleChange}
               placeholder="English"
+              disabled={viewOnly}
             />
           </div>
 
@@ -376,6 +382,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               name="closedCaptioning"
               value={formData.closedCaptioning}
               onChange={handleChange}
+              disabled={viewOnly}
             >
               <option value="Yes">Yes</option>
               <option value="No">No</option>
@@ -394,6 +401,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               value={formData.audio}
               onChange={handleChange}
               placeholder="Stereo LR"
+              disabled={viewOnly}
             />
           </div>
 
@@ -405,6 +413,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               name="airDate"
               value={formData.airDate}
               onChange={handleChange}
+              disabled={viewOnly}
             />
           </div>
         </div>
@@ -418,6 +427,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               name="aspectRatio"
               value={formData.aspectRatio}
               onChange={handleChange}
+              disabled={viewOnly}
             >
               <option value="16:9">16:9</option>
               <option value="9:16">9:16</option>
@@ -434,6 +444,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               name="version"
               value={formData.version}
               onChange={handleChange}
+              disabled={viewOnly}
             >
               <option value="A">A</option>
               <option value="B">B</option>
@@ -453,6 +464,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               name="channel"
               value={formData.channel}
               onChange={handleChange}
+              disabled={viewOnly}
             >
               <option value="Broadcast">Broadcast</option>
               <option value="CTV">CTV</option>
@@ -470,6 +482,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               name="status"
               value={formData.status}
               onChange={handleChange}
+              disabled={viewOnly}
             >
               <option value={ISCIStatus.PENDING}>Pending</option>
               <option value={ISCIStatus.IN_PROGRESS}>In Progress</option>

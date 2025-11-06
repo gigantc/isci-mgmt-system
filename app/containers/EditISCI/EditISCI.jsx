@@ -3,13 +3,14 @@ import { useNavigate, useParams } from "react-router";
 import { ISCIStatus } from "@/types/isci";
 import ISCIForm from "@/components/ISCIForm";
 import Header from "@/containers/Header";
-import { isAuthenticated, getUserSession, saveUserSession } from "@/utils/auth";
+import { isAuthenticated, getUserSession, saveUserSession, isAdmin } from "@/utils/auth";
 import styles from "./EditISCI.module.scss";
 
 /**
  * EditISCI Container
  *
- * Dedicated container for editing an existing ISCI code.
+ * Dedicated container for editing/viewing an existing ISCI code.
+ * Shows read-only view for non-admins and edit mode for admins.
  * This component is decoupled from the Dashboard so it can be accessed
  * from multiple places in the application.
  */
@@ -17,6 +18,7 @@ const EditISCI = () => {
   const navigate = useNavigate();
   const { code: isciCode } = useParams();
   const formRef = useRef(null);
+  const userIsAdmin = isAdmin();
 
   const [code, setCode] = useState(null);
   const [allCodes, setAllCodes] = useState([]);
@@ -167,15 +169,17 @@ const EditISCI = () => {
         {/* Sticky header section */}
         <div className={styles.stickyHeader}>
           <div className={styles.headerContent}>
-            <h2>Edit ISCI Code</h2>
+            <h2>{userIsAdmin ? "Edit ISCI Code" : "View ISCI Code"}</h2>
             {!isLoading && !error && (
               <div className={styles.headerActions}>
                 <button type="button" className="btn-text" onClick={handleCancel}>
-                  Cancel
+                  {userIsAdmin ? "Cancel" : "Back"}
                 </button>
-                <button type="button" className="btn-primary" onClick={handleSubmitClick}>
-                  Update ISCI
-                </button>
+                {userIsAdmin && (
+                  <button type="button" className="btn-primary" onClick={handleSubmitClick}>
+                    Update ISCI
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -202,6 +206,7 @@ const EditISCI = () => {
               hideActions={true}
               hideTitle={true}
               formRef={formRef}
+              viewOnly={!userIsAdmin}
             />
           )}
         </div>

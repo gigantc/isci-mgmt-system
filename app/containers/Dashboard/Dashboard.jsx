@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
 import Header from "@/containers/Header";
-import { isAuthenticated, getUserSession } from "@/utils/auth";
+import { isAuthenticated, getUserSession, isAdmin } from "@/utils/auth";
 import styles from "./Dashboard.module.scss";
 
 /**
@@ -246,7 +246,7 @@ const Dashboard = () => {
           <div className={styles.recentItems}>
             {currentUser && currentUser.recentlyViewed && currentUser.recentlyViewed.length > 0 ? (
               currentUser.recentlyViewed
-                .slice(0, 2)
+                .slice(0, 5)
                 .map(isciCode => {
                   const code = codes.find(c => c.code === isciCode);
                   if (!code) return null;
@@ -258,7 +258,7 @@ const Dashboard = () => {
                         <span className={styles.recentTitle}>{code.spotTitle}</span>
                       </div>
                       <a href={`/edit/${code.code}`} className={styles.recentEditBtn}>
-                        Edit
+                        {isAdmin() ? "Edit" : "View"}
                       </a>
                     </div>
                   );
@@ -284,7 +284,7 @@ const Dashboard = () => {
                     if (!b.airDate) return -1;
                     return new Date(b.airDate) - new Date(a.airDate);
                   })
-                  .slice(0, 2);
+                  .slice(0, 5);
 
                 if (assignedCodes.length === 0) {
                   return <p className={styles.emptyState}>No assigned projects</p>;
@@ -297,7 +297,7 @@ const Dashboard = () => {
                       <span className={styles.recentTitle}>{code.spotTitle}</span>
                     </div>
                     <a href={`/edit/${code.code}`} className={styles.recentEditBtn}>
-                      Edit
+                      {isAdmin() ? "Edit" : "View"}
                     </a>
                   </div>
                 ));
@@ -318,7 +318,7 @@ const Dashboard = () => {
                     // Sort by createdAt (most recent first)
                     return new Date(b.createdAt) - new Date(a.createdAt);
                   })
-                  .slice(0, 2);
+                  .slice(0, 5);
 
                 if (recentlyCoded.length === 0) {
                   return <p className={styles.emptyState}>No codes created yet</p>;
@@ -331,7 +331,7 @@ const Dashboard = () => {
                       <span className={styles.recentTitle}>{code.spotTitle}</span>
                     </div>
                     <a href={`/edit/${code.code}`} className={styles.recentEditBtn}>
-                      Edit
+                      {isAdmin() ? "Edit" : "View"}
                     </a>
                   </div>
                 ));

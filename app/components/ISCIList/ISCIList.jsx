@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router";
+import { isAdmin } from "@/utils/auth";
 import styles from "./ISCIList.module.scss";
 
 const ISCIList = ({ codes, onDelete }) => {
   const navigate = useNavigate();
+  const userIsAdmin = isAdmin();
   const getStatusBadgeClass = (status) => {
     const statusKey = `status${status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('')}`;
     return `${styles.statusBadge} ${styles[statusKey] || ''}`;
@@ -46,17 +48,19 @@ const ISCIList = ({ codes, onDelete }) => {
                     <button
                       className={styles.btnEdit}
                       onClick={() => navigate(`/edit/${code.code}`)}
-                      title="Edit"
+                      title={userIsAdmin ? "Edit" : "View"}
                     >
-                      Edit
+                      {userIsAdmin ? "Edit" : "View"}
                     </button>
-                    <button
-                      className={styles.btnEdit}
-                      onClick={() => onDelete(code.id)}
-                      title="Delete"
-                    >
-                      Delete
-                    </button>
+                    {userIsAdmin && (
+                      <button
+                        className={styles.btnEdit}
+                        onClick={() => onDelete(code.id)}
+                        title="Delete"
+                      >
+                        Delete
+                      </button>
+                    )}
                 </div>
               </span>
               <span>{code.assignedEditor || "Unassigned"}</span>
