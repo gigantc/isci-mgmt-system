@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "react-router";
+import { useState, useEffect, useMemo } from "react";
+import { useLocation, Link } from "react-router";
 import { getUserSession, isAdmin } from "@/utils/auth";
 import ProfileMenu from "@/components/ProfileMenu";
 import styles from "./Header.module.scss";
@@ -17,13 +17,16 @@ const Header = () => {
   });
   const location = useLocation();
 
+  // Only check for user updates when navigating to profile page
+  // This prevents unnecessary re-renders on every route change
   useEffect(() => {
-    // Update user if it changes (e.g., after profile update)
-    const currentUser = getUserSession();
-    if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
-      setUser(currentUser);
+    if (location.pathname === "/profile") {
+      const currentUser = getUserSession();
+      if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
+        setUser(currentUser);
+      }
     }
-  }, [location.pathname]); // Re-check when navigating
+  }, [location.pathname, user]);
 
   // Determine if a path is active
   const isActive = (path) => {
@@ -41,9 +44,21 @@ const Header = () => {
     }
   };
 
-  const displayName = user ? `${user.firstName} ${user.lastName}` : "Guest";
-  const displayRole = user ? (user.userType === "admin" ? "Admin" : "Editor") : "Guest";
-  const profileImage = user?.profileImage || DefaultProfileImage;
+  // Memoize computed values to prevent unnecessary recalculations
+  const displayName = useMemo(() =>
+    user ? `${user.firstName} ${user.lastName}` : "Guest",
+    [user]
+  );
+
+  const displayRole = useMemo(() =>
+    user ? (user.userType === "admin" ? "Admin" : "Editor") : "Guest",
+    [user]
+  );
+
+  const profileImage = useMemo(() =>
+    user?.profileImage || DefaultProfileImage,
+    [user?.profileImage]
+  );
 
   return(
     <header className={styles.header}>
@@ -54,31 +69,31 @@ const Header = () => {
       </div>
 
       <div className={styles.headerActions}>
-        <a
-          href="/"
+        <Link
+          to="/"
           className={`${styles.navLink} ${isActive("/") ? styles.active : ""}`}
           onClick={(e) => handleNavClick(e, "/")}
         >
           Dashboard
-        </a>
+        </Link>
 
         {isAdmin() && (
           <>
-            <a
-              href="/reports"
+            <Link
+              to="/reports"
               className={`${styles.navLink} ${isActive("/reports") ? styles.active : ""}`}
               onClick={(e) => handleNavClick(e, "/reports")}
             >
               Reports
-            </a>
+            </Link>
 
-            <a
-              href="/admin"
+            <Link
+              to="/admin"
               className={`${styles.navLink} ${isActive("/admin") ? styles.active : ""}`}
               onClick={(e) => handleNavClick(e, "/admin")}
             >
               Admin
-            </a>
+            </Link>
           </>
         )}
       </div>

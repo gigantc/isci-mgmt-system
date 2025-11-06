@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
-import Header from "@/containers/Header";
 import { isAuthenticated, getUserSession, isAdmin } from "@/utils/auth";
 import styles from "./Dashboard.module.scss";
 
@@ -197,8 +196,6 @@ const Dashboard = () => {
   // TIME TO RENDER! 🎨
   return (
     <div className={styles.isciDashboard}>
-
-      <Header />
 
       {/* Main content area - shows different things based on the current state */}
       <div className={styles.dashboardContent}>

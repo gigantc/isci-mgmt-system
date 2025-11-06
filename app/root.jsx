@@ -5,9 +5,10 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from "react-router";
 
-
+import Header from "@/containers/Header";
 import "./styles/app.scss";
 
 export const links = () => [
@@ -42,7 +43,17 @@ export function Layout({ children }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const location = useLocation();
+
+  // Don't show header on login page
+  const showHeader = location.pathname !== "/login";
+
+  return (
+    <>
+      {showHeader && <Header />}
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }) {

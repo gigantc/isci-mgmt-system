@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { getUserSession, saveUserSession, isAuthenticated } from "@/utils/auth";
-import Header from "@/containers/Header";
 import DefaultProfileImage from "@/containers/Header/assets/default_profile_image.jpg";
 import styles from "./Profile.module.scss";
 
@@ -165,7 +164,6 @@ const Profile = () => {
 
   return (
     <div className={styles.profilePage}>
-      <Header />
 
       <div className={styles.pageContent}>
         <div className={styles.stickyHeader}>

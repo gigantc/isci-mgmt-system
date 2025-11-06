@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
-import Header from "@/containers/Header";
 import { isAuthenticated } from "@/utils/auth";
 import styles from "./CreateISCI.module.scss";
 
@@ -99,7 +98,6 @@ const CreateISCI = () => {
   // Render page
   return (
     <div className={styles.createISCI}>
-      <Header />
 
       <div className={styles.pageContent}>
         {/* Sticky header section */}

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ISCIStatus } from "@/types/isci";
 import ISCIForm from "@/components/ISCIForm";
-import Header from "@/containers/Header";
 import { isAuthenticated, getUserSession, saveUserSession, isAdmin } from "@/utils/auth";
 import styles from "./EditISCI.module.scss";
 
@@ -163,7 +162,6 @@ const EditISCI = () => {
   // Render page
   return (
     <div className={styles.editISCI}>
-      <Header />
 
       <div className={styles.pageContent}>
         {/* Sticky header section */}
