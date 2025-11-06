@@ -66,14 +66,17 @@ isci-mgmt-system/
 │   │   ├── admin.jsx           # Admin panel route (brands & users)
 │   │   ├── login.jsx           # Login page route
 │   │   ├── profile.jsx         # User profile page route
+│   │   ├── reports.jsx         # Reports page route (import/export)
 │   │   ├── create.jsx          # Create ISCI code route
 │   │   ├── edit.jsx            # Edit ISCI code route
 │   │   ├── home.jsx            # Home page route
 │   │   ├── api.auth.js         # Authentication API endpoints
 │   │   ├── api.user.js         # User profile update API
+│   │   ├── api.user.recently-viewed.js  # Recently viewed tracking API
 │   │   ├── api.users.js        # User management API endpoints
 │   │   ├── api.brands.js       # Brand API endpoints
-│   │   └── api.isci.js         # ISCI code API endpoints
+│   │   ├── api.isci.js         # ISCI code API endpoints
+│   │   └── api.isci.import.js  # ISCI code CSV import API
 │   ├── utils/                  # Utility functions
 │   │   └── auth.js             # Authentication helper functions
 │   ├── styles/                 # Global styles and variables
@@ -207,6 +210,64 @@ const generateISCICode = (brandCode) => {
 - `getCurrentUserName()` - Get user's full name
 
 **Storage**: `data/users.json`
+
+### Role-Based Access Control
+
+The system implements role-based access control with two user types:
+
+**Admin Users:**
+- Full access to all features
+- Can view, create, edit, and delete ISCI codes
+- Access to Admin panel (brand and user management)
+- Access to Reports page (import/export)
+- Can manage all users and brands
+
+**Editor Users:**
+- View-only access to ISCI codes
+- Cannot edit or delete ISCI codes
+- No access to Admin panel or Reports page
+- Can view their assigned projects
+- Cannot create new ISCI codes (admins only)
+
+**Implementation:**
+- Navigation links (Admin, Reports) are hidden for non-admins
+- "Edit" buttons change to "View" for non-admins
+- "Delete" buttons are completely hidden for non-admins
+- Edit page becomes read-only view for non-admins (all form fields disabled)
+- Page-level protection redirects non-admins attempting URL access
+- "+ New ISCI Code" button only visible to admins
+
+### Import/Export System
+
+**Location**: `/reports` page (admin-only)
+
+**Export Features:**
+- Advanced filtering by date (created/updated/air), status, editor, brand, channel, spot length
+- CSV export with all ISCI code fields
+- Shows filtered count before export
+- One-click filter reset
+
+**Import Features:**
+- CSV template download with example data
+- Three import modes:
+  - **Add New**: Import only codes that don't exist (skips duplicates)
+  - **Update Existing**: Update codes that match by ISCI code
+  - **Replace All**: Delete all existing codes and import new set (⚠️ Warning shown)
+- File upload with drag/drop support
+- Preview showing file details before import
+- Row-by-row validation
+- Detailed success/error reporting
+- Required fields: ISCI Code, Brand, Spot Title
+
+**CSV Format:**
+```csv
+ISCI Code,Brand,Campaign Name,Spot Title,Spot Length,Assigned Editor,Status,Channel,Aspect Ratio,Version,Language,Closed Captioning,Audio,Air Date,Description
+```
+
+**API Endpoint**: `POST /api/isci/import`
+- Handler: `app/routes/api.isci.import.js`
+- Request: `{ csvData: string, importMode: "add" | "update" | "replace" }`
+- Response: `{ success: boolean, message: string, errors?: array }`
 
 ### Brand/Client Management
 
@@ -362,16 +423,32 @@ $orange: #febc2c;     // Pending/Warning states
 
 ### Public Routes
 
-- **`/` (Home)**: Main dashboard with ISCI code list and create functionality
+- **`/` (Home)**: Main dashboard with ISCI code list and search functionality
   - Handler: `app/routes/home.jsx`
   - Component: `Dashboard` container
-  - Features: List view, search, create new codes
+  - Features:
+    - List view with search functionality
+    - "+ New ISCI Code" button in search bar (admin only)
+    - Three dashboard boxes: Recently Viewed, Assigned Projects, Recently Created
+    - "Edit" buttons for admins, "View" buttons for editors
+    - "Delete" buttons hidden for editors
 
-- **`/edit/:code` (Edit ISCI Code)**: Dedicated edit page for a specific ISCI code
+- **`/create` (Create ISCI Code)**: Create new ISCI code page (protected, admin-only)
+  - Handler: `app/routes/create.jsx`
+  - Component: `CreateISCI` container
+  - Features: Form with auto-generated ISCI code based on brand selection
+  - Protected: Admin only
+
+- **`/edit/:code` (Edit/View ISCI Code)**: View or edit a specific ISCI code (protected)
   - Handler: `app/routes/edit.jsx`
   - Component: `EditISCI` container
   - URL Parameter: `:code` - The ISCI code (e.g., `/edit/LVCI2501`)
-  - Features: Edit form pre-filled with existing data
+  - Features:
+    - Admins: Full edit capabilities with "Update ISCI" button
+    - Editors: Read-only view with all form fields disabled
+    - Page title changes based on role: "Edit ISCI Code" vs "View ISCI Code"
+    - Button changes based on role: "Cancel" vs "Back"
+  - Protected: Requires authentication
 
 - **`/login` (Login)**: User authentication page
   - Handler: `app/routes/login.jsx`
@@ -383,7 +460,15 @@ $orange: #febc2c;     // Pending/Warning states
   - Features: Edit name, email, password, upload profile image
   - Protected: Requires authentication
 
-- **`/admin` (Admin Panel)**: Brand and user management interface (protected)
+- **`/reports` (Reports)**: Import/export data management page (protected, admin-only)
+  - Handler: `app/routes/reports.jsx`
+  - Features:
+    - Export tab: Advanced filtering and CSV export
+    - Import tab: CSV import with three modes (add/update/replace)
+    - Template download
+  - Protected: Admin only (redirects editors to home)
+
+- **`/admin` (Admin Panel)**: Brand and user management interface (protected, admin-only)
   - Handler: `app/routes/admin.jsx`
   - Components: `BrandManager`, `UserManager`
   - Features: Tabbed interface for managing brands and users
@@ -409,6 +494,18 @@ $orange: #febc2c;     // Pending/Warning states
 - Saves ISCI codes (full array replacement)
 - Handler: `app/routes/api.isci.js` - `action()` function
 - Request Body: Array of ISCI code objects
+
+**POST /api/isci/import**
+- Imports ISCI codes from CSV data
+- Handler: `app/routes/api.isci.import.js` - `action()` function
+- Request Body: `{ csvData: string, importMode: "add" | "update" | "replace" }`
+- Response: `{ success: boolean, message: string, errors?: array, skipped?: number }`
+- Import modes:
+  - `add`: Import only new codes (skips existing)
+  - `update`: Update existing codes by matching ISCI code
+  - `replace`: Delete all and import new set
+- Validates required fields: Code, Brand, Spot Title
+- Returns row-by-row error details
 
 #### Brands
 
@@ -440,6 +537,14 @@ $orange: #febc2c;     // Pending/Warning states
 - Request Body: FormData with user fields and optional profileImage file
 - Supports: Name, email, password updates, profile image upload
 - Used by: Profile component (self-service)
+
+**POST /api/user/recently-viewed**
+- Tracks recently viewed ISCI codes for a user
+- Handler: `app/routes/api.user.recently-viewed.js` - `action()` function
+- Request Body: `{ userId: string, isciCode: string }`
+- Maintains a list of last 5 viewed codes per user
+- Updates user session in sessionStorage
+- Used by: EditISCI container to track viewed codes
 
 ## Common Tasks
 
@@ -544,17 +649,19 @@ npm run preview
 ## Future Enhancements (Roadmap)
 
 - [ ] Database integration (PostgreSQL/MySQL)
-- [ ] User authentication and authorization
-- [ ] Multi-user collaboration
+- [x] User authentication and authorization ✅ (v3.3.0)
+- [x] Multi-user collaboration ✅ (v3.3.0 - multi-user support)
 - [ ] File attachments for ISCI codes
-- [ ] Export to CSV/Excel
-- [ ] Advanced filtering and sorting by brand, status, date
-- [ ] Dashboard analytics and reporting
+- [x] Export to CSV/Excel ✅ (v3.4.0 - CSV export with filtering)
+- [x] Advanced filtering and sorting by brand, status, date ✅ (v3.4.0 - export filtering)
+- [x] Import from CSV/Excel ✅ (v3.4.0 - CSV import with 3 modes)
+- [ ] Dashboard analytics and reporting (partially complete - Recently Created section)
 - [ ] Activity logs and audit trail
 - [ ] Email notifications for due dates
 - [ ] Batch operations (bulk edit/delete)
 - [ ] Brand usage statistics and reporting
 - [ ] Automatic year rollover handling
+- [ ] Exportable Slate feature (1920x1080 JPG with ISCI code details)
 
 ## Code Style
 
@@ -620,23 +727,35 @@ npm run preview
 
 10. **Dark Mode**: The application uses a fixed dark mode theme. Do not add light mode or theme switching functionality.
 
-11. **Form Behavior**: ISCIForm behaves differently in create vs edit mode:
+11. **Form Behavior**: ISCIForm behaves differently in create vs edit vs view mode:
     - **Create**: Brand dropdown shown, code field is read-only and auto-generated
-    - **Edit**: Brand shown as disabled text (can't change), code field is editable
+    - **Edit (Admin)**: Brand shown as disabled text (can't change), code field is editable, all fields enabled
+    - **View (Editor)**: All fields disabled (viewOnly mode), "Update" button hidden
 
-12. **Header Component**: The Header component is flexible and reusable across routes. Configure button visibility using props: `showAdminButton`, `showCreateButton`, `showBackButton`.
+12. **Header Component**: The Header automatically determines navigation visibility based on user role using `isAdmin()`. No props needed. Navigation shows Dashboard for all users, and Admin/Reports for admin users only. Uses lazy state initializer to prevent profile image flash.
 
-13. **CSS Grid Layout**: ISCIList uses CSS Grid instead of HTML tables for better flexibility and modern styling. The grid header uses `position: sticky` for a fixed header while content scrolls.
+13. **Navigation States**: Active navigation links show with orange color and 3px bottom border. Dashboard link only active on root path `/`. Clicking active nav items is prevented.
 
-14. **Edit Workflow**: Edit functionality is decoupled from Dashboard - it has its own route (`/edit/:code`) and container (`EditISCI`). This allows editing from multiple entry points in the future.
+14. **Button Location**: The "+ New ISCI Code" button is located in the dashboard search bar (not in header). Only visible to admin users.
 
-15. **URL Structure**: ISCI codes are used in URLs instead of UUIDs (e.g., `/edit/LVCI2501`). This makes URLs more readable and shareable.
+15. **CSS Grid Layout**: ISCIList uses CSS Grid instead of HTML tables for better flexibility and modern styling. The grid header uses `position: sticky` for a fixed header while content scrolls.
 
-16. **SSR Hydration**: When using auth functions like `getUserSession()` in components, always use `useState` and `useEffect` to avoid hydration mismatches. Never call these functions during render - they must run only on the client side after hydration completes.
+16. **Edit Workflow**: Edit functionality is decoupled from Dashboard - it has its own route (`/edit/:code`) and container (`EditISCI`). Page title and buttons change based on user role (Edit vs View).
 
-17. **ProfileMenu Component**: Dropdown menu in header provides access to "Edit Profile" and "Logout" actions. Uses click-outside detection to auto-close.
+17. **URL Structure**: ISCI codes are used in URLs instead of UUIDs (e.g., `/edit/LVCI2501`). This makes URLs more readable and shareable.
 
-18. **User Management Access**: Only admins can access the User Management tab in the admin panel. The tab interface makes it easy to switch between Brand and User management.
+18. **SSR Hydration**: The Header uses lazy state initializer (`useState(() => {...})`) to load user session immediately on mount, preventing flash of default profile image during navigation.
+
+19. **ProfileMenu Component**: Dropdown menu in header provides access to "Edit Profile" and "Logout" actions. Uses click-outside detection to auto-close.
+
+20. **User Management Access**: Only admins can access the User Management tab in the admin panel. The tab interface makes it easy to switch between Brand and User management.
+
+21. **Role-Based UI**: The UI adapts based on user role:
+    - Admins see: Edit buttons, Delete buttons, Create button, Admin/Reports nav
+    - Editors see: View buttons, no Delete buttons, no Create button, Dashboard nav only
+    - All form fields disabled in view mode for editors
+
+22. **Recently Viewed Tracking**: The EditISCI container automatically tracks viewed codes and updates the user's recentlyViewed list (max 5 codes) via the `/api/user/recently-viewed` endpoint.
 
 ## Workflow
 
@@ -746,10 +865,36 @@ This project is maintained for internal video editing workflow management. When 
 
 ---
 
-**Last Updated**: January 6, 2025
-**Version**: 3.3.0 - User Management & Authentication System
+**Last Updated**: November 6, 2025
+**Version**: 3.4.0 - Role-Based Access Control & Import/Export System
 
 ## Changelog
+
+### v3.4.0 - Role-Based Access Control & Import/Export System (November 6, 2025)
+- **Import/Export System**: Added comprehensive CSV import/export functionality on `/reports` page
+  - Export with advanced filtering (date, status, editor, brand, channel, spot length)
+  - Import with three modes: add new, update existing, replace all
+  - CSV template download with example data
+  - Row-by-row validation and error reporting
+  - Added `POST /api/isci/import` endpoint
+- **Role-Based Access Control**: Implemented comprehensive admin/editor permission system
+  - Admins: Full access to create, edit, delete ISCI codes
+  - Editors: View-only access with all form fields disabled
+  - Navigation links (Admin, Reports) hidden for non-admins
+  - "Edit" buttons change to "View" for editors
+  - "Delete" buttons completely hidden for editors
+  - Page-level protection with redirects for unauthorized access
+- **UI/UX Improvements**:
+  - Moved "+ New ISCI Code" button from header to dashboard search bar
+  - Added active navigation states with orange underline (3px bottom border)
+  - Fixed profile image flash on navigation using lazy state initializer
+  - Dashboard link only active on root path (not on /create or /edit)
+- **Dashboard Enhancements**:
+  - Added "Recently Created" section showing 5 most recent codes
+  - "Recently Viewed" and "Assigned Projects" boxes show appropriate buttons based on role
+- **Recently Viewed Tracking**: Added `POST /api/user/recently-viewed` endpoint to track viewed codes
+- **Header Component**: Simplified to automatically determine navigation based on user role (no props needed)
+- **ISCIForm viewOnly Mode**: Added read-only mode for non-admin users viewing ISCI codes
 
 ### v3.3.0 - User Management & Authentication System (January 6, 2025)
 - Implemented user authentication system with login and session management
