@@ -10,7 +10,7 @@
     "spotLength": 15,
     "description": "15-second broadcast spot for Visit Las Vegas campaign",
     "language": "English",
-    "closedCaptioning": "No",
+    "closedCaptioning": "Yes",
     "audio": "Stereo LR",
     "airDate": "2024-08-15",
     "aspectRatio": "16:9",
@@ -18,8 +18,8 @@
     "channel": "Broadcast",
     "status": "completed",
     "createdAt": "2025-06-21T23:27:48.815Z",
-    "updatedAt": "2026-05-25T20:30:57.193Z",
-    "completedAt": "2026-05-25T20:30:57.193Z"
+    "updatedAt": "2025-11-06T14:45:35.840Z",
+    "completedAt": "2025-11-06T14:45:35.840Z"
   },
   {
     "id": "2",
@@ -196,7 +196,7 @@
     "id": "10",
     "code": "LVCI2510",
     "brandId": "1",
-    "assignedEditor": "Sarah Johnson",
+    "assignedEditor": "Steve McVideo",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "Visit Las Vegas",
     "spotTitle": "LVCI_Visit_Las_Vegas_60s_Broadcast",
@@ -211,7 +211,7 @@
     "channel": "Broadcast",
     "status": "in_review",
     "createdAt": "2025-04-09T11:18:38.115Z",
-    "updatedAt": "2025-10-17T07:11:55.922Z"
+    "updatedAt": "2025-11-06T15:12:48.491Z"
   },
   {
     "id": "11",
@@ -2123,7 +2123,7 @@
     "id": "100",
     "code": "TLSA2503",
     "brandId": "15",
-    "assignedEditor": "Maria Garcia",
+    "assignedEditor": "Steve McVideo",
     "brand": "Tesla",
     "campaignName": "Electric Future",
     "spotTitle": "TLSA_Electric_Future_45s_Radio",
@@ -2138,7 +2138,7 @@
     "channel": "Radio",
     "status": "archived",
     "createdAt": "2024-06-04T11:09:08.573Z",
-    "updatedAt": "2025-09-16T06:19:17.906Z",
+    "updatedAt": "2025-11-06T15:12:38.606Z",
     "completedAt": "2025-09-16T06:19:17.906Z"
   }
 ]

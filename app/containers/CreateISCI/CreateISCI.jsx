@@ -99,7 +99,7 @@ const CreateISCI = () => {
   // Render page
   return (
     <div className={styles.createISCI}>
-      <Header showBackButton={true} />
+      <Header />
 
       <div className={styles.pageContent}>
         {/* Sticky header section */}

@@ -13,6 +13,7 @@ const UserManager = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     loadUsers();
@@ -128,6 +129,7 @@ const UserManager = () => {
       password: "", // Don't pre-fill password
       userType: user.userType
     });
+    setShowForm(true);
   };
 
   const handleDelete = async (id) => {
@@ -157,6 +159,7 @@ const UserManager = () => {
     });
     setEditingUser(null);
     setErrors({});
+    setShowForm(false);
   };
 
   const handleChange = (e) => {
@@ -173,8 +176,9 @@ const UserManager = () => {
         <div className={styles.loadingState}>Loading users...</div>
       ) : (
         <>
-          <div className={styles.userFormSection}>
-            <h2>{editingUser ? "Edit User" : "Add New User"}</h2>
+          {showForm && (
+            <div className={styles.userFormSection}>
+              <h2>{editingUser ? "Edit User" : "Add New User"}</h2>
             <form onSubmit={handleSubmit} className={styles.userForm}>
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
@@ -264,10 +268,21 @@ const UserManager = () => {
                 </button>
               </div>
             </form>
-          </div>
+            </div>
+          )}
 
           <div className={styles.usersListSection}>
-            <h2>All Users ({users.length})</h2>
+            <div className={styles.listHeader}>
+              <h2>All Users ({users.length})</h2>
+              {!showForm && (
+                <button
+                  className={styles.btnAddNew}
+                  onClick={() => setShowForm(true)}
+                >
+                  + Add New User
+                </button>
+              )}
+            </div>
             {users.length === 0 ? (
               <p className={styles.emptyState}>No users yet. Add your first one above!</p>
             ) : (

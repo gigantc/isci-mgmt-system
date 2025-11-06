@@ -1,0 +1,23 @@
+1) Header needs to have all navigation items with an active state  and disabled from clicks when you are currently in that section. For now, let's make it orange with a 3px underline when you are active.
+
+2) "Admin" in the header needs to be hidden if a user is not an admin. We also need to make sure the Admin page is not acessibile to any user who is not an admin if they go to it by URL or any other means
+
+3) On the dashboard, any edit buttons need to be changed to "view" if they are not an admin. We will also need a "view" version of the "Edit ISCI Code" page. And we need to make sure a non-admin cannot get to that page via the URL or any other means.
+
+4) On the DAshboard, we need to remove the "Delete" button if they are not an admin.
+
+5) We need to add a "Slate" to the edit/view of an ISCI Code page. A Slate will have these items it.
+
+Client: 	LVCVA
+Title: 		LVCVA_New Fab Trailer_30s_Hartbeat_No Disclaimer
+ISCI: 		LVCT25127H
+LENGTH: 	:30
+AUDIO:	 	STEREO LR
+AGENCY:		R&R PARTNERS
+DATE:		10-24-25
+
+It will have to be black background with white text and the aspect ratio will need to be 16:9. There should be a way to export this slate out as a jpg so it can be easily imported into an video editor file. So we'll need it to be 1920 x 1080 pixels.
+
+6) on the dashboard the thrid dashBox should show "Recently created" codes. These could have been created by any user.
+
+7) Let's move the "+ New ISCI Code" to the same line as the search bar on the dashboard and out of the header.

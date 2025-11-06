@@ -7,9 +7,7 @@ import { ReactComponent as Logo } from "./assets/Logo.svg";
 import DefaultProfileImage from "./assets/default_profile_image.jpg";
 
 const Header = ({
-  showAdminButton = true,
-  showCreateButton = true,
-  showBackButton = false
+  showAdminButton = true
 }) => {
   const [user, setUser] = useState(null);
   const location = useLocation();
@@ -22,10 +20,8 @@ const Header = ({
   // Determine if a path is active
   const isActive = (path) => {
     if (path === "/") {
-      // Dashboard is active only on root path or /create or /edit pages
-      return location.pathname === "/" ||
-             location.pathname.startsWith("/create") ||
-             location.pathname.startsWith("/edit");
+      // Dashboard is active only on root path
+      return location.pathname === "/";
     }
     return location.pathname.startsWith(path);
   };
@@ -75,13 +71,6 @@ const Header = ({
             Admin
           </a>
         )}
-
-        {showCreateButton && (
-          <a href="/create" className="btn-primary">
-            + New ISCI Code
-          </a>
-        )}
-
       </div>
 
       <div className={styles.profile}>

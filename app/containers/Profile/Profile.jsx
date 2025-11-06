@@ -165,7 +165,7 @@ const Profile = () => {
 
   return (
     <div className={styles.profilePage}>
-      <Header showAdminButton={false} showCreateButton={false} showBackButton={true} />
+      <Header showAdminButton={false} />
 
       <div className={styles.pageContent}>
         <div className={styles.stickyHeader}>

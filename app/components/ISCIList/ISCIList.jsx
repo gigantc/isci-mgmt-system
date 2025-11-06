@@ -32,7 +32,7 @@ const ISCIList = ({ codes, onDelete }) => {
           <span>Campaign</span>
           <span>Spot Title</span>
           <span>Length</span>
-          <span>Air Date</span>
+          <span>Air/Start Date</span>
           <span>Status</span>
         </div>
 

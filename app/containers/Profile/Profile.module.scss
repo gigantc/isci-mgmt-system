@@ -1,7 +1,7 @@
 @use "@/styles/variables" as v;
 
 .profilePage {
-  
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   background-color: v.$gray;
   padding-bottom: 2rem;
 }

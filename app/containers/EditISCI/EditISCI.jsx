@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { ISCIStatus } from "@/types/isci";
 import ISCIForm from "@/components/ISCIForm";
 import Header from "@/containers/Header";
-import { isAuthenticated } from "@/utils/auth";
+import { isAuthenticated, getUserSession, saveUserSession } from "@/utils/auth";
 import styles from "./EditISCI.module.scss";
 
 /**
@@ -32,6 +32,42 @@ const EditISCI = () => {
   useEffect(() => {
     loadData();
   }, [isciCode]);
+
+  /**
+   * Track this ISCI code as recently viewed
+   */
+  useEffect(() => {
+    if (code && isciCode) {
+      const trackView = async () => {
+        const user = getUserSession();
+        if (user) {
+          try {
+            const response = await fetch("/api/user/recently-viewed", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userId: user.id,
+                isciCode: isciCode
+              })
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.success && data.recentlyViewed) {
+                // Update the user session with the new recentlyViewed array
+                const updatedUser = { ...user, recentlyViewed: data.recentlyViewed };
+                saveUserSession(updatedUser);
+              }
+            }
+          } catch (error) {
+            console.error("Error tracking recently viewed:", error);
+            // Don't block the UI if tracking fails
+          }
+        }
+      };
+      trackView();
+    }
+  }, [code, isciCode]);
 
   /**
    * Load both the specific code being edited and all codes
@@ -125,7 +161,7 @@ const EditISCI = () => {
   // Render page
   return (
     <div className={styles.editISCI}>
-      <Header showBackButton={true} />
+      <Header />
 
       <div className={styles.pageContent}>
         {/* Sticky header section */}

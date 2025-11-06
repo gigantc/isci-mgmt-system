@@ -7,6 +7,7 @@ const BrandManager = () => {
   const [formData, setFormData] = useState({ name: "", code: "" });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     loadBrands();
@@ -93,6 +94,7 @@ const BrandManager = () => {
   const handleEdit = (brand) => {
     setEditingBrand(brand);
     setFormData({ name: brand.name, code: brand.code });
+    setShowForm(true);
   };
 
   const handleDelete = async (id) => {
@@ -135,6 +137,7 @@ const BrandManager = () => {
     setFormData({ name: "", code: "" });
     setEditingBrand(null);
     setErrors({});
+    setShowForm(false);
   };
 
   const handleChange = (e) => {
@@ -151,8 +154,9 @@ const BrandManager = () => {
         <div className={styles.loadingState}>Loading brands...</div>
       ) : (
         <>
-      <div className={styles.brandFormSection}>
-        <h2>{editingBrand ? "Edit Brand" : "Add New Brand"}</h2>
+      {showForm && (
+        <div className={styles.brandFormSection}>
+          <h2>{editingBrand ? "Edit Brand" : "Add New Brand"}</h2>
         <form onSubmit={handleSubmit} className={styles.brandForm}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
@@ -197,10 +201,21 @@ const BrandManager = () => {
             </button>
           </div>
         </form>
-      </div>
+        </div>
+      )}
 
       <div className={styles.brandsListSection}>
-        <h2>All Brands ({brands.length})</h2>
+        <div className={styles.listHeader}>
+          <h2>All Brands ({brands.length})</h2>
+          {!showForm && (
+            <button
+              className={styles.btnAddNew}
+              onClick={() => setShowForm(true)}
+            >
+              + Add New Brand
+            </button>
+          )}
+        </div>
         {brands.length === 0 ? (
           <p className={styles.emptyState}>No brands yet. Add your first one above!</p>
         ) : (

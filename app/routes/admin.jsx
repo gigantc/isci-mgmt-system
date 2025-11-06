@@ -27,11 +27,7 @@ export default function Admin() {
 
   return (
     <div className={styles.adminPage}>
-      <Header
-        showAdminButton={true}
-        showCreateButton={false}
-        showBackButton={false}
-      />
+      <Header />
 
       <div className={styles.pageContent}>
         {/* Sticky header section */}

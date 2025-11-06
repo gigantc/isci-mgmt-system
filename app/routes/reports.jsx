@@ -328,11 +328,7 @@ export default function Reports() {
 
   return (
     <div className={styles.reportsPage}>
-      <Header
-        showAdminButton={true}
-        showCreateButton={false}
-        showBackButton={false}
-      />
+      <Header />
 
       <div className={styles.pageContent}>
         <div className={styles.stickyHeader}>

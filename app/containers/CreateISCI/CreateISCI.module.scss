@@ -1,17 +1,17 @@
 @use "@/styles/variables" as v;
 
 .createISCI {
-  min-height: 100vh;
 
   .pageContent {
     background: v.$black;
     border-radius: 0px 0px 32px 32px;
     margin: 0 auto;
     width: calc(100% - 4rem);
-    height: 70vh;
+    height: calc(100vh - 114px - 4rem);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   }
 
   .stickyHeader {

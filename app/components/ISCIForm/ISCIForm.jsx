@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { ISCIStatus } from "@/types/isci";
+import { getUserSession } from "@/utils/auth";
 import styles from "./ISCIForm.module.scss";
 
 const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef }) => {
   const [brands, setBrands] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({
     code: "",
     brandId: "",
@@ -27,6 +30,8 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
 
   useEffect(() => {
     loadBrands();
+    loadUsers();
+    setCurrentUser(getUserSession());
   }, []);
 
   useEffect(() => {
@@ -62,6 +67,41 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
     } catch (error) {
       console.error("Error loading brands:", error);
     }
+  };
+
+  const loadUsers = async () => {
+    try {
+      const response = await fetch("/api/users");
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error loading users:", error);
+    }
+  };
+
+  // Sort users with current user first, then alphabetically
+  const getSortedUsers = () => {
+    if (!users || users.length === 0) return [];
+
+    const currentUserFullName = currentUser
+      ? `${currentUser.firstName} ${currentUser.lastName}`
+      : null;
+
+    const sorted = [...users].sort((a, b) => {
+      const aFullName = `${a.firstName} ${a.lastName}`;
+      const bFullName = `${b.firstName} ${b.lastName}`;
+
+      // Current user always first
+      if (currentUserFullName) {
+        if (aFullName === currentUserFullName) return -1;
+        if (bFullName === currentUserFullName) return 1;
+      }
+
+      // Then alphabetically by full name
+      return aFullName.localeCompare(bFullName);
+    });
+
+    return sorted;
   };
 
   const generateISCICode = (brandCode) => {
@@ -234,14 +274,23 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
 
           <div className={styles.formGroup}>
             <label htmlFor="assignedEditor">Assigned Editor</label>
-            <input
-              type="text"
+            <select
               id="assignedEditor"
               name="assignedEditor"
               value={formData.assignedEditor}
               onChange={handleChange}
-              placeholder="Editor Name"
-            />
+            >
+              <option value="">Select Editor</option>
+              {getSortedUsers().map(user => {
+                const fullName = `${user.firstName} ${user.lastName}`;
+                return (
+                  <option key={user.id} value={fullName}>
+                    {fullName}
+                    {currentUser && fullName === `${currentUser.firstName} ${currentUser.lastName}` ? ' (You)' : ''}
+                  </option>
+                );
+              })}
+            </select>
           </div>
         </div>
 

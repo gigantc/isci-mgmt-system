@@ -198,7 +198,7 @@ const Dashboard = () => {
   return (
     <div className={styles.isciDashboard}>
 
-      <Header showCreateButton={false} />
+      <Header />
 
       {/* Main content area - shows different things based on the current state */}
       <div className={styles.dashboardContent}>

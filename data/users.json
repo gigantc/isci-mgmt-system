@@ -8,7 +8,18 @@
     "userType": "admin",
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": "2025-11-05T21:22:47.811Z",
-    "profileImage": "/uploads/profiles/user-1-1762377767810.jpg"
+    "profileImage": "/uploads/profiles/user-1-1762377767810.jpg",
+    "recentlyViewed": [
+      "LVCI2501",
+      "TLSA2502",
+      "LVCI2506",
+      "LVCI2505",
+      "LVCI2510",
+      "TLSA2503",
+      "NFLX2502",
+      "APPL2501",
+      "COCA2502"
+    ]
   },
   {
     "id": "2",
@@ -19,7 +30,8 @@
     "userType": "editor",
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": null,
-    "profileImage": null
+    "profileImage": null,
+    "recentlyViewed": []
   },
   {
     "id": "3",
@@ -30,7 +42,8 @@
     "userType": "editor",
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": null,
-    "profileImage": null
+    "profileImage": null,
+    "recentlyViewed": []
   },
   {
     "id": "4",
@@ -41,7 +54,8 @@
     "userType": "editor",
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": null,
-    "profileImage": null
+    "profileImage": null,
+    "recentlyViewed": []
   },
   {
     "id": "5",
@@ -52,7 +66,8 @@
     "userType": "editor",
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": null,
-    "profileImage": null
+    "profileImage": null,
+    "recentlyViewed": []
   },
   {
     "id": "6",
@@ -63,7 +78,8 @@
     "userType": "editor",
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": null,
-    "profileImage": null
+    "profileImage": null,
+    "recentlyViewed": []
   },
   {
     "id": "7",
@@ -74,7 +90,8 @@
     "userType": "editor",
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": null,
-    "profileImage": null
+    "profileImage": null,
+    "recentlyViewed": []
   },
   {
     "id": "8",
@@ -85,7 +102,8 @@
     "userType": "editor",
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": null,
-    "profileImage": null
+    "profileImage": null,
+    "recentlyViewed": []
   },
   {
     "id": "9",
@@ -96,6 +114,7 @@
     "userType": "editor",
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": null,
-    "profileImage": null
+    "profileImage": null,
+    "recentlyViewed": []
   }
 ]
