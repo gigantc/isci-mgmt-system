@@ -1,0 +1,67 @@
+@use "@/styles/variables" as v;
+
+.slateContainer {
+  background: rgba(v.$white, 0.02);
+  border-radius: 8px;
+  border: 1px solid v.$border-color;
+  padding: 2rem;
+  margin-top: 2rem;
+
+  .slateHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: v.$text-primary;
+      margin: 0;
+    }
+
+    .btnExport {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: v.$accent-text;
+      background-color: v.$accent;
+
+      &:hover {
+        background-color: v.$hover;
+        color: v.$white;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+
+  .slatePreview {
+    background: v.$black;
+    border-radius: 4px;
+    border: 1px solid v.$border-color;
+    overflow: hidden;
+    width: 100%;
+    padding: 1rem;
+
+    .canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid rgba(v.$white, 0.1);
+    }
+  }
+
+  .slateNote {
+    margin: 1rem 0 0 0;
+    font-size: 0.875rem;
+    color: v.$text-secondary;
+    text-align: center;
+  }
+}

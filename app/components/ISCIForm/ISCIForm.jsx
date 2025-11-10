@@ -19,6 +19,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
     language: "English",
     closedCaptioning: "No",
     audio: "Stereo LR",
+    agency: "",
     airDate: "",
     aspectRatio: "16:9",
     version: "A",
@@ -49,6 +50,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
         language: code.language || "English",
         closedCaptioning: code.closedCaptioning || "No",
         audio: code.audio || "Stereo LR",
+        agency: code.agency || "",
         airDate: code.airDate ? code.airDate.split('T')[0] : "",
         aspectRatio: code.aspectRatio || "16:9",
         version: code.version || "A",
@@ -390,7 +392,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
           </div>
         </div>
 
-        {/* Row 4: Audio and Air Date */}
+        {/* Row 4: Audio and Agency */}
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label htmlFor="audio">Audio</label>
@@ -406,6 +408,22 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
           </div>
 
           <div className={styles.formGroup}>
+            <label htmlFor="agency">Agency</label>
+            <input
+              type="text"
+              id="agency"
+              name="agency"
+              value={formData.agency}
+              onChange={handleChange}
+              placeholder="R&R Partners"
+              disabled={viewOnly}
+            />
+          </div>
+        </div>
+
+        {/* Row 5: Air Date */}
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
             <label htmlFor="airDate">Date (Air/Start Date)</label>
             <input
               type="date"
@@ -418,7 +436,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
           </div>
         </div>
 
-        {/* Row 5: Aspect Ratio and Version/Cut */}
+        {/* Row 6: Aspect Ratio and Version/Cut */}
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label htmlFor="aspectRatio">Aspect Ratio</label>
@@ -455,7 +473,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
           </div>
         </div>
 
-        {/* Row 6: Channel and Status */}
+        {/* Row 7: Channel and Status */}
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label htmlFor="channel">Output: Channel</label>

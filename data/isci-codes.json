@@ -16,10 +16,11 @@
     "aspectRatio": "16:9",
     "version": "B",
     "channel": "Broadcast",
-    "status": "completed",
+    "status": "in_progress",
     "createdAt": "2025-06-21T23:27:48.815Z",
-    "updatedAt": "2025-11-06T14:45:35.840Z",
-    "completedAt": "2025-11-06T14:45:35.840Z"
+    "updatedAt": "2025-11-06T23:29:38.788Z",
+    "completedAt": "2025-11-06T14:45:35.840Z",
+    "agency": ""
   },
   {
     "id": "2",

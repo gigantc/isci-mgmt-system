@@ -31,7 +31,11 @@
     "createdAt": "2025-01-01T00:00:00.000Z",
     "profileUpdatedAt": null,
     "profileImage": null,
-    "recentlyViewed": []
+    "recentlyViewed": [
+      "APPL2504",
+      "PEPS2501",
+      "LVCI2501"
+    ]
   },
   {
     "id": "3",

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ISCIStatus } from "@/types/isci";
 import ISCIForm from "@/components/ISCIForm";
+import Slate from "@/components/Slate";
 import { isAuthenticated, getUserSession, saveUserSession, isAdmin } from "@/utils/auth";
 import styles from "./EditISCI.module.scss";
 
@@ -196,16 +197,19 @@ const EditISCI = () => {
               </button>
             </div>
           ) : (
-            <ISCIForm
-              code={code}
-              onSubmit={handleUpdateCode}
-              onCancel={handleCancel}
-              allCodes={allCodes}
-              hideActions={true}
-              hideTitle={true}
-              formRef={formRef}
-              viewOnly={!userIsAdmin}
-            />
+            <>
+              <ISCIForm
+                code={code}
+                onSubmit={handleUpdateCode}
+                onCancel={handleCancel}
+                allCodes={allCodes}
+                hideActions={true}
+                hideTitle={true}
+                formRef={formRef}
+                viewOnly={!userIsAdmin}
+              />
+              <Slate code={code} />
+            </>
           )}
         </div>
       </div>

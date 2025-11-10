@@ -77,24 +77,22 @@ const Header = () => {
           Dashboard
         </Link>
 
-        {isAdmin() && (
-          <>
-            <Link
-              to="/reports"
-              className={`${styles.navLink} ${isActive("/reports") ? styles.active : ""}`}
-              onClick={(e) => handleNavClick(e, "/reports")}
-            >
-              Reports
-            </Link>
+        <Link
+          to="/reports"
+          className={`${styles.navLink} ${isActive("/reports") ? styles.active : ""}`}
+          onClick={(e) => handleNavClick(e, "/reports")}
+        >
+          Reports
+        </Link>
 
-            <Link
-              to="/admin"
-              className={`${styles.navLink} ${isActive("/admin") ? styles.active : ""}`}
-              onClick={(e) => handleNavClick(e, "/admin")}
-            >
-              Admin
-            </Link>
-          </>
+        {isAdmin() && (
+          <Link
+            to="/admin"
+            className={`${styles.navLink} ${isActive("/admin") ? styles.active : ""}`}
+            onClick={(e) => handleNavClick(e, "/admin")}
+          >
+            Admin
+          </Link>
         )}
       </div>
 

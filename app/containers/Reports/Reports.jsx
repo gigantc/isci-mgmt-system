@@ -33,8 +33,6 @@ const Reports = () => {
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login");
-    } else if (!isAdmin()) {
-      navigate("/");
     }
   }, [navigate]);
 
@@ -331,12 +329,14 @@ const Reports = () => {
             >
               Export Data
             </button>
-            <button
-              className={`${styles.tab} ${activeTab === "import" ? styles.active : ""}`}
-              onClick={() => setActiveTab("import")}
-            >
-              Import Data
-            </button>
+            {isAdmin() && (
+              <button
+                className={`${styles.tab} ${activeTab === "import" ? styles.active : ""}`}
+                onClick={() => setActiveTab("import")}
+              >
+                Import Data
+              </button>
+            )}
           </div>
         </div>
 
@@ -478,7 +478,7 @@ const Reports = () => {
                 </div>
               )}
 
-              {activeTab === "import" && (
+              {activeTab === "import" && isAdmin() && (
                 <div className={styles.importSection}>
                   <div className={styles.importCard}>
                     <h3>Import ISCI Codes from CSV</h3>
