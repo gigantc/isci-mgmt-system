@@ -1,0 +1,34 @@
+# Netlify Configuration for ISCI Management System
+# WARNING: This is for TESTING ONLY
+# - Data changes will NOT persist
+# - File uploads will be LOST on each deployment
+# - JSON files reset to committed state on each build
+
+[build]
+  command = "npm run netlify-test"
+  publish = "build/client"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  directory = "netlify/functions"
+
+# React Router SSR support
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server"
+  status = 200
+  force = false
+
+# Environment info
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
