@@ -16,6 +16,57 @@
   flex-direction: column;
   gap: 1.25rem;
 
+  .formSection {
+    background-color: v.$gray_dark;
+    padding: 1.5rem;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid v.$border-color-light;
+  }
+
+  // Full-width section
+  .formSectionFull {
+    width: 100%;
+  }
+
+  // Half-width section
+  .formSectionHalf {
+    flex: 1;
+    min-width: 0; // Prevent flex items from overflowing
+  }
+
+  // 2x2 Grid wrapper for half-width sections
+  .formSectionsRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // Section title styling
+  .sectionTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: v.$text-primary;
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid v.$border-color-light;
+  }
+
+  // Flexible form row - displays child formGroups side-by-side at 50% width
+  // Usage: Wrap two formGroups in a formRow div to display them side-by-side
+  // Example:
+  //   <div className={styles.formRow}>
+  //     <div className={styles.formGroup}>...</div>
+  //     <div className={styles.formGroup}>...</div>
+  //   </div>
+  // Works within any section (full-width or half-width sections)
+  // Automatically stacks vertically on mobile (< 768px)
   .formRow {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -24,12 +75,19 @@
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
     }
+
+    // Ensure formGroups inside formRow take full width of their grid cell
+    .formGroup {
+      width: 100%;
+    }
   }
+
 
   .formGroup {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+   
 
     label {
       font-size: 0.875rem;

@@ -206,99 +206,79 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
 
       <form onSubmit={handleSubmit} className={styles.isciForm} ref={formRef}>
 
-        {/* Brand/Client - Full width */}
-        <div className={styles.formGroup}>
-          <label htmlFor="brand">Brand / Client *</label>
-          {code ? (
-            // When editing, show brand as text (can't change brand)
-            <input
-              type="text"
-              value={formData.brand}
-              disabled
-              className={styles.disabledInput}
-            />
-          ) : (
-            // When creating, show dropdown
-            <select
-              id="brand"
-              name="brand"
-              value={formData.brandId}
-              onChange={handleBrandChange}
-              className={errors.brand ? "error" : ""}
-            >
-              <option value="">Select a brand...</option>
-              {brands.map(brand => (
-                <option key={brand.id} value={brand.id}>
-                  {brand.name} ({brand.code})
-                </option>
-              ))}
-            </select>
-          )}
-          {errors.brand && <span className={styles.errorMessage}>{errors.brand}</span>}
-          {!code && brands.length === 0 && (
-            <span className={styles.helpText}>No brands available. <a href="/admin">Add brands in Admin Panel</a></span>
-          )}
-        </div>
+        {/* FULL-WIDTH SECTION: Basic Details */}
+        <div className={`${styles.formSection} ${styles.formSectionFull}`}>
+          <h3 className={styles.sectionTitle}>Basic Details</h3>
 
-        {/* Row 1: ISCI Code and Assigned Editor */}
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label htmlFor="code">ISCI Code *</label>
-            {code ? (
-              // When editing, show ISCI code as text (can't change code)
-              <input
-                type="text"
-                value={formData.code}
-                disabled
-                className={styles.disabledInput}
-                title="ISCI codes cannot be changed after creation"
-              />
-            ) : (
-              // When creating, show as read-only auto-generated field
-              <>
+          {/* Brand and ISCI Code side-by-side */}
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label htmlFor="brand">Brand / Client *</label>
+              {code ? (
+                // When editing, show brand as text (can't change brand)
                 <input
                   type="text"
-                  id="code"
-                  name="code"
-                  value={formData.code}
-                  onChange={handleChange}
-                  placeholder="Auto-generated"
-                  maxLength={12}
-                  readOnly
-                  className={`${errors.code ? "error" : ""} ${styles.readonlyInput}`}
-                  title="Auto-generated based on brand selection"
+                  value={formData.brand}
+                  disabled
+                  className={styles.disabledInput}
                 />
-                {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
-                <span className={styles.helpText}>Auto-generated: [BRAND][YEAR][NUMBER]</span>
-              </>
-            )}
+              ) : (
+                // When creating, show dropdown
+                <select
+                  id="brand"
+                  name="brand"
+                  value={formData.brandId}
+                  onChange={handleBrandChange}
+                  className={errors.brand ? "error" : ""}
+                >
+                  <option value="">Select a brand...</option>
+                  {brands.map(brand => (
+                    <option key={brand.id} value={brand.id}>
+                      {brand.name} ({brand.code})
+                    </option>
+                  ))}
+                </select>
+              )}
+              {errors.brand && <span className={styles.errorMessage}>{errors.brand}</span>}
+              {!code && brands.length === 0 && (
+                <span className={styles.helpText}>No brands available. <a href="/admin">Add brands in Admin Panel</a></span>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="code">ISCI Code *</label>
+              {code ? (
+                // When editing, show ISCI code as text (can't change code)
+                <input
+                  type="text"
+                  value={formData.code}
+                  disabled
+                  className={styles.disabledInput}
+                  title="ISCI codes cannot be changed after creation"
+                />
+              ) : (
+                // When creating, show as read-only auto-generated field
+                <>
+                  <input
+                    type="text"
+                    id="code"
+                    name="code"
+                    value={formData.code}
+                    onChange={handleChange}
+                    placeholder="Auto-generated"
+                    maxLength={12}
+                    readOnly
+                    className={`${errors.code ? "error" : ""} ${styles.readonlyInput}`}
+                    title="Auto-generated based on brand selection"
+                  />
+                  {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
+                  <span className={styles.helpText}>Auto-generated: [BRAND][YEAR][NUMBER]</span>
+                </>
+              )}
+            </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="assignedEditor">Assigned Editor</label>
-            <select
-              id="assignedEditor"
-              name="assignedEditor"
-              value={formData.assignedEditor}
-              onChange={handleChange}
-              disabled={viewOnly}
-            >
-              <option value="">Select Editor</option>
-              {getSortedUsers().map(user => {
-                const fullName = `${user.firstName} ${user.lastName}`;
-                return (
-                  <option key={user.id} value={fullName}>
-                    {fullName}
-                    {currentUser && fullName === `${currentUser.firstName} ${currentUser.lastName}` ? ' (You)' : ''}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-        </div>
-
-        {/* Row 2: Campaign Name and Spot Length */}
-        <div className={styles.formRow}>
+          {/* Campaign Name full-width */}
           <div className={styles.formGroup}>
             <label htmlFor="campaignName">Campaign Name</label>
             <input
@@ -311,204 +291,243 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               disabled={viewOnly}
             />
           </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="spotLength">Spot Length (seconds)</label>
-            <select
-              id="spotLength"
-              name="spotLength"
-              value={formData.spotLength}
-              onChange={handleChange}
-              disabled={viewOnly}
-            >
-              <option value="">Select length</option>
-              <option value="6">06</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="30">30</option>
-              <option value="45">45</option>
-              <option value="60">60</option>
-            </select>
-          </div>
         </div>
 
-        {/* Spot Title - Full width */}
-        <div className={styles.formGroup}>
-          <label htmlFor="spotTitle">Spot Title *</label>
-          <input
-            type="text"
-            id="spotTitle"
-            name="spotTitle"
-            value={formData.spotTitle}
-            onChange={handleChange}
-            placeholder="e.g., LVCVA_New Fab Trailer_30s_Hartbeat_No Disclaimer"
-            className={errors.spotTitle ? "error" : ""}
-            disabled={viewOnly}
-          />
-          {errors.spotTitle && <span className="error-message">{errors.spotTitle}</span>}
-        </div>
+        {/* 2x2 GRID: Four Half-Width Sections */}
+        <div className={styles.formSectionsRow}>
 
-        {/* Description/Notes */}
-        <div className={styles.formGroup}>
-          <label htmlFor="description">Description / Notes</label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Additional details about this project..."
-            rows={3}
-            disabled={viewOnly}
-          />
-        </div>
+          {/* TOP LEFT: Status */}
+          <div className={`${styles.formSection} ${styles.formSectionHalf}`}>
+            <h3 className={styles.sectionTitle}>Status</h3>
 
-        {/* Row 3: Language and Closed Captioning */}
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label htmlFor="language">Language</label>
-            <input
-              type="text"
-              id="language"
-              name="language"
-              value={formData.language}
-              onChange={handleChange}
-              placeholder="English"
-              disabled={viewOnly}
-            />
+            {/* Assigned Editor full-width */}
+            <div className={styles.formGroup}>
+              <label htmlFor="assignedEditor">Assigned Editor</label>
+              <select
+                id="assignedEditor"
+                name="assignedEditor"
+                value={formData.assignedEditor}
+                onChange={handleChange}
+                disabled={viewOnly}
+              >
+                <option value="">Select Editor</option>
+                {getSortedUsers().map(user => {
+                  const fullName = `${user.firstName} ${user.lastName}`;
+                  return (
+                    <option key={user.id} value={fullName}>
+                      {fullName}
+                      {currentUser && fullName === `${currentUser.firstName} ${currentUser.lastName}` ? ' (You)' : ''}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            {/* Air Date and Status side-by-side */}
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor="airDate">Date (Air/Start Date)</label>
+                <input
+                  type="date"
+                  id="airDate"
+                  name="airDate"
+                  value={formData.airDate}
+                  onChange={handleChange}
+                  disabled={viewOnly}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="status">Status</label>
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  disabled={viewOnly}
+                >
+                  <option value={ISCIStatus.PENDING}>Pending</option>
+                  <option value={ISCIStatus.IN_PROGRESS}>In Progress</option>
+                  <option value={ISCIStatus.IN_REVIEW}>In Review</option>
+                  <option value={ISCIStatus.COMPLETED}>Completed</option>
+                  <option value={ISCIStatus.ARCHIVED}>Archived</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Agency full-width */}
+            <div className={styles.formGroup}>
+              <label htmlFor="agency">Agency</label>
+              <input
+                type="text"
+                id="agency"
+                name="agency"
+                value={formData.agency}
+                onChange={handleChange}
+                placeholder="R&R Partners"
+                disabled={viewOnly}
+              />
+            </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="closedCaptioning">Closed Captioning</label>
-            <select
-              id="closedCaptioning"
-              name="closedCaptioning"
-              value={formData.closedCaptioning}
-              onChange={handleChange}
-              disabled={viewOnly}
-            >
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </div>
-        </div>
+          {/* TOP RIGHT: Spot Details */}
+          <div className={`${styles.formSection} ${styles.formSectionHalf}`}>
+            <h3 className={styles.sectionTitle}>Spot Details</h3>
 
-        {/* Row 4: Audio and Agency */}
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label htmlFor="audio">Audio</label>
-            <input
-              type="text"
-              id="audio"
-              name="audio"
-              value={formData.audio}
-              onChange={handleChange}
-              placeholder="Stereo LR"
-              disabled={viewOnly}
-            />
-          </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="spotTitle">Spot Title *</label>
+              <input
+                type="text"
+                id="spotTitle"
+                name="spotTitle"
+                value={formData.spotTitle}
+                onChange={handleChange}
+                placeholder="e.g., LVCVA_New Fab Trailer_30s_Hartbeat_No Disclaimer"
+                className={errors.spotTitle ? "error" : ""}
+                disabled={viewOnly}
+              />
+              {errors.spotTitle && <span className={styles.errorMessage}>{errors.spotTitle}</span>}
+            </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="agency">Agency</label>
-            <input
-              type="text"
-              id="agency"
-              name="agency"
-              value={formData.agency}
-              onChange={handleChange}
-              placeholder="R&R Partners"
-              disabled={viewOnly}
-            />
-          </div>
-        </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="spotLength">Spot Length (seconds)</label>
+              <select
+                id="spotLength"
+                name="spotLength"
+                value={formData.spotLength}
+                onChange={handleChange}
+                disabled={viewOnly}
+              >
+                <option value="">Select length</option>
+                <option value="6">06</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+                <option value="60">60</option>
+              </select>
+            </div>
 
-        {/* Row 5: Air Date */}
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label htmlFor="airDate">Date (Air/Start Date)</label>
-            <input
-              type="date"
-              id="airDate"
-              name="airDate"
-              value={formData.airDate}
-              onChange={handleChange}
-              disabled={viewOnly}
-            />
-          </div>
-        </div>
-
-        {/* Row 6: Aspect Ratio and Version/Cut */}
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label htmlFor="aspectRatio">Aspect Ratio</label>
-            <select
-              id="aspectRatio"
-              name="aspectRatio"
-              value={formData.aspectRatio}
-              onChange={handleChange}
-              disabled={viewOnly}
-            >
-              <option value="16:9">16:9</option>
-              <option value="9:16">9:16</option>
-              <option value="4:3">4:3</option>
-              <option value="1:1">1:1</option>
-              <option value="2.39:1">2.39:1</option>
-            </select>
+            <div className={styles.formGroup}>
+              <label htmlFor="description">Description / Notes</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Additional details about this project..."
+                rows={3}
+                disabled={viewOnly}
+              />
+            </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="version">Version / Cut</label>
-            <select
-              id="version"
-              name="version"
-              value={formData.version}
-              onChange={handleChange}
-              disabled={viewOnly}
-            >
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-              <option value="E">E</option>
-            </select>
-          </div>
-        </div>
+          {/* BOTTOM LEFT: Audio Information */}
+          <div className={`${styles.formSection} ${styles.formSectionHalf}`}>
+            <h3 className={styles.sectionTitle}>Audio Information</h3>
+            
+            <div className={styles.formGroup}>
+              <label htmlFor="language">Language</label>
+              <input
+                type="text"
+                id="language"
+                name="language"
+                value={formData.language}
+                onChange={handleChange}
+                placeholder="English"
+                disabled={viewOnly}
+              />
+            </div>
 
-        {/* Row 7: Channel and Status */}
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label htmlFor="channel">Output: Channel</label>
-            <select
-              id="channel"
-              name="channel"
-              value={formData.channel}
-              onChange={handleChange}
-              disabled={viewOnly}
-            >
-              <option value="Broadcast">Broadcast</option>
-              <option value="CTV">CTV</option>
-              <option value="Digital">Digital</option>
-              <option value="Social">Social</option>
-              <option value="OLV">OLV</option>
-              <option value="Radio">Radio</option>
-            </select>
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor="closedCaptioning">Closed Captioning</label>
+                <select
+                  id="closedCaptioning"
+                  name="closedCaptioning"
+                  value={formData.closedCaptioning}
+                  onChange={handleChange}
+                  disabled={viewOnly}
+                >
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="audio">Audio</label>
+                <input
+                  type="text"
+                  id="audio"
+                  name="audio"
+                  value={formData.audio}
+                  onChange={handleChange}
+                  placeholder="Stereo LR"
+                  disabled={viewOnly}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="status">Status</label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              disabled={viewOnly}
-            >
-              <option value={ISCIStatus.PENDING}>Pending</option>
-              <option value={ISCIStatus.IN_PROGRESS}>In Progress</option>
-              <option value={ISCIStatus.IN_REVIEW}>In Review</option>
-              <option value={ISCIStatus.COMPLETED}>Completed</option>
-              <option value={ISCIStatus.ARCHIVED}>Archived</option>
-            </select>
+          {/* BOTTOM RIGHT: Technical Details */}
+          <div className={`${styles.formSection} ${styles.formSectionHalf}`}>
+            <h3 className={styles.sectionTitle}>Technical Details</h3>
+            
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor="aspectRatio">Aspect Ratio</label>
+                <select
+                  id="aspectRatio"
+                  name="aspectRatio"
+                  value={formData.aspectRatio}
+                  onChange={handleChange}
+                  disabled={viewOnly}
+                >
+                  <option value="16:9">16:9</option>
+                  <option value="9:16">9:16</option>
+                  <option value="4:3">4:3</option>
+                  <option value="1:1">1:1</option>
+                  <option value="2.39:1">2.39:1</option>
+                </select>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="version">Version / Cut</label>
+                <select
+                  id="version"
+                  name="version"
+                  value={formData.version}
+                  onChange={handleChange}
+                  disabled={viewOnly}
+                >
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                  <option value="E">E</option>
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="channel">Output: Channel</label>
+              <select
+                id="channel"
+                name="channel"
+                value={formData.channel}
+                onChange={handleChange}
+                disabled={viewOnly}
+              >
+                <option value="Broadcast">Broadcast</option>
+                <option value="CTV">CTV</option>
+                <option value="Digital">Digital</option>
+                <option value="Social">Social</option>
+                <option value="OLV">OLV</option>
+                <option value="Radio">Radio</option>
+              </select>
+            </div>
           </div>
+
         </div>
 
         {/* Action Buttons */}
