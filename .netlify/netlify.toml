@@ -1,0 +1,54 @@
+functionsDirectory = "/Users/danf/Sites/dev/isci-mgmt-system/netlify/functions"
+functionsDirectoryOrigin = "config"
+headersOrigin = "config"
+redirectsOrigin = "config"
+plugins = []
+
+[build]
+publish = "/Users/danf/Sites/dev/isci-mgmt-system/build/client"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm run netlify-test"
+functions = "/Users/danf/Sites/dev/isci-mgmt-system/netlify/functions"
+
+[build.environment]
+NODE_VERSION = "20"
+NPM_FLAGS = "--legacy-peer-deps"
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[functions]
+
+[functions."*"]
+included_files = ["build/server/**", "data/**", "public/**", "node_modules/**"]
+node_bundler = "none"
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+from = "/*"
+to = "/.netlify/functions/server"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
