@@ -7,18 +7,17 @@
 [build]
   command = "npm run netlify-test"
   publish = "build/client"
-  functions = "netlify/functions"
 
 [functions]
-  node_bundler = "esbuild"
   directory = "netlify/functions"
+  node_bundler = "esbuild"
+  included_files = ["build/server/**", "data/**", "public/**"]
 
-# React Router SSR support
+# React Router SSR support - try server function first
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/server"
   status = 200
-  force = false
 
 # Environment info
 [build.environment]
