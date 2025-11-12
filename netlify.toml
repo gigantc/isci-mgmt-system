@@ -10,8 +10,9 @@
 
 [functions]
   directory = "netlify/functions"
-  node_bundler = "nft"
-  included_files = ["build/server/**", "data/**", "public/**"]
+  # Disable bundling to avoid ES module conflicts
+  node_bundler = "none"
+  included_files = ["build/server/**", "data/**", "public/**", "node_modules/**"]
 
 # React Router SSR support - try server function first
 [[redirects]]
