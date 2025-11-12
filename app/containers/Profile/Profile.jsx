@@ -198,69 +198,72 @@ const Profile = () => {
                 </div>
               )}
 
-              <div className={styles.formSection}>
-                <h3>Personal Information</h3>
+              {/* Personal Information and Profile Image - Side by Side */}
+              <div className={styles.formSectionsRow}>
+                <div className={styles.formSection}>
+                  <h3>Personal Information</h3>
 
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="firstName">First Name</label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      required
-                    />
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label htmlFor="firstName">First Name</label>
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label htmlFor="lastName">Last Name</label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label htmlFor="lastName">Last Name</label>
+                    <label htmlFor="email">Email</label>
                     <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      value={formData.lastName}
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
                       onChange={handleChange}
                       required
                     />
                   </div>
                 </div>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="email">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
+                <div className={styles.formSection}>
+                  <h3>Profile Image</h3>
+                  <p className={styles.sectionNote}>JPEG, PNG, GIF, or WebP (max 5MB)</p>
 
-              <div className={styles.formSection}>
-                <h3>Profile Image</h3>
-                <p className={styles.sectionNote}>JPEG, PNG, GIF, or WebP (max 5MB)</p>
+                  <div className={styles.imageUploadSection}>
+                    <div className={styles.currentImage}>
+                      <img
+                        src={profileImagePreview || currentUser?.profileImage || DefaultProfileImage}
+                        alt="Profile"
+                      />
+                    </div>
 
-                <div className={styles.imageUploadSection}>
-                  <div className={styles.currentImage}>
-                    <img
-                      src={profileImagePreview || currentUser?.profileImage || DefaultProfileImage}
-                      alt="Profile"
-                    />
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label htmlFor="profileImage">Upload New Image</label>
-                    <input
-                      type="file"
-                      id="profileImage"
-                      name="profileImage"
-                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                      onChange={handleImageChange}
-                    />
+                    <div className={styles.formGroup}>
+                      <label htmlFor="profileImage">Upload New Image</label>
+                      <input
+                        type="file"
+                        id="profileImage"
+                        name="profileImage"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        onChange={handleImageChange}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
