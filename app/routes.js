@@ -55,6 +55,10 @@ export default [
   // Handles GET (load brands) and POST (save brands) requests
   route("api/brands", "routes/api.brands.js"),
 
+  // API endpoint for agencies
+  // Handles GET (load agencies) and POST (save agencies) requests
+  route("api/agencies", "routes/api.agencies.js"),
+
   // API endpoint for users
   // Handles GET (load users) and POST (save users) requests
   route("api/users", "routes/api.users.js"),

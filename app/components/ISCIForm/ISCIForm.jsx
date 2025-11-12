@@ -6,6 +6,7 @@ import styles from "./ISCIForm.module.scss";
 const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef, viewOnly = false }) => {
   const [brands, setBrands] = useState([]);
   const [users, setUsers] = useState([]);
+  const [agencies, setAgencies] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({
     code: "",
@@ -32,6 +33,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
   useEffect(() => {
     loadBrands();
     loadUsers();
+    loadAgencies();
     setCurrentUser(getUserSession());
   }, []);
 
@@ -78,6 +80,25 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
       setUsers(data);
     } catch (error) {
       console.error("Error loading users:", error);
+    }
+  };
+
+  const loadAgencies = async () => {
+    try {
+      const response = await fetch("/api/agencies");
+      const data = await response.json();
+      // Only show active agencies
+      setAgencies(data.filter(a => a.active));
+
+      // If creating a new code (no code prop), set default agency
+      if (!code && data.length > 0) {
+        const defaultAgency = data.find(a => a.isDefault);
+        if (defaultAgency) {
+          setFormData(prev => ({ ...prev, agency: defaultAgency.name }));
+        }
+      }
+    } catch (error) {
+      console.error("Error loading agencies:", error);
     }
   };
 
@@ -358,15 +379,20 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
             {/* Agency full-width */}
             <div className={styles.formGroup}>
               <label htmlFor="agency">Agency</label>
-              <input
-                type="text"
+              <select
                 id="agency"
                 name="agency"
                 value={formData.agency}
                 onChange={handleChange}
-                placeholder="R&R Partners"
                 disabled={viewOnly}
-              />
+              >
+                <option value="">Select Agency</option>
+                {agencies.map(agency => (
+                  <option key={agency.id} value={agency.name}>
+                    {agency.name}{agency.isDefault ? ' (Default)' : ''}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -387,25 +413,6 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                 disabled={viewOnly}
               />
               {errors.spotTitle && <span className={styles.errorMessage}>{errors.spotTitle}</span>}
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="spotLength">Spot Length (seconds)</label>
-              <select
-                id="spotLength"
-                name="spotLength"
-                value={formData.spotLength}
-                onChange={handleChange}
-                disabled={viewOnly}
-              >
-                <option value="">Select length</option>
-                <option value="6">06</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="30">30</option>
-                <option value="45">45</option>
-                <option value="60">60</option>
-              </select>
             </div>
 
             <div className={styles.formGroup}>
@@ -509,22 +516,44 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               </div>
             </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="channel">Output: Channel</label>
-              <select
-                id="channel"
-                name="channel"
-                value={formData.channel}
-                onChange={handleChange}
-                disabled={viewOnly}
-              >
-                <option value="Broadcast">Broadcast</option>
-                <option value="CTV">CTV</option>
-                <option value="Digital">Digital</option>
-                <option value="Social">Social</option>
-                <option value="OLV">OLV</option>
-                <option value="Radio">Radio</option>
-              </select>
+
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor="spotLength">Spot Length (seconds)</label>
+                <select
+                  id="spotLength"
+                  name="spotLength"
+                  value={formData.spotLength}
+                  onChange={handleChange}
+                  disabled={viewOnly}
+                >
+                  <option value="">Select length</option>
+                  <option value="6">06</option>
+                  <option value="10">10</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                  <option value="60">60</option>
+                </select>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="channel">Output: Channel</label>
+                <select
+                  id="channel"
+                  name="channel"
+                  value={formData.channel}
+                  onChange={handleChange}
+                  disabled={viewOnly}
+                >
+                  <option value="Broadcast">Broadcast</option>
+                  <option value="CTV">CTV</option>
+                  <option value="Digital">Digital</option>
+                  <option value="Social">Social</option>
+                  <option value="OLV">OLV</option>
+                  <option value="Radio">Radio</option>
+                </select>
+              </div>
             </div>
           </div>
 

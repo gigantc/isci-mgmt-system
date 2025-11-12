@@ -18,9 +18,9 @@
     "channel": "Broadcast",
     "status": "in_progress",
     "createdAt": "2025-06-21T23:27:48.815Z",
-    "updatedAt": "2025-11-06T23:29:38.788Z",
+    "updatedAt": "2025-11-12T16:40:51.530Z",
     "completedAt": "2025-11-06T14:45:35.840Z",
-    "agency": ""
+    "agency": "R&R Partners"
   },
   {
     "id": "2",
@@ -41,7 +41,8 @@
     "channel": "Digital",
     "status": "pending",
     "createdAt": "2025-08-07T00:13:02.673Z",
-    "updatedAt": "2025-06-05T15:36:49.021Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "3",
@@ -62,8 +63,9 @@
     "channel": "Social",
     "status": "archived",
     "createdAt": "2024-07-07T19:57:51.465Z",
-    "updatedAt": "2025-09-02T00:34:50.247Z",
-    "completedAt": "2025-09-02T00:34:50.247Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-09-02T00:34:50.247Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "4",
@@ -84,7 +86,8 @@
     "channel": "CTV",
     "status": "in_review",
     "createdAt": "2024-12-26T04:01:33.668Z",
-    "updatedAt": "2025-02-27T10:13:40.137Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "5",
@@ -105,7 +108,8 @@
     "channel": "OLV",
     "status": "in_progress",
     "createdAt": "2025-02-19T21:39:21.594Z",
-    "updatedAt": "2026-11-07T09:24:28.602Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "6",
@@ -126,7 +130,8 @@
     "channel": "OLV",
     "status": "pending",
     "createdAt": "2025-06-08T02:40:46.335Z",
-    "updatedAt": "2026-07-03T16:12:12.860Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "7",
@@ -147,8 +152,9 @@
     "channel": "Broadcast",
     "status": "archived",
     "createdAt": "2024-03-07T07:39:30.327Z",
-    "updatedAt": "2026-06-18T04:45:11.157Z",
-    "completedAt": "2026-06-18T04:45:11.157Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-06-18T04:45:11.157Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "8",
@@ -169,8 +175,9 @@
     "channel": "Social",
     "status": "completed",
     "createdAt": "2025-01-13T04:49:06.682Z",
-    "updatedAt": "2025-12-05T04:17:03.784Z",
-    "completedAt": "2025-12-05T04:17:03.784Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-12-05T04:17:03.784Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "9",
@@ -191,7 +198,8 @@
     "channel": "CTV",
     "status": "in_progress",
     "createdAt": "2024-12-11T15:28:46.376Z",
-    "updatedAt": "2025-09-24T08:02:46.182Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "10",
@@ -212,7 +220,8 @@
     "channel": "Broadcast",
     "status": "in_review",
     "createdAt": "2025-04-09T11:18:38.115Z",
-    "updatedAt": "2025-11-06T15:12:48.491Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "11",
@@ -233,7 +242,8 @@
     "channel": "Social",
     "status": "pending",
     "createdAt": "2025-11-04T05:56:31.032Z",
-    "updatedAt": "2026-02-11T00:15:51.186Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "12",
@@ -254,8 +264,9 @@
     "channel": "Radio",
     "status": "completed",
     "createdAt": "2025-02-26T20:07:37.150Z",
-    "updatedAt": "2025-05-01T14:37:47.952Z",
-    "completedAt": "2025-05-01T14:37:47.952Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-05-01T14:37:47.952Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "13",
@@ -276,8 +287,9 @@
     "channel": "Social",
     "status": "archived",
     "createdAt": "2025-12-13T05:40:15.397Z",
-    "updatedAt": "2026-04-30T15:58:52.898Z",
-    "completedAt": "2026-04-30T15:58:52.898Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-04-30T15:58:52.898Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "14",
@@ -298,7 +310,8 @@
     "channel": "CTV",
     "status": "in_progress",
     "createdAt": "2024-03-10T06:02:14.174Z",
-    "updatedAt": "2025-01-01T17:39:38.172Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "15",
@@ -319,8 +332,9 @@
     "channel": "Radio",
     "status": "completed",
     "createdAt": "2024-02-01T17:17:20.959Z",
-    "updatedAt": "2026-03-20T14:49:10.394Z",
-    "completedAt": "2026-03-20T14:49:10.394Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-03-20T14:49:10.394Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "16",
@@ -341,8 +355,9 @@
     "channel": "CTV",
     "status": "completed",
     "createdAt": "2024-06-01T08:29:11.183Z",
-    "updatedAt": "2025-09-23T03:26:22.767Z",
-    "completedAt": "2025-09-23T03:26:22.767Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-09-23T03:26:22.767Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "17",
@@ -363,7 +378,8 @@
     "channel": "Social",
     "status": "pending",
     "createdAt": "2024-05-17T05:11:42.436Z",
-    "updatedAt": "2026-04-28T05:35:18.330Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "18",
@@ -384,7 +400,8 @@
     "channel": "Digital",
     "status": "pending",
     "createdAt": "2024-07-11T10:56:32.082Z",
-    "updatedAt": "2026-12-04T12:52:22.689Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "19",
@@ -405,7 +422,8 @@
     "channel": "Radio",
     "status": "pending",
     "createdAt": "2024-11-21T22:16:38.331Z",
-    "updatedAt": "2025-03-18T13:56:20.476Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "20",
@@ -426,7 +444,8 @@
     "channel": "OLV",
     "status": "in_progress",
     "createdAt": "2025-07-02T07:23:40.329Z",
-    "updatedAt": "2025-12-01T23:08:55.494Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "21",
@@ -447,7 +466,8 @@
     "channel": "CTV",
     "status": "in_review",
     "createdAt": "2024-06-23T04:23:08.107Z",
-    "updatedAt": "2025-07-19T01:07:34.092Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "22",
@@ -468,8 +488,9 @@
     "channel": "Digital",
     "status": "completed",
     "createdAt": "2025-12-29T07:44:29.620Z",
-    "updatedAt": "2026-10-29T02:55:15.422Z",
-    "completedAt": "2026-10-29T02:55:15.422Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-10-29T02:55:15.422Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "23",
@@ -490,7 +511,8 @@
     "channel": "CTV",
     "status": "in_progress",
     "createdAt": "2025-04-10T18:49:19.448Z",
-    "updatedAt": "2025-03-16T15:44:16.068Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "24",
@@ -511,7 +533,8 @@
     "channel": "CTV",
     "status": "in_progress",
     "createdAt": "2024-12-28T20:14:42.465Z",
-    "updatedAt": "2025-08-03T13:37:27.075Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "25",
@@ -532,7 +555,8 @@
     "channel": "OLV",
     "status": "pending",
     "createdAt": "2024-03-03T21:39:59.966Z",
-    "updatedAt": "2026-06-17T20:16:16.745Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "26",
@@ -553,8 +577,9 @@
     "channel": "Social",
     "status": "completed",
     "createdAt": "2024-07-06T21:30:52.045Z",
-    "updatedAt": "2026-09-25T01:02:56.962Z",
-    "completedAt": "2026-09-25T01:02:56.962Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-09-25T01:02:56.962Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "27",
@@ -575,7 +600,8 @@
     "channel": "Broadcast",
     "status": "in_progress",
     "createdAt": "2025-09-08T08:19:13.235Z",
-    "updatedAt": "2026-02-14T17:36:07.778Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "28",
@@ -596,8 +622,9 @@
     "channel": "Broadcast",
     "status": "completed",
     "createdAt": "2025-01-04T17:12:40.757Z",
-    "updatedAt": "2025-07-11T05:36:47.555Z",
-    "completedAt": "2025-07-11T05:36:47.555Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-07-11T05:36:47.555Z",
+    "agency": "House of V"
   },
   {
     "id": "29",
@@ -618,8 +645,9 @@
     "channel": "CTV",
     "status": "completed",
     "createdAt": "2024-03-08T14:28:32.518Z",
-    "updatedAt": "2025-06-27T20:32:42.151Z",
-    "completedAt": "2025-06-27T20:32:42.151Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-06-27T20:32:42.151Z",
+    "agency": "House of V"
   },
   {
     "id": "30",
@@ -640,7 +668,8 @@
     "channel": "OLV",
     "status": "in_progress",
     "createdAt": "2024-04-07T01:07:00.662Z",
-    "updatedAt": "2026-08-14T21:27:18.710Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "House of V"
   },
   {
     "id": "31",
@@ -661,7 +690,8 @@
     "channel": "OLV",
     "status": "pending",
     "createdAt": "2024-02-22T17:32:36.458Z",
-    "updatedAt": "2026-02-11T02:43:26.143Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "House of V"
   },
   {
     "id": "32",
@@ -682,8 +712,9 @@
     "channel": "Social",
     "status": "archived",
     "createdAt": "2024-09-02T19:49:58.264Z",
-    "updatedAt": "2025-10-23T16:24:06.147Z",
-    "completedAt": "2025-10-23T16:24:06.147Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-10-23T16:24:06.147Z",
+    "agency": "House of V"
   },
   {
     "id": "33",
@@ -704,7 +735,8 @@
     "channel": "OLV",
     "status": "in_review",
     "createdAt": "2024-07-01T04:24:13.478Z",
-    "updatedAt": "2026-08-20T09:53:59.245Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "House of V"
   },
   {
     "id": "34",
@@ -725,8 +757,9 @@
     "channel": "CTV",
     "status": "archived",
     "createdAt": "2024-10-05T02:57:57.748Z",
-    "updatedAt": "2026-12-03T21:57:20.128Z",
-    "completedAt": "2026-12-03T21:57:20.128Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-12-03T21:57:20.128Z",
+    "agency": "House of V"
   },
   {
     "id": "35",
@@ -747,8 +780,9 @@
     "channel": "Social",
     "status": "completed",
     "createdAt": "2025-03-30T22:08:48.613Z",
-    "updatedAt": "2026-07-22T00:40:27.464Z",
-    "completedAt": "2026-07-22T00:40:27.464Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-07-22T00:40:27.464Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "36",
@@ -769,7 +803,8 @@
     "channel": "OLV",
     "status": "in_review",
     "createdAt": "2025-08-08T12:09:25.858Z",
-    "updatedAt": "2025-01-16T00:22:15.204Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "37",
@@ -790,7 +825,8 @@
     "channel": "Radio",
     "status": "in_progress",
     "createdAt": "2024-01-06T19:32:22.849Z",
-    "updatedAt": "2025-08-30T08:44:10.438Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "38",
@@ -811,8 +847,9 @@
     "channel": "OLV",
     "status": "completed",
     "createdAt": "2024-04-23T14:47:53.763Z",
-    "updatedAt": "2025-05-26T11:50:25.900Z",
-    "completedAt": "2025-05-26T11:50:25.900Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-05-26T11:50:25.900Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "39",
@@ -833,8 +870,9 @@
     "channel": "OLV",
     "status": "archived",
     "createdAt": "2025-12-19T00:16:39.140Z",
-    "updatedAt": "2026-11-17T22:54:28.219Z",
-    "completedAt": "2026-11-17T22:54:28.219Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-11-17T22:54:28.219Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "40",
@@ -855,7 +893,8 @@
     "channel": "CTV",
     "status": "in_review",
     "createdAt": "2025-02-23T19:31:25.078Z",
-    "updatedAt": "2025-02-11T12:19:03.991Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "41",
@@ -876,8 +915,9 @@
     "channel": "Digital",
     "status": "archived",
     "createdAt": "2024-07-23T23:18:36.301Z",
-    "updatedAt": "2025-06-13T13:47:46.923Z",
-    "completedAt": "2025-06-13T13:47:46.923Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-06-13T13:47:46.923Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "42",
@@ -898,7 +938,8 @@
     "channel": "Radio",
     "status": "in_review",
     "createdAt": "2024-05-13T18:59:50.577Z",
-    "updatedAt": "2025-10-31T13:32:31.885Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "43",
@@ -919,8 +960,9 @@
     "channel": "OLV",
     "status": "archived",
     "createdAt": "2025-10-21T18:58:47.842Z",
-    "updatedAt": "2025-05-28T13:29:04.577Z",
-    "completedAt": "2025-05-28T13:29:04.577Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-05-28T13:29:04.577Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "44",
@@ -941,7 +983,8 @@
     "channel": "Social",
     "status": "pending",
     "createdAt": "2025-04-28T17:39:29.525Z",
-    "updatedAt": "2025-05-14T15:55:41.000Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "45",
@@ -962,7 +1005,8 @@
     "channel": "OLV",
     "status": "pending",
     "createdAt": "2025-12-13T01:57:59.438Z",
-    "updatedAt": "2025-08-30T20:41:10.871Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "46",
@@ -983,7 +1027,8 @@
     "channel": "Digital",
     "status": "in_progress",
     "createdAt": "2025-03-24T12:48:17.893Z",
-    "updatedAt": "2025-01-24T15:59:26.532Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "47",
@@ -1004,8 +1049,9 @@
     "channel": "OLV",
     "status": "archived",
     "createdAt": "2025-05-12T10:53:27.005Z",
-    "updatedAt": "2026-06-05T21:01:52.320Z",
-    "completedAt": "2026-06-05T21:01:52.320Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-06-05T21:01:52.320Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "48",
@@ -1026,8 +1072,9 @@
     "channel": "OLV",
     "status": "archived",
     "createdAt": "2025-03-23T12:12:58.703Z",
-    "updatedAt": "2026-09-30T06:22:22.583Z",
-    "completedAt": "2026-09-30T06:22:22.583Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-09-30T06:22:22.583Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "49",
@@ -1048,7 +1095,8 @@
     "channel": "Broadcast",
     "status": "in_review",
     "createdAt": "2025-02-13T11:47:32.820Z",
-    "updatedAt": "2026-04-05T08:38:55.630Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "50",
@@ -1069,7 +1117,8 @@
     "channel": "Digital",
     "status": "pending",
     "createdAt": "2025-02-24T07:57:17.205Z",
-    "updatedAt": "2026-01-09T14:24:41.656Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "51",
@@ -1090,8 +1139,9 @@
     "channel": "Broadcast",
     "status": "archived",
     "createdAt": "2025-04-24T03:46:38.231Z",
-    "updatedAt": "2025-12-16T07:39:23.889Z",
-    "completedAt": "2025-12-16T07:39:23.889Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-12-16T07:39:23.889Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "52",
@@ -1112,7 +1162,8 @@
     "channel": "Social",
     "status": "in_progress",
     "createdAt": "2025-05-31T23:42:23.989Z",
-    "updatedAt": "2026-02-21T21:00:01.606Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "53",
@@ -1133,7 +1184,8 @@
     "channel": "Social",
     "status": "pending",
     "createdAt": "2025-03-17T09:27:03.202Z",
-    "updatedAt": "2026-01-02T22:08:21.680Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "54",
@@ -1154,7 +1206,8 @@
     "channel": "Digital",
     "status": "in_review",
     "createdAt": "2024-09-29T02:05:27.051Z",
-    "updatedAt": "2025-06-23T01:59:16.557Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "55",
@@ -1175,8 +1228,9 @@
     "channel": "OLV",
     "status": "archived",
     "createdAt": "2025-10-09T23:34:15.715Z",
-    "updatedAt": "2026-09-27T18:25:49.931Z",
-    "completedAt": "2026-09-27T18:25:49.931Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-09-27T18:25:49.931Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "56",
@@ -1197,7 +1251,8 @@
     "channel": "CTV",
     "status": "pending",
     "createdAt": "2024-01-04T06:25:15.182Z",
-    "updatedAt": "2026-10-12T08:33:53.645Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "57",
@@ -1218,8 +1273,9 @@
     "channel": "Digital",
     "status": "completed",
     "createdAt": "2024-08-30T07:28:33.127Z",
-    "updatedAt": "2026-08-25T23:32:52.437Z",
-    "completedAt": "2026-08-25T23:32:52.437Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-08-25T23:32:52.437Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "58",
@@ -1240,8 +1296,9 @@
     "channel": "Radio",
     "status": "archived",
     "createdAt": "2024-03-18T22:55:07.795Z",
-    "updatedAt": "2025-11-12T14:05:32.149Z",
-    "completedAt": "2025-11-12T14:05:32.149Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-11-12T14:05:32.149Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "59",
@@ -1262,8 +1319,9 @@
     "channel": "Social",
     "status": "completed",
     "createdAt": "2024-08-10T12:56:18.923Z",
-    "updatedAt": "2026-12-08T05:35:40.945Z",
-    "completedAt": "2026-12-08T05:35:40.945Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-12-08T05:35:40.945Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "60",
@@ -1284,8 +1342,9 @@
     "channel": "Social",
     "status": "completed",
     "createdAt": "2024-04-10T01:03:42.437Z",
-    "updatedAt": "2025-08-24T16:18:46.148Z",
-    "completedAt": "2025-08-24T16:18:46.148Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-08-24T16:18:46.148Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "61",
@@ -1306,8 +1365,9 @@
     "channel": "Radio",
     "status": "completed",
     "createdAt": "2025-10-05T16:24:15.877Z",
-    "updatedAt": "2026-12-25T19:38:18.981Z",
-    "completedAt": "2026-12-25T19:38:18.981Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-12-25T19:38:18.981Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "62",
@@ -1328,7 +1388,8 @@
     "channel": "Radio",
     "status": "in_review",
     "createdAt": "2024-11-03T19:47:52.514Z",
-    "updatedAt": "2025-06-06T09:14:17.616Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "63",
@@ -1349,7 +1410,8 @@
     "channel": "Digital",
     "status": "in_progress",
     "createdAt": "2025-11-09T15:52:38.272Z",
-    "updatedAt": "2026-08-08T21:01:15.176Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "64",
@@ -1370,8 +1432,9 @@
     "channel": "Radio",
     "status": "completed",
     "createdAt": "2024-01-18T03:30:27.218Z",
-    "updatedAt": "2025-10-24T06:56:20.380Z",
-    "completedAt": "2025-10-24T06:56:20.380Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-10-24T06:56:20.380Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "65",
@@ -1392,8 +1455,9 @@
     "channel": "Social",
     "status": "completed",
     "createdAt": "2025-02-14T09:31:11.507Z",
-    "updatedAt": "2026-05-27T15:50:43.743Z",
-    "completedAt": "2026-05-27T15:50:43.743Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-05-27T15:50:43.743Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "66",
@@ -1414,7 +1478,8 @@
     "channel": "CTV",
     "status": "in_review",
     "createdAt": "2024-06-28T00:54:24.033Z",
-    "updatedAt": "2025-06-10T14:44:35.383Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "67",
@@ -1435,7 +1500,8 @@
     "channel": "CTV",
     "status": "pending",
     "createdAt": "2025-05-23T09:15:48.406Z",
-    "updatedAt": "2025-01-15T00:02:27.791Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "68",
@@ -1456,8 +1522,9 @@
     "channel": "Broadcast",
     "status": "archived",
     "createdAt": "2025-03-01T05:30:45.462Z",
-    "updatedAt": "2025-03-09T08:25:28.550Z",
-    "completedAt": "2025-03-09T08:25:28.550Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-03-09T08:25:28.550Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "69",
@@ -1478,7 +1545,8 @@
     "channel": "Broadcast",
     "status": "in_review",
     "createdAt": "2025-06-15T01:37:35.260Z",
-    "updatedAt": "2026-05-07T21:19:22.493Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "70",
@@ -1499,7 +1567,8 @@
     "channel": "Radio",
     "status": "pending",
     "createdAt": "2024-10-31T17:59:15.203Z",
-    "updatedAt": "2026-10-28T20:53:49.291Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "71",
@@ -1520,7 +1589,8 @@
     "channel": "Broadcast",
     "status": "in_review",
     "createdAt": "2025-09-10T12:27:17.828Z",
-    "updatedAt": "2026-03-23T21:47:05.645Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "72",
@@ -1541,7 +1611,8 @@
     "channel": "Digital",
     "status": "in_progress",
     "createdAt": "2024-08-24T16:32:25.709Z",
-    "updatedAt": "2026-09-28T17:33:01.429Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "73",
@@ -1562,7 +1633,8 @@
     "channel": "Broadcast",
     "status": "in_review",
     "createdAt": "2024-12-17T11:59:40.981Z",
-    "updatedAt": "2025-10-24T06:31:32.236Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "74",
@@ -1583,7 +1655,8 @@
     "channel": "Radio",
     "status": "in_review",
     "createdAt": "2024-06-06T15:01:20.441Z",
-    "updatedAt": "2026-12-10T20:15:15.376Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "75",
@@ -1604,7 +1677,8 @@
     "channel": "Digital",
     "status": "pending",
     "createdAt": "2024-10-20T04:36:54.974Z",
-    "updatedAt": "2026-11-29T04:08:24.719Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "76",
@@ -1625,7 +1699,8 @@
     "channel": "OLV",
     "status": "in_review",
     "createdAt": "2025-01-23T10:12:03.428Z",
-    "updatedAt": "2026-06-05T12:55:47.676Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "77",
@@ -1646,7 +1721,8 @@
     "channel": "Radio",
     "status": "in_review",
     "createdAt": "2024-08-03T15:45:19.791Z",
-    "updatedAt": "2026-04-05T18:21:33.589Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "78",
@@ -1667,7 +1743,8 @@
     "channel": "Social",
     "status": "in_progress",
     "createdAt": "2025-07-24T05:26:39.343Z",
-    "updatedAt": "2025-05-22T23:44:58.120Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "79",
@@ -1688,7 +1765,8 @@
     "channel": "CTV",
     "status": "in_review",
     "createdAt": "2024-06-16T23:31:06.959Z",
-    "updatedAt": "2026-03-21T02:28:55.215Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "80",
@@ -1709,7 +1787,8 @@
     "channel": "Social",
     "status": "in_progress",
     "createdAt": "2024-10-12T16:08:12.484Z",
-    "updatedAt": "2026-05-22T21:09:30.914Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "81",
@@ -1730,7 +1809,8 @@
     "channel": "Broadcast",
     "status": "pending",
     "createdAt": "2025-07-22T07:56:58.691Z",
-    "updatedAt": "2025-05-31T23:34:20.975Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "82",
@@ -1751,7 +1831,8 @@
     "channel": "Broadcast",
     "status": "pending",
     "createdAt": "2024-10-17T12:49:11.031Z",
-    "updatedAt": "2026-02-28T11:31:40.775Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "83",
@@ -1772,8 +1853,9 @@
     "channel": "Digital",
     "status": "archived",
     "createdAt": "2025-08-21T11:03:14.886Z",
-    "updatedAt": "2026-12-30T10:23:04.926Z",
-    "completedAt": "2026-12-30T10:23:04.926Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-12-30T10:23:04.926Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "84",
@@ -1794,8 +1876,9 @@
     "channel": "CTV",
     "status": "archived",
     "createdAt": "2024-02-26T19:26:17.674Z",
-    "updatedAt": "2026-02-05T16:04:27.452Z",
-    "completedAt": "2026-02-05T16:04:27.452Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-02-05T16:04:27.452Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "85",
@@ -1816,7 +1899,8 @@
     "channel": "Broadcast",
     "status": "in_progress",
     "createdAt": "2025-11-19T14:45:38.288Z",
-    "updatedAt": "2026-06-12T00:53:39.415Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "86",
@@ -1837,8 +1921,9 @@
     "channel": "Broadcast",
     "status": "archived",
     "createdAt": "2025-12-01T12:33:54.948Z",
-    "updatedAt": "2026-03-02T21:14:40.532Z",
-    "completedAt": "2026-03-02T21:14:40.532Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-03-02T21:14:40.532Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "87",
@@ -1859,8 +1944,9 @@
     "channel": "CTV",
     "status": "completed",
     "createdAt": "2024-02-29T02:29:35.760Z",
-    "updatedAt": "2025-11-06T19:59:05.945Z",
-    "completedAt": "2025-11-06T19:59:05.945Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-11-06T19:59:05.945Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "88",
@@ -1881,7 +1967,8 @@
     "channel": "Social",
     "status": "in_progress",
     "createdAt": "2025-05-26T22:43:33.583Z",
-    "updatedAt": "2026-10-22T19:06:08.237Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "89",
@@ -1902,8 +1989,9 @@
     "channel": "Digital",
     "status": "completed",
     "createdAt": "2024-03-29T20:45:53.995Z",
-    "updatedAt": "2025-08-24T12:56:30.909Z",
-    "completedAt": "2025-08-24T12:56:30.909Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-08-24T12:56:30.909Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "90",
@@ -1924,8 +2012,9 @@
     "channel": "Radio",
     "status": "completed",
     "createdAt": "2025-06-01T17:06:40.901Z",
-    "updatedAt": "2025-08-06T17:10:02.823Z",
-    "completedAt": "2025-08-06T17:10:02.823Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-08-06T17:10:02.823Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "91",
@@ -1946,7 +2035,8 @@
     "channel": "CTV",
     "status": "in_progress",
     "createdAt": "2025-06-25T03:39:24.231Z",
-    "updatedAt": "2025-05-19T12:53:53.804Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "92",
@@ -1967,8 +2057,9 @@
     "channel": "OLV",
     "status": "completed",
     "createdAt": "2024-12-11T19:38:37.375Z",
-    "updatedAt": "2025-11-06T20:34:15.762Z",
-    "completedAt": "2025-11-06T20:34:15.762Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-11-06T20:34:15.762Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "93",
@@ -1989,8 +2080,9 @@
     "channel": "OLV",
     "status": "completed",
     "createdAt": "2025-03-28T07:27:34.454Z",
-    "updatedAt": "2026-07-23T15:40:42.708Z",
-    "completedAt": "2026-07-23T15:40:42.708Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-07-23T15:40:42.708Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "94",
@@ -2011,8 +2103,9 @@
     "channel": "Broadcast",
     "status": "completed",
     "createdAt": "2024-03-07T16:22:37.012Z",
-    "updatedAt": "2025-01-10T03:54:14.410Z",
-    "completedAt": "2025-01-10T03:54:14.410Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-01-10T03:54:14.410Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "95",
@@ -2033,8 +2126,9 @@
     "channel": "Social",
     "status": "completed",
     "createdAt": "2024-07-14T04:49:18.829Z",
-    "updatedAt": "2026-12-18T11:10:25.682Z",
-    "completedAt": "2026-12-18T11:10:25.682Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2026-12-18T11:10:25.682Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "96",
@@ -2055,7 +2149,8 @@
     "channel": "CTV",
     "status": "pending",
     "createdAt": "2024-01-07T15:03:34.541Z",
-    "updatedAt": "2025-06-04T18:00:51.997Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "97",
@@ -2076,7 +2171,8 @@
     "channel": "Social",
     "status": "pending",
     "createdAt": "2025-05-22T05:52:33.855Z",
-    "updatedAt": "2026-12-30T11:20:13.879Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "98",
@@ -2097,7 +2193,8 @@
     "channel": "CTV",
     "status": "in_progress",
     "createdAt": "2025-12-21T19:23:38.643Z",
-    "updatedAt": "2025-03-15T20:41:49.935Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "99",
@@ -2118,7 +2215,8 @@
     "channel": "Radio",
     "status": "in_review",
     "createdAt": "2025-11-22T22:24:00.855Z",
-    "updatedAt": "2026-08-12T09:15:48.369Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "agency": "R&R Partners"
   },
   {
     "id": "100",
@@ -2139,7 +2237,8 @@
     "channel": "Radio",
     "status": "archived",
     "createdAt": "2024-06-04T11:09:08.573Z",
-    "updatedAt": "2025-11-06T15:12:38.606Z",
-    "completedAt": "2025-09-16T06:19:17.906Z"
+    "updatedAt": "2025-11-12T16:40:51.531Z",
+    "completedAt": "2025-09-16T06:19:17.906Z",
+    "agency": "R&R Partners"
   }
 ]

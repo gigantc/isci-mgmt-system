@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "name": "R&R Partners",
+    "isDefault": true,
+    "active": true,
+    "createdAt": "2025-01-12T00:00:00.000Z",
+    "updatedAt": "2025-01-12T00:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "name": "House of V",
+    "isDefault": false,
+    "active": true,
+    "createdAt": "2025-01-12T00:00:00.000Z",
+    "updatedAt": "2025-01-12T00:00:00.000Z"
+  },
+  {
+    "id": "3",
+    "name": "R&R Foundation",
+    "isDefault": false,
+    "active": true,
+    "createdAt": "2025-01-12T00:00:00.000Z",
+    "updatedAt": "2025-01-12T00:00:00.000Z"
+  }
+]

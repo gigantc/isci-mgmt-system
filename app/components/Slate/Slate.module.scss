@@ -49,12 +49,17 @@
     overflow: hidden;
     width: 100%;
     padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     .canvas {
       width: 100%;
+      max-width: 100%;
       height: auto;
       display: block;
       border: 1px solid rgba(v.$white, 0.1);
+      object-fit: contain;
     }
   }
 

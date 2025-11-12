@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import BrandManager from "@/components/BrandManager";
 import UserManager from "@/components/UserManager";
+import AgencyManager from "@/components/AgencyManager";
 import { isAuthenticated, isAdmin } from "@/utils/auth";
 import styles from "./Admin.module.scss";
 
@@ -32,6 +33,12 @@ const Admin = () => {
               Brand Management
             </button>
             <button
+              className={`${styles.tab} ${activeTab === "agencies" ? styles.active : ""}`}
+              onClick={() => setActiveTab("agencies")}
+            >
+              Agency Management
+            </button>
+            <button
               className={`${styles.tab} ${activeTab === "users" ? styles.active : ""}`}
               onClick={() => setActiveTab("users")}
             >
@@ -43,6 +50,7 @@ const Admin = () => {
         {/* Scrollable content area */}
         <div className={styles.scrollableContent}>
           {activeTab === "brands" && <BrandManager />}
+          {activeTab === "agencies" && <AgencyManager />}
           {activeTab === "users" && <UserManager />}
         </div>
       </div>

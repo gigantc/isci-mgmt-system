@@ -59,21 +59,59 @@ const Slate = ({ code }) => {
       { label: "DATE:", value: formatDate(code.airDate) }
     ];
 
-    // Starting position
-    let y = 280;
+    // Starting position - more centered
+    let y = 200;
     const lineHeight = 100;
-    const labelX = 400;
-    const valueX = 800;
+    const labelX = 240;
+    const valueX = 600;
+    const maxWidth = 1680; // Maximum width for text (1920 - 240 margin)
+
+    // Helper function to wrap text if it's too long
+    const wrapText = (text, maxWidth) => {
+      const words = text.split('_');
+      const lines = [];
+      let currentLine = words[0];
+
+      for (let i = 1; i < words.length; i++) {
+        const testLine = currentLine + '_' + words[i];
+        const metrics = ctx.measureText(testLine);
+
+        if (metrics.width > maxWidth) {
+          lines.push(currentLine);
+          currentLine = words[i];
+        } else {
+          currentLine = testLine;
+        }
+      }
+      lines.push(currentLine);
+      return lines;
+    };
 
     // Draw each field
-    fields.forEach((field) => {
+    fields.forEach((field, index) => {
       // Label
       ctx.font = "bold 48px Inter, sans-serif";
       ctx.fillText(field.label, labelX, y);
 
-      // Value
+      // Value - special handling for Title field
       ctx.font = "400 48px Inter, sans-serif";
-      ctx.fillText(field.value, valueX, y);
+
+      if (field.label === "Title:") {
+        // Wrap title if it's too long
+        const availableWidth = maxWidth - valueX;
+        const lines = wrapText(field.value, availableWidth);
+
+        lines.forEach((line, lineIndex) => {
+          ctx.fillText(line, valueX, y + (lineIndex * 60));
+        });
+
+        // Add extra spacing if title wrapped to multiple lines
+        if (lines.length > 1) {
+          y += (lines.length - 1) * 60;
+        }
+      } else {
+        ctx.fillText(field.value, valueX, y);
+      }
 
       y += lineHeight;
     });
