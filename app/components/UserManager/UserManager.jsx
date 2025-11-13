@@ -178,7 +178,17 @@ const UserManager = () => {
         <>
           {showForm && (
             <div className={styles.userFormSection}>
-              <h2>{editingUser ? "Edit User" : "Add New User"}</h2>
+              <div className={styles.formHeader}>
+                <h2>{editingUser ? "Edit User" : "Add New User"}</h2>
+                <button
+                  type="button"
+                  className={styles.btnClose}
+                  onClick={resetForm}
+                  aria-label="Close form"
+                >
+                  ×
+                </button>
+              </div>
             <form onSubmit={handleSubmit} className={styles.userForm}>
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
@@ -258,11 +268,9 @@ const UserManager = () => {
               </div>
 
               <div className={styles.formActions}>
-                {editingUser && (
-                  <button type="button" className={styles.btnCancel} onClick={resetForm}>
-                    Cancel
-                  </button>
-                )}
+                <button type="button" className={styles.btnCancel} onClick={resetForm}>
+                  Cancel
+                </button>
                 <button type="submit" className={styles.btnSubmit}>
                   {editingUser ? "Update" : "Add"} User
                 </button>

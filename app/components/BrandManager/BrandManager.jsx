@@ -156,7 +156,17 @@ const BrandManager = () => {
         <>
       {showForm && (
         <div className={styles.brandFormSection}>
-          <h2>{editingBrand ? "Edit Brand" : "Add New Brand"}</h2>
+          <div className={styles.formHeader}>
+            <h2>{editingBrand ? "Edit Brand" : "Add New Brand"}</h2>
+            <button
+              type="button"
+              className={styles.btnClose}
+              onClick={resetForm}
+              aria-label="Close form"
+            >
+              ×
+            </button>
+          </div>
         <form onSubmit={handleSubmit} className={styles.brandForm}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
@@ -191,11 +201,9 @@ const BrandManager = () => {
           </div>
 
           <div className={styles.formActions}>
-            {editingBrand && (
-              <button type="button" className={styles.btnCancel} onClick={resetForm}>
-                Cancel
-              </button>
-            )}
+            <button type="button" className={styles.btnCancel} onClick={resetForm}>
+              Cancel
+            </button>
             <button type="submit" className={styles.btnSubmit}>
               {editingBrand ? "Update" : "Add"} Brand
             </button>

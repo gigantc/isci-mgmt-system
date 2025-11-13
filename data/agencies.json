@@ -5,7 +5,7 @@
     "isDefault": true,
     "active": true,
     "createdAt": "2025-01-12T00:00:00.000Z",
-    "updatedAt": "2025-01-12T00:00:00.000Z"
+    "updatedAt": "2025-11-13T17:08:39.218Z"
   },
   {
     "id": "2",
@@ -13,7 +13,7 @@
     "isDefault": false,
     "active": true,
     "createdAt": "2025-01-12T00:00:00.000Z",
-    "updatedAt": "2025-01-12T00:00:00.000Z"
+    "updatedAt": "2025-11-13T17:08:39.218Z"
   },
   {
     "id": "3",
@@ -21,6 +21,6 @@
     "isDefault": false,
     "active": true,
     "createdAt": "2025-01-12T00:00:00.000Z",
-    "updatedAt": "2025-01-12T00:00:00.000Z"
+    "updatedAt": "2025-11-13T17:08:39.218Z"
   }
 ]

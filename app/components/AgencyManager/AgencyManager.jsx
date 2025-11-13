@@ -280,7 +280,7 @@ const AgencyManager = () => {
                               onClick={() => handleSetDefault(agency)}
                               title="Set as default"
                             >
-                              Set Default
+                              Set As Default
                             </button>
                           )}
                         </td>
