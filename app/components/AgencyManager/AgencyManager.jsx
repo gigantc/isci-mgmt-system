@@ -8,6 +8,7 @@ const AgencyManager = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     loadAgencies();
@@ -169,10 +170,14 @@ const AgencyManager = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: "", isDefault: false });
-    setEditingAgency(null);
-    setErrors({});
-    setShowForm(false);
+    setIsClosing(true);
+    setTimeout(() => {
+      setFormData({ name: "", isDefault: false });
+      setEditingAgency(null);
+      setErrors({});
+      setShowForm(false);
+      setIsClosing(false);
+    }, 300); // Match animation duration
   };
 
   const handleChange = (e) => {
@@ -193,46 +198,52 @@ const AgencyManager = () => {
       ) : (
         <>
           {showForm && (
-            <div className={styles.agencyFormSection}>
-              <h2>{editingAgency ? "Edit Agency" : "Add New Agency"}</h2>
+            <div className={`${styles.agencyFormSection} ${isClosing ? styles.closing : ''}`}>
+              <div className={styles.formHeader}>
+                <h2>{editingAgency ? "Edit Agency" : "Add New Agency"}</h2>
+                <button
+                  type="button"
+                  className={styles.btnClose}
+                  onClick={resetForm}
+                  aria-label="Close form"
+                >
+                  ×
+                </button>
+              </div>
               <form onSubmit={handleSubmit} className={styles.agencyForm}>
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="name">Agency Name *</label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="e.g., R&R Partners"
-                      className={errors.name ? "error" : ""}
-                    />
-                    {errors.name && <span className={styles.errorMessage}>{errors.name}</span>}
-                  </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="name">Agency Name *</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="e.g., R&R Partners"
+                    className={errors.name ? "error" : ""}
+                  />
+                  {errors.name && <span className={styles.errorMessage}>{errors.name}</span>}
+                </div>
 
-                  <div className={styles.formGroup}>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        name="isDefault"
-                        checked={formData.isDefault}
-                        onChange={handleChange}
-                      />
-                      Set as Default Agency
-                    </label>
-                    <span className={styles.helpText}>
-                      The default agency will be auto-selected for new ISCI codes
-                    </span>
-                  </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="isDefault"
+                      checked={formData.isDefault}
+                      onChange={handleChange}
+                    />
+                    Set as Default Agency
+                  </label>
+                  <span className={styles.helpText}>
+                    The default agency will be auto-selected for new ISCI codes
+                  </span>
                 </div>
 
                 <div className={styles.formActions}>
-                  {editingAgency && (
-                    <button type="button" className={styles.btnCancel} onClick={resetForm}>
-                      Cancel
-                    </button>
-                  )}
+                  <button type="button" className={styles.btnCancel} onClick={resetForm}>
+                    Cancel
+                  </button>
                   <button type="submit" className={styles.btnSubmit}>
                     {editingAgency ? "Update" : "Add"} Agency
                   </button>

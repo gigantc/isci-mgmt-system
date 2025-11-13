@@ -865,10 +865,34 @@ This project is maintained for internal video editing workflow management. When 
 
 ---
 
-**Last Updated**: November 6, 2025
-**Version**: 3.4.0 - Role-Based Access Control & Import/Export System
+**Last Updated**: November 13, 2025
+**Version**: 3.5.0 - Admin Panel Enhancements & Sorting
 
 ## Changelog
+
+### v3.5.0 - Admin Panel Enhancements & Sorting (November 13, 2025)
+- **ISCIList Sorting**: Added clickable column headers with ascending/descending sort functionality
+  - All columns sortable: ISCI Code, Editor, Brand, Campaign, Spot Title, Length, Air Date, Status
+  - Visual indicators (▲/▼) show active sort column and direction
+  - Hover effects on sortable headers for better UX
+  - Alphabetical, numeric, and date-based sorting supported
+- **Admin Panel UX Improvements**:
+  - Added X close button in top-right corner of all form panels (Brand, User, Agency)
+  - Cancel button now always visible (not just when editing)
+  - Smooth closing animations matching the opening animations (300ms slideUp)
+  - Consistent form header styling across all three management sections
+- **Sticky Headers & Scroll Containers**:
+  - List section headers ("All Brands", "All Users", "All Agencies") remain visible when scrolling
+  - Table column headers stay fixed at top while scrolling through data
+  - Table areas limited to 600px height with internal scrolling
+  - Prevents entire page from scrolling, improves navigation
+- **Agency Management Standardization**:
+  - Standardized header spacing and colors to match Brand/User management
+  - Moved "Set as Default Agency" checkbox below Agency Name field
+  - Added proper spacing between form elements
+  - Consistent sticky behavior and scroll containers
+
+
 
 ### v3.4.0 - Role-Based Access Control & Import/Export System (November 6, 2025)
 - **Import/Export System**: Added comprehensive CSV import/export functionality on `/reports` page

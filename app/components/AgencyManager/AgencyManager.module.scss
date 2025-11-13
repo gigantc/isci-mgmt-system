@@ -34,11 +34,67 @@
       }
     }
 
-    h2 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: v.$text-primary;
-      margin: 0 0 1.5rem 0;
+    @keyframes slideUp {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 1000px;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        margin-bottom: 2rem;
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+    }
+
+    &.closing {
+      animation: slideUp 0.3s ease-out forwards;
+    }
+
+    .formHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+
+      h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: v.$text-primary;
+        margin: 0;
+      }
+
+      .btnClose {
+        background: none;
+        border: none;
+        color: v.$text-secondary;
+        font-size: 2rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+          background-color: rgba(v.$red, 0.15);
+          color: v.$red;
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+      }
     }
   }
 
@@ -57,6 +113,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      margin-bottom: 1.5rem;
 
       label {
         font-size: 0.875rem;
@@ -141,11 +198,11 @@
 
       .btnCancel {
         color: v.$text-primary;
-        background-color: rgba(v.$white, 0.05);
-        border: 1px solid v.$border-color;
-
+        background-color: transparent;
+        border: none;
+        text-transform:uppercase;
         &:hover {
-          background-color: rgba(v.$white, 0.1);
+         opacity:0.7;
         }
       }
 
@@ -167,10 +224,15 @@
 
   .agenciesListSection {
     .listHeader {
+      position: sticky;
+      top: 0;
+      z-index: 10;
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.5rem;
+      padding: 1rem 0;
+      background-color: v.$bg-primary;
 
       h2 {
         font-size: 1.5rem;
@@ -212,6 +274,8 @@
   }
 
   .agenciesTableWrapper {
+    max-height: 600px;
+    overflow-y: auto;
     overflow-x: auto;
     background: rgba(v.$white, 0.02);
     border-radius: 8px;
@@ -230,6 +294,9 @@
         }
 
         th {
+          position: sticky;
+          top: 0;
+          z-index: 5;
           padding: 0.75rem 1rem;
           text-align: left;
           font-weight: 600;
@@ -237,6 +304,8 @@
           text-transform: uppercase;
           font-size: 0.75rem;
           letter-spacing: 0.05em;
+          background-color: v.$gray;
+          border-bottom: 2px solid v.$border-color;
         }
       }
 

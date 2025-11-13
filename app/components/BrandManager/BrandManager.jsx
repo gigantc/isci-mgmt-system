@@ -8,6 +8,7 @@ const BrandManager = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     loadBrands();
@@ -134,10 +135,14 @@ const BrandManager = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: "", code: "" });
-    setEditingBrand(null);
-    setErrors({});
-    setShowForm(false);
+    setIsClosing(true);
+    setTimeout(() => {
+      setFormData({ name: "", code: "" });
+      setEditingBrand(null);
+      setErrors({});
+      setShowForm(false);
+      setIsClosing(false);
+    }, 300); // Match animation duration
   };
 
   const handleChange = (e) => {
@@ -155,7 +160,7 @@ const BrandManager = () => {
       ) : (
         <>
       {showForm && (
-        <div className={styles.brandFormSection}>
+        <div className={`${styles.brandFormSection} ${isClosing ? styles.closing : ''}`}>
           <div className={styles.formHeader}>
             <h2>{editingBrand ? "Edit Brand" : "Add New Brand"}</h2>
             <button

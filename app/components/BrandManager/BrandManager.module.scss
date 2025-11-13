@@ -36,6 +36,29 @@
       }
     }
 
+    @keyframes slideUp {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 1000px;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        margin-bottom: 2rem;
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+    }
+
+    &.closing {
+      animation: slideUp 0.3s ease-out forwards;
+    }
+
     .formHeader {
       display: flex;
       justify-content: space-between;
@@ -154,11 +177,11 @@
 
       .btnCancel {
         color: v.$text-primary;
-        background-color: rgba(v.$white, 0.05);
-        border: 1px solid v.$border-color;
-
+        background-color: transparent;
+        border: none;
+        text-transform:uppercase;
         &:hover {
-          background-color: rgba(v.$white, 0.1);
+         opacity:0.7;
         }
       }
 

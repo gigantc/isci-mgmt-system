@@ -14,6 +14,7 @@ const UserManager = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     loadUsers();
@@ -150,16 +151,20 @@ const UserManager = () => {
   };
 
   const resetForm = () => {
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      userType: "editor"
-    });
-    setEditingUser(null);
-    setErrors({});
-    setShowForm(false);
+    setIsClosing(true);
+    setTimeout(() => {
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        userType: "editor"
+      });
+      setEditingUser(null);
+      setErrors({});
+      setShowForm(false);
+      setIsClosing(false);
+    }, 300); // Match animation duration
   };
 
   const handleChange = (e) => {
@@ -177,7 +182,7 @@ const UserManager = () => {
       ) : (
         <>
           {showForm && (
-            <div className={styles.userFormSection}>
+            <div className={`${styles.userFormSection} ${isClosing ? styles.closing : ''}`}>
               <div className={styles.formHeader}>
                 <h2>{editingUser ? "Edit User" : "Add New User"}</h2>
                 <button
