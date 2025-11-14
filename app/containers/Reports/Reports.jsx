@@ -1,34 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { isAuthenticated, isAdmin } from "@/utils/auth";
+import { useFetchData, useExportData, useImportData } from "@/hooks";
 import styles from "./Reports.module.scss";
 
 const Reports = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("export");
-  const [codes, setCodes] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Import state
-  const [importFile, setImportFile] = useState(null);
-  const [importMode, setImportMode] = useState("add");
-  const [importPreview, setImportPreview] = useState(null);
-  const [importResult, setImportResult] = useState(null);
-  const [isImporting, setIsImporting] = useState(false);
+  // Fetch data using useFetchData hook
+  const { data: codes, loading: codesLoading, refetch: loadData } = useFetchData("/api/isci");
+  const { data: brands, loading: brandsLoading } = useFetchData("/api/brands");
+  const { data: users, loading: usersLoading } = useFetchData("/api/users");
 
-  // Filter state
-  const [filters, setFilters] = useState({
-    dateType: "all",
-    startDate: "",
-    endDate: "",
-    status: "all",
-    assignedEditor: "all",
-    brand: "all",
-    channel: "all",
-    spotLength: "all"
-  });
+  const isLoading = codesLoading || brandsLoading || usersLoading;
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -36,99 +21,75 @@ const Reports = () => {
     }
   }, [navigate]);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  // Export hook with filtering and CSV generation
+  const {
+    filters,
+    filteredData: filteredCodes,
+    filteredCount,
+    handleFilterChange,
+    resetFilters,
+    exportToCSV,
+    downloadTemplate
+  } = useExportData(codes, {
+    initialFilters: {
+      dateType: "all",
+      startDate: "",
+      endDate: "",
+      status: "all",
+      assignedEditor: "all",
+      brand: "all",
+      channel: "all",
+      spotLength: "all"
+    },
+    filterFunction: (codes, filters) => {
+      return codes.filter(code => {
+        // Date filter
+        if (filters.dateType !== "all" && filters.startDate && filters.endDate) {
+          const startDate = new Date(filters.startDate);
+          const endDate = new Date(filters.endDate);
+          let codeDate;
 
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      const [codesRes, brandsRes, usersRes] = await Promise.all([
-        fetch("/api/isci"),
-        fetch("/api/brands"),
-        fetch("/api/users")
-      ]);
+          if (filters.dateType === "created") {
+            codeDate = new Date(code.createdAt);
+          } else if (filters.dateType === "updated") {
+            codeDate = new Date(code.updatedAt);
+          } else if (filters.dateType === "air") {
+            if (!code.airDate) return false;
+            codeDate = new Date(code.airDate);
+          }
 
-      const [codesData, brandsData, usersData] = await Promise.all([
-        codesRes.json(),
-        brandsRes.json(),
-        usersRes.json()
-      ]);
-
-      setCodes(codesData);
-      setBrands(brandsData);
-      setUsers(usersData);
-    } catch (error) {
-      console.error("Error loading data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
-  };
-
-  const getFilteredCodes = () => {
-    return codes.filter(code => {
-      // Date filter
-      if (filters.dateType !== "all" && filters.startDate && filters.endDate) {
-        const startDate = new Date(filters.startDate);
-        const endDate = new Date(filters.endDate);
-        let codeDate;
-
-        if (filters.dateType === "created") {
-          codeDate = new Date(code.createdAt);
-        } else if (filters.dateType === "updated") {
-          codeDate = new Date(code.updatedAt);
-        } else if (filters.dateType === "air") {
-          if (!code.airDate) return false;
-          codeDate = new Date(code.airDate);
+          if (codeDate < startDate || codeDate > endDate) return false;
         }
 
-        if (codeDate < startDate || codeDate > endDate) return false;
-      }
+        // Status filter
+        if (filters.status !== "all" && code.status !== filters.status) {
+          return false;
+        }
 
-      // Status filter
-      if (filters.status !== "all" && code.status !== filters.status) {
-        return false;
-      }
+        // Assigned Editor filter
+        if (filters.assignedEditor !== "all" && code.assignedEditor !== filters.assignedEditor) {
+          return false;
+        }
 
-      // Assigned Editor filter
-      if (filters.assignedEditor !== "all" && code.assignedEditor !== filters.assignedEditor) {
-        return false;
-      }
+        // Brand filter
+        if (filters.brand !== "all" && code.brand !== filters.brand) {
+          return false;
+        }
 
-      // Brand filter
-      if (filters.brand !== "all" && code.brand !== filters.brand) {
-        return false;
-      }
+        // Channel filter
+        if (filters.channel !== "all" && code.channel !== filters.channel) {
+          return false;
+        }
 
-      // Channel filter
-      if (filters.channel !== "all" && code.channel !== filters.channel) {
-        return false;
-      }
+        // Spot Length filter
+        if (filters.spotLength !== "all" && code.spotLength?.toString() !== filters.spotLength) {
+          return false;
+        }
 
-      // Spot Length filter
-      if (filters.spotLength !== "all" && code.spotLength?.toString() !== filters.spotLength) {
-        return false;
-      }
-
-      return true;
-    });
-  };
-
-  const exportToCSV = () => {
-    const filteredCodes = getFilteredCodes();
-
-    if (filteredCodes.length === 0) {
-      alert("No data to export with current filters");
-      return;
-    }
-
-    // CSV Headers
-    const headers = [
+        return true;
+      });
+    },
+    csvHeaders: [
       "ISCI Code",
       "Brand",
       "Campaign Name",
@@ -146,10 +107,8 @@ const Reports = () => {
       "Description",
       "Created At",
       "Updated At"
-    ];
-
-    // Convert data to CSV rows
-    const rows = filteredCodes.map(code => [
+    ],
+    csvRowMapper: (code) => [
       code.code,
       code.brand,
       code.campaignName || "",
@@ -167,62 +126,32 @@ const Reports = () => {
       code.description || "",
       code.createdAt,
       code.updatedAt
-    ]);
+    ],
+    filenamePrefix: "isci-codes-export"
+  });
 
-    // Combine headers and rows
-    const csvContent = [
-      headers.join(","),
-      ...rows.map(row => row.map(field => `"${field}"`).join(","))
-    ].join("\n");
+  // Import hook with file upload and preview
+  const {
+    file: importFile,
+    preview: importPreview,
+    result: importResult,
+    mode: importMode,
+    isImporting,
+    handleFileUpload,
+    handleImport,
+    setMode: setImportMode,
+    clearFile,
+    clearResult
+  } = useImportData({
+    endpoint: "/api/isci/import",
+    defaultMode: "add",
+    onSuccess: (result) => {
+      loadData(); // Reload codes after successful import
+    }
+  });
 
-    // Create download
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute("href", url);
-    link.setAttribute("download", `isci-codes-export-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = "hidden";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const resetFilters = () => {
-    setFilters({
-      dateType: "all",
-      startDate: "",
-      endDate: "",
-      status: "all",
-      assignedEditor: "all",
-      brand: "all",
-      channel: "all",
-      spotLength: "all"
-    });
-  };
-
-  const filteredCount = getFilteredCodes().length;
-
-  const downloadTemplate = () => {
-    const headers = [
-      "ISCI Code",
-      "Brand",
-      "Campaign Name",
-      "Spot Title",
-      "Spot Length",
-      "Assigned Editor",
-      "Status",
-      "Channel",
-      "Aspect Ratio",
-      "Version",
-      "Language",
-      "Closed Captioning",
-      "Audio",
-      "Air Date",
-      "Description"
-    ];
-
+  // Template download with example data
+  const handleDownloadTemplate = () => {
     const exampleRow = [
       "LVCI2599",
       "Las Vegas Convention and Visitors Authority",
@@ -241,79 +170,7 @@ const Reports = () => {
       "Summer campaign spot"
     ];
 
-    const csvContent = [
-      headers.join(","),
-      exampleRow.map(field => `"${field}"`).join(",")
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute("href", url);
-    link.setAttribute("download", "isci-import-template.csv");
-    link.style.visibility = "hidden";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setImportFile(file);
-    setImportResult(null);
-
-    // Read and preview file
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const csvData = event.target.result;
-      const lines = csvData.trim().split("\n");
-      setImportPreview({
-        rowCount: lines.length - 1,
-        fileName: file.name,
-        fileSize: (file.size / 1024).toFixed(2) + " KB"
-      });
-    };
-    reader.readAsText(file);
-  };
-
-  const handleImport = async () => {
-    if (!importFile) return;
-
-    setIsImporting(true);
-    setImportResult(null);
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const csvData = event.target.result;
-
-      try {
-        const response = await fetch("/api/isci/import", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ csvData, importMode })
-        });
-
-        const result = await response.json();
-        setImportResult(result);
-
-        if (result.success) {
-          // Reload codes
-          loadData();
-          setImportFile(null);
-          setImportPreview(null);
-        }
-      } catch (error) {
-        console.error("Import error:", error);
-        setImportResult({ success: false, message: "Import failed: " + error.message });
-      } finally {
-        setIsImporting(false);
-      }
-    };
-    reader.readAsText(importFile);
+    downloadTemplate(exampleRow);
   };
 
   return (

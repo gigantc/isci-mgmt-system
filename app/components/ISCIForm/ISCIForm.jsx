@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { ISCIStatus } from "@/types/isci";
 import { getUserSession } from "@/utils/auth";
+import { useFetchData } from "@/hooks";
 import styles from "./ISCIForm.module.scss";
 
 const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef, viewOnly = false }) => {
-  const [brands, setBrands] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [agencies, setAgencies] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({
     code: "",
@@ -30,12 +28,30 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
 
   const [errors, setErrors] = useState({});
 
+  // Fetch brands, users, and agencies using useFetchData hook
+  const { data: brands } = useFetchData("/api/brands", {
+    filter: (data) => data.filter(b => b.active)
+  });
+
+  const { data: users } = useFetchData("/api/users");
+
+  const { data: agencies } = useFetchData("/api/agencies", {
+    filter: (data) => data.filter(a => a.active)
+  });
+
   useEffect(() => {
-    loadBrands();
-    loadUsers();
-    loadAgencies();
     setCurrentUser(getUserSession());
   }, []);
+
+  // Set default agency when agencies load and we're creating a new code
+  useEffect(() => {
+    if (!code && agencies.length > 0) {
+      const defaultAgency = agencies.find(a => a.isDefault);
+      if (defaultAgency && !formData.agency) {
+        setFormData(prev => ({ ...prev, agency: defaultAgency.name }));
+      }
+    }
+  }, [agencies, code, formData.agency]);
 
   useEffect(() => {
     if (code) {
@@ -61,46 +77,6 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
       });
     }
   }, [code]);
-
-  const loadBrands = async () => {
-    try {
-      const response = await fetch("/api/brands");
-      const data = await response.json();
-      // Only show active brands
-      setBrands(data.filter(b => b.active));
-    } catch (error) {
-      console.error("Error loading brands:", error);
-    }
-  };
-
-  const loadUsers = async () => {
-    try {
-      const response = await fetch("/api/users");
-      const data = await response.json();
-      setUsers(data);
-    } catch (error) {
-      console.error("Error loading users:", error);
-    }
-  };
-
-  const loadAgencies = async () => {
-    try {
-      const response = await fetch("/api/agencies");
-      const data = await response.json();
-      // Only show active agencies
-      setAgencies(data.filter(a => a.active));
-
-      // If creating a new code (no code prop), set default agency
-      if (!code && data.length > 0) {
-        const defaultAgency = data.find(a => a.isDefault);
-        if (defaultAgency) {
-          setFormData(prev => ({ ...prev, agency: defaultAgency.name }));
-        }
-      }
-    } catch (error) {
-      console.error("Error loading agencies:", error);
-    }
-  };
 
   // Sort users with current user first, then alphabetically
   const getSortedUsers = () => {

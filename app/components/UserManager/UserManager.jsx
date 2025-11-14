@@ -1,179 +1,85 @@
-import { useState, useEffect } from "react";
+import { useResourceManager } from "@/hooks";
 import styles from "./UserManager.module.scss";
 
 const UserManager = () => {
-  const [users, setUsers] = useState([]);
-  const [editingUser, setEditingUser] = useState(null);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    userType: "editor"
-  });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const {
+    items: users,
+    formData,
+    errors,
+    isLoading,
+    showForm,
+    isClosing,
+    editingItem: editingUser,
+    handleChange,
+    handleSubmit,
+    handleEdit,
+    handleDelete,
+    handleNew,
+    resetForm
+  } = useResourceManager("/api/users", {
+    initialFormData: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      userType: "editor"
+    },
+    validate: (data, users, editingUser) => {
+      const newErrors = {};
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const loadUsers = async () => {
-    try {
-      const response = await fetch("/api/users");
-      const data = await response.json();
-      setUsers(data);
-    } catch (error) {
-      console.error("Error loading users:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required";
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    } else {
-      // Check for duplicate email
-      const isDuplicate = users.some(
-        u => u.email === formData.email && u.id !== editingUser?.id
-      );
-      if (isDuplicate) {
-        newErrors.email = "This email is already in use";
+      if (!data.firstName.trim()) {
+        newErrors.firstName = "First name is required";
       }
-    }
 
-    // Password is required only for new users
-    if (!editingUser && !formData.password) {
-      newErrors.password = "Password is required for new users";
-    } else if (formData.password && formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
+      if (!data.lastName.trim()) {
+        newErrors.lastName = "Last name is required";
+      }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+      if (!data.email.trim()) {
+        newErrors.email = "Email is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        newErrors.email = "Please enter a valid email address";
+      } else {
+        // Check for duplicate email
+        const isDuplicate = users.some(
+          u => u.email === data.email && u.id !== editingUser?.id
+        );
+        if (isDuplicate) {
+          newErrors.email = "This email is already in use";
+        }
+      }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+      // Password is required only for new users
+      if (!editingUser && !data.password) {
+        newErrors.password = "Password is required for new users";
+      } else if (data.password && data.password.length < 6) {
+        newErrors.password = "Password must be at least 6 characters";
+      }
 
-    if (!validateForm()) return;
-
-    const now = new Date().toISOString();
-    let updatedUsers;
-
-    if (editingUser) {
-      // Update existing user
-      updatedUsers = users.map(u =>
-        u.id === editingUser.id
-          ? {
-              ...u,
-              firstName: formData.firstName,
-              lastName: formData.lastName,
-              email: formData.email,
-              userType: formData.userType,
-              // Only update password if provided
-              ...(formData.password ? { password: formData.password } : {}),
-              profileUpdatedAt: now
-            }
-          : u
-      );
-    } else {
-      // Create new user
-      const newUser = {
-        id: Date.now().toString(),
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-        userType: formData.userType,
-        createdAt: now,
-        profileUpdatedAt: null,
-        profileImage: null
-      };
-      updatedUsers = [...users, newUser];
-    }
-
-    try {
-      await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedUsers),
-      });
-      setUsers(updatedUsers);
-      resetForm();
-    } catch (error) {
-      console.error("Error saving user:", error);
-    }
-  };
-
-  const handleEdit = (user) => {
-    setEditingUser(user);
-    setFormData({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      password: "", // Don't pre-fill password
-      userType: user.userType
-    });
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
-
-    const updatedUsers = users.filter(u => u.id !== id);
-
-    try {
-      await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedUsers),
-      });
-      setUsers(updatedUsers);
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    }
-  };
-
-  const resetForm = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        userType: "editor"
-      });
-      setEditingUser(null);
-      setErrors({});
-      setShowForm(false);
-      setIsClosing(false);
-    }, 300); // Match animation duration
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
+      return newErrors;
+    },
+    createItem: (data, now) => ({
+      id: Date.now().toString(),
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      password: data.password,
+      userType: data.userType,
+      createdAt: now,
+      profileUpdatedAt: null,
+      profileImage: null
+    }),
+    updateItem: (existingUser, data, now) => ({
+      ...existingUser,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      userType: data.userType,
+      // Only update password if provided
+      ...(data.password ? { password: data.password } : {}),
+      profileUpdatedAt: now
+    })
+  });
 
   return (
     <div className={styles.userManager}>
@@ -290,7 +196,7 @@ const UserManager = () => {
               {!showForm && (
                 <button
                   className={styles.btnAddNew}
-                  onClick={() => setShowForm(true)}
+                  onClick={handleNew}
                 >
                   + Add New User
                 </button>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
 import { isAuthenticated, getUserSession, isAdmin } from "@/utils/auth";
+import { useFetchData } from "@/hooks";
 import styles from "./Dashboard.module.scss";
 
 /**
@@ -29,14 +30,11 @@ const Dashboard = () => {
   // Current logged in user
   const [currentUser, setCurrentUser] = useState(null);
 
-  // All the ISCI codes we've loaded from the server
-  const [codes, setCodes] = useState([]);
-
   // What's the user typing in the search box?
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Are we still loading data from the server? (shows a loading message)
-  const [isLoading, setIsLoading] = useState(true);
+  // Fetch ISCI codes using useFetchData hook
+  const { data: codes, loading: isLoading, refetch: loadCodes } = useFetchData("/api/isci");
 
   /**
    * useEffect Hook - Check authentication and load user
@@ -48,16 +46,6 @@ const Dashboard = () => {
       setCurrentUser(getUserSession());
     }
   }, [navigate]);
-
-  /**
-   * useEffect Hook - Runs when the component first loads
-   *
-   * The empty array [] at the end means "only run this once when the component mounts"
-   * It's like saying "Hey React, when this component appears on screen, load the codes!"
-   */
-  useEffect(() => {
-    loadCodes();
-  }, []);
 
   /**
    * useEffect Hook - Reload codes and user data when returning to the page
@@ -94,34 +82,7 @@ const Dashboard = () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
     };
-  }, []);
-
-  /**
-   * loadCodes
-   *
-   * Fetches all ISCI codes from the server API.
-   * This is an async function because talking to the server takes time!
-   * (The internet isn't instant, despite what your cat videos would have you believe)
-   */
-  const loadCodes = async () => {
-    try {
-      // Make a GET request to our API endpoint
-      const response = await fetch("/api/isci");
-
-      if (response.ok) {
-        // If the server says "here's your data!", parse it from JSON
-        const data = await response.json();
-        setCodes(data);  // Store it in our state
-      }
-    } catch (error) {
-      // Uh oh, something went wrong! Log it to the console.
-      console.error("Error loading ISCI codes:", error);
-      // TODO: Maybe show an error message to the user?
-    } finally {
-      // Whether we succeeded or failed, we're done loading!
-      setIsLoading(false);
-    }
-  };
+  }, [loadCodes]);
 
   /**
    * saveCodes
@@ -142,8 +103,8 @@ const Dashboard = () => {
       });
 
       if (response.ok) {
-        // Success! Update our local state to match what we just saved
-        setCodes(updatedCodes);
+        // Success! Refetch codes to update local state
+        loadCodes();
       } else {
         console.error("Failed to save ISCI codes");
       }

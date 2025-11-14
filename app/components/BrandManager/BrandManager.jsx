@@ -1,157 +1,57 @@
-import { useState, useEffect } from "react";
+import { useResourceManager } from "@/hooks";
 import styles from "./BrandManager.module.scss";
 
 const BrandManager = () => {
-  const [brands, setBrands] = useState([]);
-  const [editingBrand, setEditingBrand] = useState(null);
-  const [formData, setFormData] = useState({ name: "", code: "" });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const {
+    items: brands,
+    formData,
+    errors,
+    isLoading,
+    showForm,
+    isClosing,
+    editingItem: editingBrand,
+    handleChange,
+    handleSubmit,
+    handleEdit,
+    handleDelete,
+    handleToggleActive,
+    handleNew,
+    resetForm
+  } = useResourceManager("/api/brands", {
+    initialFormData: { name: "", code: "" },
+    validate: (data, brands, editingBrand) => {
+      const newErrors = {};
 
-  useEffect(() => {
-    loadBrands();
-  }, []);
-
-  const loadBrands = async () => {
-    try {
-      const response = await fetch("/api/brands");
-      const data = await response.json();
-      setBrands(data);
-    } catch (error) {
-      console.error("Error loading brands:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Brand name is required";
-    }
-
-    if (!formData.code.trim()) {
-      newErrors.code = "Brand code is required";
-    } else if (!/^[A-Z]{4}$/.test(formData.code)) {
-      newErrors.code = "Brand code must be exactly 4 uppercase letters (e.g., LVCI)";
-    } else {
-      // Check for duplicate code
-      const isDuplicate = brands.some(
-        b => b.code === formData.code && b.id !== editingBrand?.id
-      );
-      if (isDuplicate) {
-        newErrors.code = "This brand code is already in use";
+      if (!data.name.trim()) {
+        newErrors.name = "Brand name is required";
       }
-    }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+      if (!data.code.trim()) {
+        newErrors.code = "Brand code is required";
+      } else if (!/^[A-Z]{4}$/.test(data.code)) {
+        newErrors.code = "Brand code must be exactly 4 uppercase letters (e.g., LVCI)";
+      } else {
+        // Check for duplicate code
+        const isDuplicate = brands.some(
+          b => b.code === data.code && b.id !== editingBrand?.id
+        );
+        if (isDuplicate) {
+          newErrors.code = "This brand code is already in use";
+        }
+      }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    const now = new Date().toISOString();
-    let updatedBrands;
-
-    if (editingBrand) {
-      // Update existing brand
-      updatedBrands = brands.map(b =>
-        b.id === editingBrand.id
-          ? { ...b, ...formData, updatedAt: now }
-          : b
-      );
-    } else {
-      // Create new brand
-      const newBrand = {
-        id: Date.now().toString(),
-        name: formData.name,
-        code: formData.code.toUpperCase(),
-        active: true,
-        createdAt: now,
-        updatedAt: now,
-      };
-      updatedBrands = [...brands, newBrand];
-    }
-
-    try {
-      await fetch("/api/brands", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedBrands),
-      });
-      setBrands(updatedBrands);
-      resetForm();
-    } catch (error) {
-      console.error("Error saving brand:", error);
-    }
-  };
-
-  const handleEdit = (brand) => {
-    setEditingBrand(brand);
-    setFormData({ name: brand.name, code: brand.code });
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this brand?")) return;
-
-    const updatedBrands = brands.filter(b => b.id !== id);
-
-    try {
-      await fetch("/api/brands", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedBrands),
-      });
-      setBrands(updatedBrands);
-    } catch (error) {
-      console.error("Error deleting brand:", error);
-    }
-  };
-
-  const handleToggleActive = async (brand) => {
-    const updatedBrands = brands.map(b =>
-      b.id === brand.id
-        ? { ...b, active: !b.active, updatedAt: new Date().toISOString() }
-        : b
-    );
-
-    try {
-      await fetch("/api/brands", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedBrands),
-      });
-      setBrands(updatedBrands);
-    } catch (error) {
-      console.error("Error toggling brand status:", error);
-    }
-  };
-
-  const resetForm = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setFormData({ name: "", code: "" });
-      setEditingBrand(null);
-      setErrors({});
-      setShowForm(false);
-      setIsClosing(false);
-    }, 300); // Match animation duration
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
+      return newErrors;
+    },
+    createItem: (data, now) => ({
+      id: Date.now().toString(),
+      name: data.name,
+      code: data.code.toUpperCase(),
+      active: true,
+      createdAt: now,
+      updatedAt: now,
+    }),
+    hasActiveToggle: true
+  });
 
   return (
     <div className={styles.brandManager}>
@@ -223,7 +123,7 @@ const BrandManager = () => {
           {!showForm && (
             <button
               className={styles.btnAddNew}
-              onClick={() => setShowForm(true)}
+              onClick={handleNew}
             >
               + Add New Brand
             </button>

@@ -1,46 +1,52 @@
-import { useState, useEffect } from "react";
+import { useResourceManager } from "@/hooks";
 import styles from "./AgencyManager.module.scss";
 
 const AgencyManager = () => {
-  const [agencies, setAgencies] = useState([]);
-  const [editingAgency, setEditingAgency] = useState(null);
-  const [formData, setFormData] = useState({ name: "", isDefault: false });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const {
+    items: agencies,
+    formData,
+    errors,
+    isLoading,
+    showForm,
+    isClosing,
+    editingItem: editingAgency,
+    handleChange,
+    handleSubmit: baseHandleSubmit,
+    handleEdit,
+    handleDelete: baseHandleDelete,
+    handleToggleActive: baseHandleToggleActive,
+    handleNew,
+    resetForm,
+    setItems: setAgencies,
+    saveItems
+  } = useResourceManager("/api/agencies", {
+    initialFormData: { name: "", isDefault: false },
+    validate: (data) => {
+      const newErrors = {};
+      if (!data.name.trim()) {
+        newErrors.name = "Agency name is required";
+      }
+      return newErrors;
+    },
+    createItem: (data, now) => ({
+      id: Date.now().toString(),
+      name: data.name,
+      isDefault: data.isDefault,
+      active: true,
+      createdAt: now,
+      updatedAt: now,
+    }),
+    updateItem: (existingAgency, data, now) => ({
+      ...existingAgency,
+      ...data,
+      updatedAt: now
+    }),
+    hasActiveToggle: true
+  });
 
-  useEffect(() => {
-    loadAgencies();
-  }, []);
-
-  const loadAgencies = async () => {
-    try {
-      const response = await fetch("/api/agencies");
-      const data = await response.json();
-      setAgencies(data);
-    } catch (error) {
-      console.error("Error loading agencies:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Agency name is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
+  // Custom submit handler to handle default agency logic
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) return;
 
     const now = new Date().toISOString();
     let updatedAgencies;
@@ -77,25 +83,13 @@ const AgencyManager = () => {
       }
     }
 
-    try {
-      await fetch("/api/agencies", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedAgencies),
-      });
-      setAgencies(updatedAgencies);
+    const success = await saveItems(updatedAgencies);
+    if (success) {
       resetForm();
-    } catch (error) {
-      console.error("Error saving agency:", error);
     }
   };
 
-  const handleEdit = (agency) => {
-    setEditingAgency(agency);
-    setFormData({ name: agency.name, isDefault: agency.isDefault });
-    setShowForm(true);
-  };
-
+  // Custom delete handler to prevent deleting default agency
   const handleDelete = async (id) => {
     const agencyToDelete = agencies.find(a => a.id === id);
 
@@ -105,22 +99,10 @@ const AgencyManager = () => {
       return;
     }
 
-    if (!confirm("Are you sure you want to delete this agency?")) return;
-
-    const updatedAgencies = agencies.filter(a => a.id !== id);
-
-    try {
-      await fetch("/api/agencies", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedAgencies),
-      });
-      setAgencies(updatedAgencies);
-    } catch (error) {
-      console.error("Error deleting agency:", error);
-    }
+    await baseHandleDelete(id, "Are you sure you want to delete this agency?");
   };
 
+  // Custom toggle handler to prevent deactivating default agency
   const handleToggleActive = async (agency) => {
     // Prevent deactivating the default agency
     if (agency.isDefault && agency.active) {
@@ -128,24 +110,10 @@ const AgencyManager = () => {
       return;
     }
 
-    const updatedAgencies = agencies.map(a =>
-      a.id === agency.id
-        ? { ...a, active: !a.active, updatedAt: new Date().toISOString() }
-        : a
-    );
-
-    try {
-      await fetch("/api/agencies", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedAgencies),
-      });
-      setAgencies(updatedAgencies);
-    } catch (error) {
-      console.error("Error toggling agency status:", error);
-    }
+    await baseHandleToggleActive(agency);
   };
 
+  // Custom handler for setting default agency
   const handleSetDefault = async (agency) => {
     if (!confirm(`Set "${agency.name}" as the default agency?`)) return;
 
@@ -157,38 +125,7 @@ const AgencyManager = () => {
       updatedAt: new Date().toISOString()
     }));
 
-    try {
-      await fetch("/api/agencies", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedAgencies),
-      });
-      setAgencies(updatedAgencies);
-    } catch (error) {
-      console.error("Error setting default agency:", error);
-    }
-  };
-
-  const resetForm = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setFormData({ name: "", isDefault: false });
-      setEditingAgency(null);
-      setErrors({});
-      setShowForm(false);
-      setIsClosing(false);
-    }, 300); // Match animation duration
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value
-    }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
+    await saveItems(updatedAgencies);
   };
 
   return (
@@ -258,7 +195,7 @@ const AgencyManager = () => {
               {!showForm && (
                 <button
                   className={styles.btnAddNew}
-                  onClick={() => setShowForm(true)}
+                  onClick={handleNew}
                 >
                   + Add New Agency
                 </button>
