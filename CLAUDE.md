@@ -77,6 +77,13 @@ isci-mgmt-system/
 │   │   ├── api.brands.js       # Brand API endpoints
 │   │   ├── api.isci.js         # ISCI code API endpoints
 │   │   └── api.isci.import.js  # ISCI code CSV import API
+│   ├── hooks/                   # Custom React hooks (reusable logic)
+│   │   ├── index.js            # Centralized hook exports
+│   │   ├── useFetchData.js     # Data fetching with loading/error states
+│   │   ├── useFormState.js     # Form state management
+│   │   ├── useResourceManager.js  # CRUD operations for manager components
+│   │   ├── useExportData.js    # Export filtering and CSV generation
+│   │   └── useImportData.js    # CSV import handling
 │   ├── utils/                  # Utility functions
 │   │   └── auth.js             # Authentication helper functions
 │   ├── styles/                 # Global styles and variables
@@ -236,6 +243,215 @@ The system implements role-based access control with two user types:
 - Edit page becomes read-only view for non-admins (all form fields disabled)
 - Page-level protection redirects non-admins attempting URL access
 - "+ New ISCI Code" button only visible to admins
+
+### Custom Hooks (Reusable Logic)
+
+The application uses custom React hooks to eliminate code duplication and improve maintainability. All hooks are located in `app/hooks/` and exported from `app/hooks/index.js`.
+
+**Import Pattern**:
+```javascript
+import { useFetchData, useResourceManager } from "@/hooks";
+```
+
+#### 1. useFetchData Hook
+**Location**: `app/hooks/useFetchData.js`
+**Purpose**: Eliminates duplicate fetch patterns across components
+
+**Features**:
+- Automatic data fetching on mount
+- Loading and error state management
+- Manual refetch capability
+- Optional data filtering/transformation
+- Configurable fetch behavior
+
+**Usage Example**:
+```javascript
+// Simple fetch
+const { data: brands, loading, refetch } = useFetchData("/api/brands");
+
+// With filtering
+const { data: activeBrands } = useFetchData("/api/brands", {
+  filter: (data) => data.filter(b => b.active)
+});
+```
+
+**Used By**: ISCIForm, Dashboard, Reports
+
+---
+
+#### 2. useResourceManager Hook
+**Location**: `app/hooks/useResourceManager.js`
+**Purpose**: Consolidates CRUD operations for manager components (Brand, User, Agency)
+
+**Features**:
+- Complete CRUD lifecycle (Create, Read, Update, Delete)
+- Form state management with validation
+- Toggle active/inactive status
+- Smooth form animations (300ms)
+- Custom item creation/update logic
+- Automatic API integration
+
+**Configuration Options**:
+- `initialFormData`: Default form field values
+- `validate`: Validation function (receives formData, items, editingItem)
+- `createItem`: Custom item creation function
+- `updateItem`: Custom item update function (optional)
+- `hasActiveToggle`: Enable active/inactive toggle
+- `onAfterSave`: Callback after successful save
+- `onAfterDelete`: Callback after successful delete
+
+**Usage Example**:
+```javascript
+const {
+  items: brands,
+  formData,
+  errors,
+  isLoading,
+  showForm,
+  handleChange,
+  handleSubmit,
+  handleEdit,
+  handleDelete,
+  handleToggleActive,
+  handleNew,
+  resetForm
+} = useResourceManager("/api/brands", {
+  initialFormData: { name: "", code: "" },
+  validate: (data, brands, editingBrand) => {
+    const errors = {};
+    if (!data.name.trim()) errors.name = "Name required";
+    if (!data.code.match(/^[A-Z]{4}$/)) errors.code = "Invalid code";
+    return errors;
+  },
+  createItem: (data, now) => ({
+    id: Date.now().toString(),
+    name: data.name,
+    code: data.code.toUpperCase(),
+    active: true,
+    createdAt: now,
+    updatedAt: now,
+  }),
+  hasActiveToggle: true
+});
+```
+
+**Used By**: BrandManager (293→82 lines), UserManager (353→100 lines), AgencyManager (341→130 lines)
+
+---
+
+#### 3. useExportData Hook
+**Location**: `app/hooks/useExportData.js`
+**Purpose**: Handle data export with filtering and CSV generation
+
+**Features**:
+- Filter state management
+- Data filtering based on custom criteria
+- CSV generation with proper escaping
+- CSV file download
+- Template download with example data
+- Filter reset functionality
+
+**Usage Example**:
+```javascript
+const {
+  filters,
+  filteredData,
+  filteredCount,
+  handleFilterChange,
+  resetFilters,
+  exportToCSV,
+  downloadTemplate
+} = useExportData(codes, {
+  initialFilters: { status: "all", brand: "all" },
+  filterFunction: (codes, filters) => codes.filter(...),
+  csvHeaders: ["Code", "Brand", "Status"],
+  csvRowMapper: (code) => [code.code, code.brand, code.status],
+  filenamePrefix: "isci-codes"
+});
+```
+
+**Used By**: Reports
+
+---
+
+#### 4. useImportData Hook
+**Location**: `app/hooks/useImportData.js`
+**Purpose**: Handle CSV file imports with preview and validation
+
+**Features**:
+- File upload handling (click & drag-drop)
+- File preview generation (row count, size, headers)
+- CSV import with multiple modes (add/update/replace)
+- Import result handling
+- Progress state management
+- File type and size validation
+
+**Usage Example**:
+```javascript
+const {
+  file,
+  preview,
+  result,
+  mode,
+  isImporting,
+  handleFileUpload,
+  handleImport,
+  setMode,
+  clearFile
+} = useImportData({
+  endpoint: "/api/isci/import",
+  defaultMode: "add",
+  onSuccess: (result) => {
+    console.log("Import successful", result);
+    loadData();
+  }
+});
+```
+
+**Used By**: Reports
+
+---
+
+#### 5. useFormState Hook
+**Location**: `app/hooks/useFormState.js`
+**Purpose**: Centralized form state management with validation
+
+**Features**:
+- Form data state management
+- Individual and bulk field updates
+- Form reset functionality
+- Error state management
+- Validation support
+- Submit handling
+- Support for both event objects and direct values
+
+**Usage Example**:
+```javascript
+const {
+  formData,
+  errors,
+  isSubmitting,
+  handleChange,
+  handleSubmit,
+  resetForm
+} = useFormState({
+  name: "",
+  email: ""
+}, {
+  validate: (data) => {
+    const errors = {};
+    if (!data.email) errors.email = "Email required";
+    return errors;
+  },
+  onSubmit: async (data) => {
+    await saveData(data);
+  }
+});
+```
+
+**Status**: Created but not yet used (Profile component has unique FormData requirements)
+
+---
 
 ### Import/Export System
 
@@ -865,10 +1081,35 @@ This project is maintained for internal video editing workflow management. When 
 
 ---
 
-**Last Updated**: November 13, 2025
-**Version**: 3.5.0 - Admin Panel Enhancements & Sorting
+**Last Updated**: November 14, 2025
+**Version**: 3.6.0 - Phase 1 Refactoring: Custom Hooks
 
 ## Changelog
+
+### v3.6.0 - Phase 1 Refactoring: Custom Hooks (November 14, 2025)
+- **Major Codebase Refactoring**: Improved maintainability, reusability, and testability
+  - Created 5 custom hooks (993 lines of reusable code)
+  - Refactored 6 components (1,074 lines removed, 43% reduction)
+  - Eliminated 80% code duplication in manager components
+- **Custom Hooks Created**:
+  - `useFetchData`: Eliminates duplicate fetch patterns (97 lines)
+  - `useFormState`: Centralized form state management (170 lines)
+  - `useResourceManager`: Consolidates CRUD operations for managers (298 lines)
+  - `useExportData`: Export filtering and CSV generation (208 lines)
+  - `useImportData`: CSV file import handling (220 lines)
+- **Components Refactored**:
+  - BrandManager: 293 → 82 lines (72% reduction)
+  - UserManager: 353 → 100 lines (72% reduction)
+  - AgencyManager: 341 → 130 lines (62% reduction)
+  - ISCIForm: Replaced duplicate fetch logic with useFetchData
+  - Dashboard: Replaced loadCodes with useFetchData
+  - Reports: 584 → 250 lines (57% reduction) using useExportData + useImportData
+- **Documentation**:
+  - Added comprehensive Custom Hooks section to CLAUDE.md
+  - Created REFACTORING_ANALYSIS.md (initial analysis)
+  - Created REFACTORING_SUMMARY.md (complete metrics and impact)
+  - Created REFACTORING_TEST_RESULTS.md (testing checklist)
+- **Impact**: Better organized, more maintainable, and easily testable codebase
 
 ### v3.5.0 - Admin Panel Enhancements & Sorting (November 13, 2025)
 - **ISCIList Sorting**: Added clickable column headers with ascending/descending sort functionality
