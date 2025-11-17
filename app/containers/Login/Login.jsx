@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { saveUserSession } from "@/utils/auth";
-import { ReactComponent as Logo } from "@/containers/Header/assets/Logo.svg";
+import { ReactComponent as Logo } from "@/assets/Logo.svg";
 import styles from "./Login.module.scss";
 
 const Login = () => {
