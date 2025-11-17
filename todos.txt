@@ -1,0 +1,41 @@
+|- We're going to need a "New ISCI wizard created. It's been request that we add functionality that would allow a user to create multiple codes at once. At the end of this process the user would be able to download a zip file of all of the Slate's that were created.
+
+  - More info on this coming soon
+
+
+
+
+|- We are going to need to change the fields that are being used. This will effect the data, the import/export and the Dashboard.
+
+  I will update the fields here when I get them.
+  {
+    "id": "1",
+    "code": "LVCI2501",
+    "brandId": "1",
+    "assignedEditor": "Sarah Johnson",
+    "brand": "Las Vegas Convention and Visitors Authority",
+    "campaignName": "Visit Las Vegas",
+    "spotTitle": "LVCI_Visit_Las_Vegas_15s_Broadcast",
+    "spotLength": 15,
+    "description": "15-second broadcast spot for Visit Las Vegas campaign",
+    "language": "English",
+    "closedCaptioning": "Yes",
+    "audio": "Stereo LR",
+    "airDate": "2024-08-15",
+    "aspectRatio": "16:9",
+    "version": "B",
+    "channel": "Broadcast",
+    "status": "in_progress",
+    "createdAt": "2025-06-21T23:27:48.815Z",
+    "updatedAt": "2025-11-12T16:40:51.530Z",
+    "completedAt": "2025-11-06T14:45:35.840Z",
+    "agency": "R&R Partners"
+  },
+
+
+
+|- I'll need a list of actual users and brands to add to the system.
+
+
+
+|- In the Edit/View ISCI Code panel, let's create a Tabs (like we have in Admin or Reports) for different information. First tab will be "Full Details" and the second tab will be "Slate".

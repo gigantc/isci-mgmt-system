@@ -1,4 +1,5 @@
 @use "@/styles/variables" as v;
+@use "sass:color";
 
 .isciList {
   width: 100%;
@@ -40,11 +41,11 @@
 
       &:hover {
         color: v.$accent;
-        background-color: lighten(v.$gray, 5%);
+        background-color: color.adjust(v.$gray, $lightness: 5%);
       }
 
       &:active {
-        background-color: lighten(v.$gray, 8%);
+        background-color: color.adjust(v.$gray, $lightness: 8%);
       }
     }
   }

@@ -6,8 +6,8 @@
     background: v.$black;
     border-radius: 0px 0px 32px 32px;
     margin: 0 auto;
-    width: calc(100% - 4rem);
-    height: calc(100vh - 114px - 4rem);
+    width: calc(100% - 2rem);
+    height: calc(100vh - 114px - 2rem);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -17,7 +17,7 @@
     position: sticky;
     top: 0;
     background: v.$black;
-    padding: 5rem 3rem 0 3rem;
+    padding: 2.3rem 3rem 0 3rem;
     z-index: 10;
 
     h2 {

@@ -8,12 +8,12 @@
 
 .pageContent {
   margin: 0 auto;
-  width: calc(100% - 4rem);
+  width: calc(100% - 2rem);
   max-width: 1600px;
   background-color: v.$black;
   border-radius: 0 0 32px 32px;
   // min-height: calc(100vh - 140px);
-  height: calc(100vh - 114px - 4rem);
+  height: calc(100vh - 114px - 2rem);
   display: flex;
   flex-direction: column;
 }
@@ -30,10 +30,9 @@
   align-items: center;
 
   h2 {
-    font-size: 1.75rem;
-    font-weight: 600;
     color: v.$text-primary;
     margin: 0;
+    text-transform:uppercase;
   }
 
   .headerActions {

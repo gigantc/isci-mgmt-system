@@ -6,7 +6,7 @@
     background: v.$black;
     border-radius: 0px 0px 32px 32px;
     margin: 0 auto;
-    width: calc(100% - 4rem);
+    width: calc(100% - 2rem);
     height: 70vh;
     display: flex;
     flex-direction: column;
@@ -18,7 +18,7 @@
     position: sticky;
     top: 0;
     background: v.$black;
-    padding: 5rem 3rem 0 3rem;
+    padding: 2.3rem 3rem 0 3rem;
     z-index: 10;
 
     h2 {
@@ -104,7 +104,7 @@
     justify-content:center;
     align-items:flex-start;
     margin:1rem auto 0;
-    width: calc(100% - 4rem);
+    width: calc(100% - 2rem);
     gap:1rem;
 
     .recentBox {

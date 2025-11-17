@@ -2240,5 +2240,27 @@
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-09-16T06:19:17.906Z",
     "agency": "R&R Partners"
+  },
+  {
+    "id": "9678d452-a8e8-48b3-862c-6f7ce79c0d23",
+    "code": "NIKE2509",
+    "brandId": "2",
+    "assignedEditor": "",
+    "brand": "Nike",
+    "campaignName": "",
+    "spotTitle": "Test_Title",
+    "spotLength": "",
+    "description": "",
+    "language": "English",
+    "closedCaptioning": "No",
+    "audio": "Stereo LR",
+    "agency": "R&R Partners",
+    "airDate": "",
+    "aspectRatio": "16:9",
+    "version": "A",
+    "channel": "Broadcast",
+    "status": "pending",
+    "createdAt": "2025-11-13T18:02:46.852Z",
+    "updatedAt": "2025-11-13T18:02:46.852Z"
   }
 ]

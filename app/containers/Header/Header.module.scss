@@ -6,12 +6,12 @@
   justify-content: flex-end;
   align-items: center;
   padding: 2rem 2rem;
-  margin: 2rem auto 0;
+  margin: 1cap auto 0;
   background-color:v.$black;
-  width: calc(100% - 4rem);
+  width: calc(100% - 2rem);
   border-radius: 32px 32px 0px 0px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  //border-bottom:1px solid rgba(v.$white, 0.1);
+  // box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  // border-bottom:1px solid rgba(v.$white, 0.1);
   z-index:2;
   .title{
     display:flex;

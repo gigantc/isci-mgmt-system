@@ -11,14 +11,15 @@
     "profileImage": "/uploads/profiles/user-1-1762377767810.jpg",
     "recentlyViewed": [
       "LVCI2501",
+      "NIKE2501",
+      "LVCI2504",
       "TLSA2502",
       "LVCI2506",
       "LVCI2505",
       "LVCI2510",
       "TLSA2503",
       "NFLX2502",
-      "APPL2501",
-      "COCA2502"
+      "APPL2501"
     ]
   },
   {
@@ -32,6 +33,7 @@
     "profileUpdatedAt": null,
     "profileImage": null,
     "recentlyViewed": [
+      "NIKE2509",
       "APPL2504",
       "PEPS2501",
       "LVCI2501"
