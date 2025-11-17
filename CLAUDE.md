@@ -58,8 +58,6 @@ isci-mgmt-system/
 │   │   └── Header/             # Global header component
 │   │       ├── Header.jsx
 │   │       ├── Header.module.scss
-│   │       ├── assets/
-│   │       │   └── default_profile_image.jpg
 │   │       └── index.js
 │   ├── routes/                 # Route handlers
 │   │   ├── admin.jsx           # Admin panel route (brands & users)
@@ -84,7 +82,8 @@ isci-mgmt-system/
 │   │   ├── useExportData.js    # Export filtering and CSV generation
 │   │   └── useImportData.js    # CSV import handling
 │   ├── assets/                 # Global assets (shared across components)
-│   │   └── Logo.svg            # ISCIz logo
+│   │   ├── Logo.svg            # ISCIz logo
+│   │   └── default_profile_image.jpg  # Default user profile image
 │   ├── utils/                  # Utility functions
 │   │   └── auth.js             # Authentication helper functions
 │   ├── styles/                 # Global styles and variables

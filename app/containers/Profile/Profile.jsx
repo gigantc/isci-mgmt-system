@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { getUserSession, saveUserSession, isAuthenticated } from "@/utils/auth";
-import DefaultProfileImage from "@/containers/Header/assets/default_profile_image.jpg";
+import DefaultProfileImage from "@/assets/default_profile_image.jpg";
 import styles from "./Profile.module.scss";
 
 const Profile = () => {
