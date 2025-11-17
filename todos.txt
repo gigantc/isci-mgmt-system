@@ -37,5 +37,4 @@
 |- I'll need a list of actual users and brands to add to the system.
 
 
-
 |- In the Edit/View ISCI Code panel, let's create a Tabs (like we have in Admin or Reports) for different information. First tab will be "Full Details" and the second tab will be "Slate".
