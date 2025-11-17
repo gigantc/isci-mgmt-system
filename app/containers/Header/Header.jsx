@@ -3,7 +3,7 @@ import { useLocation, Link } from "react-router";
 import { getUserSession, isAdmin } from "@/utils/auth";
 import ProfileMenu from "@/components/ProfileMenu";
 import styles from "./Header.module.scss";
-import { ReactComponent as Logo } from "./assets/Logo.svg";
+import { ReactComponent as Logo } from "@/assets/Logo.svg";
 import DefaultProfileImage from "./assets/default_profile_image.jpg";
 
 const Header = () => {

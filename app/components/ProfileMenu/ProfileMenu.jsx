@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { clearUserSession } from "@/utils/auth";
 import styles from "./ProfileMenu.module.scss";
-import LogoUrl from "@/containers/Header/assets/Logo.svg?url";
+import LogoUrl from "@/assets/Logo.svg?url";
 
 const ProfileMenu = () => {
   const navigate = useNavigate();
@@ -44,6 +44,8 @@ const ProfileMenu = () => {
   const handleCloseAbout = () => {
     setShowAbout(false);
   };
+
+  const currentYear = new Date().getFullYear();
 
   const handleLogout = () => {
     setIsOpen(false);
@@ -104,7 +106,7 @@ const ProfileMenu = () => {
 
             <div className={styles.aboutBody}>
               <p className={styles.version}>Version 0.8.0-alpha</p>
-              <p className={styles.copyright}>© 2025 Badhawk Workshop. All Rights Reserved.</p>
+              <p className={styles.copyright}>© {currentYear} Badhawk Workshop. All Rights Reserved.</p>
               <p className={styles.credit}>Built with ❤️ by Dan Freeman</p>
             </div>
           </div>
