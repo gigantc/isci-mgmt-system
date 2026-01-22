@@ -113,7 +113,7 @@ npm run preview
 
 ### Production Deployment
 
-See [AWS_EC2_DEPLOYMENT.md](AWS_EC2_DEPLOYMENT.md) for complete deployment guide.
+The app is deployed on AWS EC2. See the Production Environment section below for details.
 
 **Quick deployment** (on server):
 ```bash
@@ -245,10 +245,8 @@ See CLAUDE.md for detailed hook documentation.
 
 ## Documentation
 
-- [CLAUDE.md](CLAUDE.md) - Complete technical documentation for AI assistants
-- [AWS_EC2_DEPLOYMENT.md](AWS_EC2_DEPLOYMENT.md) - Step-by-step deployment guide
-- [AWS_QUICK_REFERENCE.md](AWS_QUICK_REFERENCE.md) - Quick command reference
-- [DEPLOYMENT_FILES_README.md](DEPLOYMENT_FILES_README.md) - Deployment files overview
+- [CLAUDE.md](CLAUDE.md) - Complete technical documentation for AI assistants and developers
+- [README.md](README.md) - This file - project overview, features, and deployment guide
 
 ## Version
 
