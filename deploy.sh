@@ -51,8 +51,9 @@ echo -e "${GREEN}✓ Code updated${NC}"
 echo ""
 
 # Step 2: Install dependencies
+# Note: We need ALL dependencies (including dev) because build requires react-router CLI
 echo -e "${YELLOW}[2/6] Installing dependencies...${NC}"
-npm install --omit=dev || {
+npm install || {
     echo -e "${RED}npm install failed${NC}"
     exit 1
 }
