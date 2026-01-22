@@ -1070,6 +1070,151 @@ If duplicate codes are generated:
 - Verify regex pattern in `generateISCICode()` is correct
 - May need to add unique constraint when migrating to database
 
+## Production Deployment
+
+The ISCI Management System is deployed on AWS EC2 and accessible via HTTP.
+
+### Deployment Environment
+
+- **Platform**: AWS EC2 (Ubuntu 24.04 LTS)
+- **Live URL**: http://54.158.87.192
+- **Node.js**: v20.20.0
+- **Process Manager**: PM2 (with auto-restart on crashes and server reboot)
+- **Web Server**: Nginx (reverse proxy on port 80)
+- **Application Directory**: `/var/www/isci-mgmt-system`
+
+### Deployment Files
+
+The repository includes complete deployment configuration:
+
+1. **ecosystem.config.cjs** - PM2 process manager configuration
+   - **Important**: Uses `.cjs` extension for CommonJS compatibility (package.json has `"type": "module"`)
+   - Runs `npm start` (react-router-serve) instead of directly running build file
+   - React Router v7 requires `react-router-serve` to properly start the SSR server
+   - Configured for fork mode (not cluster) with auto-restart
+   - Logs to `/var/www/isci-mgmt-system/logs/`
+
+2. **nginx.conf** - Nginx reverse proxy configuration
+   - Proxies requests from port 80 to Node.js app on port 3000
+   - Serves static assets directly (build/client/assets/, uploads/)
+   - Includes gzip compression, security headers, and WebSocket support
+   - **Note**: Contains placeholder `yourdomain.com` - replace before SSL setup
+
+3. **deploy.sh** - Automated deployment script
+   - Pulls latest code from GitHub
+   - Installs dependencies with `npm install --omit=dev`
+   - Backs up data files before deployment
+   - Builds application
+   - Restarts PM2 process
+   - Cleans up old backups (7+ days)
+
+4. **AWS_EC2_DEPLOYMENT.md** - Complete deployment guide
+   - Step-by-step instructions for EC2 setup
+   - Security configuration, SSL setup (Let's Encrypt), backup strategies
+   - Tested on Ubuntu 24.04 LTS
+
+5. **AWS_QUICK_REFERENCE.md** - Quick command reference for daily operations
+
+6. **.env.example** - Environment configuration template
+
+### PM2 Commands (On Server)
+
+```bash
+# View application status
+pm2 status
+
+# View logs (live)
+pm2 logs isci-mgmt
+
+# View last 50 log lines
+pm2 logs isci-mgmt --lines 50
+
+# Restart application
+pm2 restart isci-mgmt
+
+# Stop application
+pm2 stop isci-mgmt
+
+# Monitor resources
+pm2 monit
+```
+
+### Deployment Workflow
+
+**Initial Deployment**: Follow AWS_EC2_DEPLOYMENT.md completely
+
+**Updating Application**:
+1. Push changes to GitHub
+2. SSH into server: `ssh -i key.pem ubuntu@54.158.87.192`
+3. Run deployment script: `cd /var/www/isci-mgmt-system && ./deploy.sh`
+4. Verify: `pm2 status` and `pm2 logs isci-mgmt`
+
+### Important Deployment Notes
+
+1. **React Router v7 Requirement**: The app uses `npm start` (react-router-serve) instead of running the build file directly with node. Running `node build/server/index.js` will start the server but it exits immediately without output. Always use PM2 with the ecosystem.config.cjs file.
+
+2. **File Extension**: `ecosystem.config.cjs` uses CommonJS syntax because package.json has `"type": "module"`. Do not rename to `.js` or it will fail to load.
+
+3. **Data Persistence**: JSON files in `data/` directory are persisted on the server. Profile images are stored in `public/uploads/profiles/`.
+
+4. **Logs**: PM2 logs are written to `/var/www/isci-mgmt-system/logs/` and are excluded from git via `.gitignore`.
+
+5. **SSL/HTTPS**: Not yet configured. When ready, update nginx.conf with domain name and follow Let's Encrypt setup in AWS_EC2_DEPLOYMENT.md Step 7.
+
+6. **Security**: Security groups should allow SSH (port 22) from your IP only, and HTTP (port 80) from anywhere. HTTPS (port 443) will be needed when SSL is configured.
+
+### Server Management
+
+```bash
+# SSH into server
+ssh -i /path/to/key.pem ubuntu@54.158.87.192
+
+# Check Nginx status
+sudo systemctl status nginx
+
+# Reload Nginx config
+sudo systemctl reload nginx
+
+# Check disk space
+df -h
+
+# Check memory
+free -h
+
+# View Nginx logs
+sudo tail -f /var/log/nginx/isci-mgmt-access.log
+sudo tail -f /var/log/nginx/isci-mgmt-error.log
+```
+
+### Troubleshooting Production Issues
+
+**502 Bad Gateway**: App not running or not listening on port 3000
+```bash
+pm2 status                    # Check if online
+pm2 logs isci-mgmt --err      # Check error logs
+sudo lsof -i :3000            # Check if port is listening
+curl http://localhost:3000    # Test local connection
+pm2 restart isci-mgmt         # Restart if needed
+```
+
+**App Crashes on Start**: Check PM2 error logs
+```bash
+pm2 logs isci-mgmt --err --lines 100
+```
+
+**Out of Memory**: Restart app to free memory
+```bash
+free -h                       # Check memory usage
+pm2 restart isci-mgmt         # Restart app
+```
+
+**Deployment Script Fails**: Check git permissions and build process
+```bash
+git status                    # Check for uncommitted changes
+npm install                   # Try manual install
+npm run build                 # Try manual build
+```
+
 ## Contact & Collaboration
 
 This project is maintained for internal video editing workflow management. When working on this project:
@@ -1081,10 +1226,28 @@ This project is maintained for internal video editing workflow management. When 
 
 ---
 
-**Last Updated**: November 14, 2025
-**Version**: 3.6.0 - Phase 1 Refactoring: Custom Hooks
+**Last Updated**: January 22, 2026
+**Version**: 3.7.0 - Production Deployment
 
 ## Changelog
+
+### v3.7.0 - Production Deployment (January 22, 2026)
+- **AWS EC2 Deployment**: Successfully deployed to production on Ubuntu 24.04 LTS
+  - Live at: http://54.158.87.192
+  - Node.js v20.20.0, PM2 process manager, Nginx reverse proxy
+- **Deployment Configuration**:
+  - Fixed `ecosystem.config.js` → `ecosystem.config.cjs` for ES module compatibility
+  - Updated to use `npm start` (react-router-serve) instead of direct node execution
+  - Fixed deprecated `npm --production` flag → `npm install --omit=dev`
+  - Created `.env.example` template file
+  - Added TODO comments to nginx.conf for domain placeholders
+- **Documentation**:
+  - Created comprehensive deployment guides (AWS_EC2_DEPLOYMENT.md, AWS_QUICK_REFERENCE.md)
+  - Added Production Deployment section to CLAUDE.md
+  - Updated README.md with live demo link and deployment info
+  - Created DEPLOYMENT_FILES_README.md overview
+- **PM2 Configuration**: Auto-start on server reboot, automatic crash recovery
+- **Next Steps**: SSL/HTTPS setup (Let's Encrypt), automated backups to S3
 
 ### v3.6.0 - Phase 1 Refactoring: Custom Hooks (November 14, 2025)
 - **Major Codebase Refactoring**: Improved maintainability, reusability, and testability
