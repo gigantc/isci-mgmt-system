@@ -52,7 +52,7 @@ echo ""
 
 # Step 2: Install dependencies
 echo -e "${YELLOW}[2/6] Installing dependencies...${NC}"
-npm install --production || {
+npm install --omit=dev || {
     echo -e "${RED}npm install failed${NC}"
     exit 1
 }
@@ -99,7 +99,7 @@ if pm2 describe isci-mgmt > /dev/null 2>&1; then
     }
 else
     # First deployment - start with ecosystem file
-    pm2 start ecosystem.config.js || {
+    pm2 start ecosystem.config.cjs || {
         echo -e "${RED}PM2 start failed${NC}"
         exit 1
     }

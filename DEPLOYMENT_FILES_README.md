@@ -2,6 +2,8 @@
 
 This document explains the deployment-related files created for AWS EC2 deployment.
 
+> **Deployment Status**: These files have been prepared and reviewed but not yet deployed to a live AWS EC2 instance. All configurations are production-ready and follow best practices.
+
 ## Files Created
 
 ### 1. `AWS_EC2_DEPLOYMENT.md`
@@ -79,7 +81,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-**Important:** Replace `yourdomain.com` with your actual domain before deploying!
+**Important:** Replace ALL instances of `yourdomain.com` with your actual domain before deploying! Look for TODO comments in the file.
 
 ---
 

@@ -2,6 +2,8 @@
 
 This guide walks you through deploying the ISCI Management System to an AWS EC2 instance.
 
+> **Note**: This deployment setup has been prepared but not yet tested on a live AWS EC2 instance. All configurations follow AWS and industry best practices. Test thoroughly in a staging environment before production deployment.
+
 ## Prerequisites
 
 - AWS account with EC2 access
