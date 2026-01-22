@@ -105,8 +105,8 @@ const ProfileMenu = () => {
             </div>
 
             <div className={styles.aboutBody}>
-              <p className={styles.version}>Version 0.8.0-alpha</p>
-              <p className={styles.copyright}>© {currentYear} Badhawk Workshop. All Rights Reserved.</p>
+              <p className={styles.version}>Version 0.9.0-alpha</p>
+              <p className={styles.copyright}>© {currentYear} R&R partners. All Rights Reserved.</p>
               <p className={styles.credit}>Built with ❤️ by Dan Freeman</p>
             </div>
           </div>

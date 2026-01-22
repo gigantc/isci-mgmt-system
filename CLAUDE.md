@@ -865,12 +865,12 @@ npm run preview
 ## Future Enhancements (Roadmap)
 
 - [ ] Database integration (PostgreSQL/MySQL)
-- [x] User authentication and authorization ✅ (v3.3.0)
-- [x] Multi-user collaboration ✅ (v3.3.0 - multi-user support)
+- [x] User authentication and authorization ✅ (v0.4.0-alpha)
+- [x] Multi-user collaboration ✅ (v0.4.0-alpha - multi-user support)
 - [ ] File attachments for ISCI codes
-- [x] Export to CSV/Excel ✅ (v3.4.0 - CSV export with filtering)
-- [x] Advanced filtering and sorting by brand, status, date ✅ (v3.4.0 - export filtering)
-- [x] Import from CSV/Excel ✅ (v3.4.0 - CSV import with 3 modes)
+- [x] Export to CSV/Excel ✅ (v0.5.0-alpha - CSV export with filtering)
+- [x] Advanced filtering and sorting by brand, status, date ✅ (v0.5.0-alpha - export filtering)
+- [x] Import from CSV/Excel ✅ (v0.5.0-alpha - CSV import with 3 modes)
 - [ ] Dashboard analytics and reporting (partially complete - Recently Created section)
 - [ ] Activity logs and audit trail
 - [ ] Email notifications for due dates
@@ -1227,11 +1227,11 @@ This project is maintained for internal video editing workflow management. When 
 ---
 
 **Last Updated**: January 22, 2026
-**Version**: 3.7.0 - Production Deployment
+**Version**: 0.8.0-alpha - Production Deployment
 
 ## Changelog
 
-### v3.7.0 - Production Deployment (January 22, 2026)
+### v0.8.0-alpha - Production Deployment (January 22, 2026)
 - **AWS EC2 Deployment**: Successfully deployed to production on Ubuntu 24.04 LTS
   - Live at: http://54.158.87.192
   - Node.js v20.20.0, PM2 process manager, Nginx reverse proxy
@@ -1249,7 +1249,7 @@ This project is maintained for internal video editing workflow management. When 
 - **PM2 Configuration**: Auto-start on server reboot, automatic crash recovery
 - **Next Steps**: SSL/HTTPS setup (Let's Encrypt), automated backups to S3
 
-### v3.6.0 - Phase 1 Refactoring: Custom Hooks (November 14, 2025)
+### v0.7.0-alpha - Phase 1 Refactoring: Custom Hooks (November 14, 2025)
 - **Major Codebase Refactoring**: Improved maintainability, reusability, and testability
   - Created 5 custom hooks (993 lines of reusable code)
   - Refactored 6 components (1,074 lines removed, 43% reduction)
@@ -1274,7 +1274,7 @@ This project is maintained for internal video editing workflow management. When 
   - Created REFACTORING_TEST_RESULTS.md (testing checklist)
 - **Impact**: Better organized, more maintainable, and easily testable codebase
 
-### v3.5.0 - Admin Panel Enhancements & Sorting (November 13, 2025)
+### v0.6.0-alpha - Admin Panel Enhancements & Sorting (November 13, 2025)
 - **ISCIList Sorting**: Added clickable column headers with ascending/descending sort functionality
   - All columns sortable: ISCI Code, Editor, Brand, Campaign, Spot Title, Length, Air Date, Status
   - Visual indicators (▲/▼) show active sort column and direction
@@ -1298,7 +1298,7 @@ This project is maintained for internal video editing workflow management. When 
 
 
 
-### v3.4.0 - Role-Based Access Control & Import/Export System (November 6, 2025)
+### v0.5.0-alpha - Role-Based Access Control & Import/Export System (November 6, 2025)
 - **Import/Export System**: Added comprehensive CSV import/export functionality on `/reports` page
   - Export with advanced filtering (date, status, editor, brand, channel, spot length)
   - Import with three modes: add new, update existing, replace all
@@ -1324,7 +1324,7 @@ This project is maintained for internal video editing workflow management. When 
 - **Header Component**: Simplified to automatically determine navigation based on user role (no props needed)
 - **ISCIForm viewOnly Mode**: Added read-only mode for non-admin users viewing ISCI codes
 
-### v3.3.0 - User Management & Authentication System (January 6, 2025)
+### v0.4.0-alpha - User Management & Authentication System (January 6, 2025)
 - Implemented user authentication system with login and session management
 - Added UserManager component for admin user CRUD operations
 - Created tabbed admin panel interface (Brand Management / User Management)
@@ -1338,7 +1338,7 @@ This project is maintained for internal video editing workflow management. When 
 - Created 9 test users (1 admin, 8 editors)
 - **Note**: Current auth is POC only - uses sessionStorage and plain-text passwords
 
-### v3.2.0 - Grid Layout & Decoupled Edit Workflow (January 5, 2025)
+### v0.3.0-alpha - Grid Layout & Decoupled Edit Workflow (January 5, 2025)
 - Refactored ISCIList from HTML table to CSS Grid layout
 - Created dedicated EditISCI container and route (`/edit/:code`)
 - Decoupled edit functionality from Dashboard component
@@ -1347,10 +1347,10 @@ This project is maintained for internal video editing workflow management. When 
 - Updated color scheme and theme variables
 - Enhanced Header component with profile section and navigation
 
-### v3.1.0 - CSS Modules & Header Component (November 4, 2025)
+### v0.2.0-alpha - CSS Modules & Header Component (November 4, 2025)
 - Converted all component styles to CSS Modules for scoped styling
 - Enhanced Header component with flexible props
 
-### v3.0.0 - Brand Management System (Previous)
+### v0.1.0-alpha - Brand Management System (Previous)
 - Implemented brand management and auto-generation system
 - Added 100 test ISCI codes and 15 brands
