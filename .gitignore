@@ -12,3 +12,14 @@
 
 # PM2 logs (server-side only)
 /logs/
+
+/app/generated/prisma
+
+# Database files
+dev.db
+dev.db-journal
+*.db
+*.db-journal
+
+# Prisma
+node_modules/.prisma

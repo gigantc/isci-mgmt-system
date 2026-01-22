@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id
+  email            String    @unique
+  password         String
+  firstName        String
+  lastName         String
+  userType         String    // "admin" or "editor"
+  recentlyViewed   String    @default("[]") // JSON string array of ISCI codes
+  profileImage     String?
+  createdAt        DateTime
+  updatedAt        DateTime
+  profileUpdatedAt DateTime?
+}
+
+model Brand {
+  id        String     @id
+  name      String
+  code      String     @unique
+  active    Boolean    @default(true)
+  createdAt DateTime
+  updatedAt DateTime
+
+  isciCodes ISCICode[]
+}
+
+model ISCICode {
+  id               String    @id
+  code             String    @unique
+  brandId          String
+  brand            Brand     @relation(fields: [brandId], references: [id])
+  assignedEditor   String?
+  campaignName     String?
+  spotTitle        String
+  spotLength       Int?
+  description      String?
+  language         String    @default("English")
+  closedCaptioning String    @default("No")
+  audio            String    @default("Stereo LR")
+  airDate          String?   // Stored as ISO string for SQLite compatibility
+  aspectRatio      String    @default("16:9")
+  version          String    @default("A")
+  channel          String    @default("Broadcast")
+  status           String    @default("pending")
+  agency           String?
+  createdAt        DateTime
+  updatedAt        DateTime
+  completedAt      DateTime?
+
+  @@index([brandId])
+}
