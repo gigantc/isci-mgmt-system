@@ -8,3 +8,6 @@
 
 # Netlify (if accidentally run)
 .netlify
+
+# PM2 logs (server-side only)
+/logs/
