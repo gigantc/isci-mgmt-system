@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 /**
  * useFetchData - Custom hook for fetching data from API endpoints
@@ -41,12 +41,17 @@ const useFetchData = (endpoint, options = {}) => {
   const {
     filter,
     transform,
-    initialValue = [],
+    initialValue,
     fetchOnMount = true,
     dependencies = []
   } = options;
 
-  const [data, setData] = useState(initialValue);
+  const stableInitialValue = useMemo(
+    () => (initialValue === undefined ? [] : initialValue),
+    [initialValue]
+  );
+
+  const [data, setData] = useState(stableInitialValue);
   const [loading, setLoading] = useState(fetchOnMount);
   const [error, setError] = useState(null);
 
@@ -77,11 +82,11 @@ const useFetchData = (endpoint, options = {}) => {
     } catch (err) {
       console.error(`Error loading data from ${endpoint}:`, err);
       setError(err);
-      setData(initialValue); // Reset to initial value on error
+      setData(stableInitialValue); // Reset to initial value on error
     } finally {
       setLoading(false);
     }
-  }, [endpoint, filter, transform, initialValue]);
+  }, [endpoint, filter, transform, stableInitialValue]);
 
   useEffect(() => {
     if (fetchOnMount) {
