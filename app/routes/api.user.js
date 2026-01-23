@@ -1,7 +1,7 @@
-import { readFile, writeFile } from "fs/promises";
+import { writeFile } from "fs/promises";
 import { join } from "path";
+import { prisma } from "@/lib/prisma";
 
-const USERS_FILE = join(process.cwd(), "data", "users.json");
 const UPLOADS_DIR = join(process.cwd(), "public", "uploads", "profiles");
 
 /**
@@ -23,21 +23,17 @@ export async function action({ request }) {
       const currentPassword = formData.get("currentPassword");
       const profileImage = formData.get("profileImage"); // File or null
 
-      // Load users from JSON file
-      const fileContent = await readFile(USERS_FILE, "utf-8");
-      const users = JSON.parse(fileContent);
-
       // Find user by ID
-      const userIndex = users.findIndex(u => u.id === id);
+      const user = await prisma.user.findUnique({
+        where: { id },
+      });
 
-      if (userIndex === -1) {
+      if (!user) {
         return Response.json(
           { success: false, message: "User not found" },
           { status: 404 }
         );
       }
-
-      const user = users[userIndex];
 
       // If changing password, verify current password
       if (password && password !== user.password) {
@@ -51,7 +47,12 @@ export async function action({ request }) {
 
       // Check if email is being changed and if it's already in use
       if (email !== user.email) {
-        const emailExists = users.some((u, index) => u.email === email && index !== userIndex);
+        const emailExists = await prisma.user.findFirst({
+          where: {
+            email,
+            NOT: { id },
+          },
+        });
         if (emailExists) {
           return Response.json(
             { success: false, message: "Email is already in use" },
@@ -95,25 +96,30 @@ export async function action({ request }) {
       }
 
       // Update user data
-      users[userIndex] = {
-        ...user,
-        firstName,
-        lastName,
-        email,
-        password: password || user.password, // Keep old password if not changing
-        profileImage: profileImagePath,
-        profileUpdatedAt: new Date().toISOString()
+      const updatedUser = await prisma.user.update({
+        where: { id },
+        data: {
+          firstName,
+          lastName,
+          email,
+          password: password || user.password, // Keep old password if not changing
+          profileImage: profileImagePath,
+          profileUpdatedAt: new Date(),
+        },
+      });
+
+      // Parse recentlyViewed from JSON string to array
+      const userWithArray = {
+        ...updatedUser,
+        recentlyViewed: JSON.parse(updatedUser.recentlyViewed || "[]"),
       };
 
-      // Save updated users array
-      await writeFile(USERS_FILE, JSON.stringify(users, null, 2));
-
       // Return updated user without password
-      const { password: _, ...userWithoutPassword } = users[userIndex];
+      const { password: _, ...userWithoutPassword } = userWithArray;
 
       return Response.json({
         success: true,
-        user: userWithoutPassword
+        user: userWithoutPassword,
       });
 
     } catch (error) {

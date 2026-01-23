@@ -1,12 +1,9 @@
-import { readFile } from "fs/promises";
-import { join } from "path";
-
-const USERS_FILE = join(process.cwd(), "data", "users.json");
+import { prisma } from "@/lib/prisma";
 
 /**
  * Authentication API Endpoint
  *
- * Handles user login by checking credentials against users.json
+ * Handles user login by checking credentials against database
  * WARNING: This is a POC - passwords are plain text, no encryption
  */
 
@@ -16,12 +13,10 @@ export async function action({ request }) {
       const formData = await request.json();
       const { email, password } = formData;
 
-      // Load users from JSON file
-      const fileContent = await readFile(USERS_FILE, "utf-8");
-      const users = JSON.parse(fileContent);
-
       // Find user by email
-      const user = users.find(u => u.email === email);
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
 
       if (!user) {
         return Response.json(
@@ -38,12 +33,18 @@ export async function action({ request }) {
         );
       }
 
+      // Parse recentlyViewed from JSON string to array
+      const userWithArray = {
+        ...user,
+        recentlyViewed: JSON.parse(user.recentlyViewed || "[]"),
+      };
+
       // Login successful - return user data without password
-      const { password: _, ...userWithoutPassword } = user;
+      const { password: _, ...userWithoutPassword } = userWithArray;
 
       return Response.json({
         success: true,
-        user: userWithoutPassword
+        user: userWithoutPassword,
       });
 
     } catch (error) {

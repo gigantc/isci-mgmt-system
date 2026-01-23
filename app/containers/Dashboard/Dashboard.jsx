@@ -85,50 +85,39 @@ const Dashboard = () => {
   }, [loadCodes]);
 
   /**
-   * saveCodes
-   *
-   * Saves the entire array of codes back to the server.
-   * We send ALL the codes, not just the ones that changed.
-   * (Simple but not super efficient - future devs might want to improve this!)
-   */
-  const saveCodes = async (updatedCodes) => {
-    try {
-      // Make a POST request with the updated codes
-      const response = await fetch("/api/isci", {
-        method: "POST",                              // POST = "I'm sending you data"
-        headers: {
-          "Content-Type": "application/json",        // "This data is JSON, FYI"
-        },
-        body: JSON.stringify(updatedCodes),          // Turn our array into a JSON string
-      });
-
-      if (response.ok) {
-        // Success! Refetch codes to update local state
-        loadCodes();
-      } else {
-        console.error("Failed to save ISCI codes");
-      }
-    } catch (error) {
-      console.error("Error saving ISCI codes:", error);
-      // TODO: Show an error toast notification?
-    }
-  };
-
-  /**
    * handleDeleteCode
    *
    * DANGER ZONE! 🚨 Permanently deletes an ISCI code.
    * We ask for confirmation first because we're not monsters.
    */
-  const handleDeleteCode = (id) => {
+  const handleDeleteCode = async (id) => {
     // Show a browser confirmation dialog
-    if (confirm("Are you sure you want to delete this ISCI code?")) {
-      // Filter out the code with the matching ID
-      // .filter() keeps everything EXCEPT the one we want to delete
-      const updatedCodes = codes.filter(code => code.id !== id);
-      saveCodes(updatedCodes);
+    if (!confirm("Are you sure you want to delete this ISCI code?")) {
+      return; // User cancelled - do nothing
     }
-    // If they clicked "Cancel", nothing happens! Crisis averted.
+
+    try {
+      const response = await fetch("/api/isci", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Success! Refetch codes to update local state
+        loadCodes();
+      } else {
+        console.error("Failed to delete ISCI code:", result.error);
+        // TODO: Show an error toast notification
+      }
+    } catch (error) {
+      console.error("Error deleting ISCI code:", error);
+      // TODO: Show an error toast notification
+    }
   };
 
   /**

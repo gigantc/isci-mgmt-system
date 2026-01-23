@@ -117,25 +117,22 @@ const EditISCI = () => {
         : code.completedAt,
     };
 
-    // Replace the old code with updated one in the array
-    const updatedCodes = allCodes.map(c =>
-      c.id === code.id ? updatedCode : c
-    );
-
     try {
       const response = await fetch("/api/isci", {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedCodes),
+        body: JSON.stringify(updatedCode),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+
+      if (response.ok && result.success) {
         // Success! Navigate back to dashboard
         navigate("/");
       } else {
-        console.error("Failed to save ISCI code");
+        console.error("Failed to save ISCI code:", result.error);
         // TODO: Show error message to user
       }
     } catch (err) {

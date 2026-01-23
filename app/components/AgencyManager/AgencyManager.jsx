@@ -18,7 +18,7 @@ const AgencyManager = () => {
     handleNew,
     resetForm,
     setItems: setAgencies,
-    saveItems
+    loadItems
   } = useResourceManager("/api/agencies", {
     initialFormData: { name: "", isDefault: false },
     validate: (data) => {
@@ -44,48 +44,87 @@ const AgencyManager = () => {
     hasActiveToggle: true
   });
 
+  // Helper to update a single agency via PUT
+  const updateAgencyApi = async (agency) => {
+    const response = await fetch("/api/agencies", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(agency),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Failed to update agency");
+    }
+    return result;
+  };
+
+  // Helper to create a new agency via POST
+  const createAgencyApi = async (agency) => {
+    const response = await fetch("/api/agencies", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(agency),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Failed to create agency");
+    }
+    return result;
+  };
+
   // Custom submit handler to handle default agency logic
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const now = new Date().toISOString();
-    let updatedAgencies;
-
-    if (editingAgency) {
-      // Update existing agency
-      updatedAgencies = agencies.map(a => {
-        if (a.id === editingAgency.id) {
-          return { ...a, ...formData, updatedAt: now };
-        }
-        // If setting this as default, unset others
-        if (formData.isDefault && a.isDefault) {
-          return { ...a, isDefault: false, updatedAt: now };
-        }
-        return a;
-      });
-    } else {
-      // Create new agency
-      const newAgency = {
-        id: Date.now().toString(),
-        name: formData.name,
-        isDefault: formData.isDefault,
-        active: true,
-        createdAt: now,
-        updatedAt: now,
-      };
-
-      // If setting as default, unset others
-      if (formData.isDefault) {
-        updatedAgencies = agencies.map(a => ({ ...a, isDefault: false, updatedAt: now }));
-        updatedAgencies.push(newAgency);
-      } else {
-        updatedAgencies = [...agencies, newAgency];
-      }
+    // Validate
+    if (!formData.name.trim()) {
+      return;
     }
 
-    const success = await saveItems(updatedAgencies);
-    if (success) {
+    const now = new Date().toISOString();
+
+    try {
+      if (editingAgency) {
+        // Update existing agency
+        const updatedAgency = { ...editingAgency, ...formData, updatedAt: now };
+        await updateAgencyApi(updatedAgency);
+
+        // If setting this as default, unset others
+        if (formData.isDefault) {
+          for (const a of agencies) {
+            if (a.id !== editingAgency.id && a.isDefault) {
+              await updateAgencyApi({ ...a, isDefault: false, updatedAt: now });
+            }
+          }
+        }
+      } else {
+        // Create new agency
+        const newAgency = {
+          id: Date.now().toString(),
+          name: formData.name,
+          isDefault: formData.isDefault,
+          active: true,
+          createdAt: now,
+          updatedAt: now,
+        };
+
+        // If setting as default, unset others first
+        if (formData.isDefault) {
+          for (const a of agencies) {
+            if (a.isDefault) {
+              await updateAgencyApi({ ...a, isDefault: false, updatedAt: now });
+            }
+          }
+        }
+
+        await createAgencyApi(newAgency);
+      }
+
+      // Reload agencies and reset form
+      await loadItems();
       resetForm();
+    } catch (error) {
+      console.error("Error saving agency:", error);
     }
   };
 
@@ -117,15 +156,29 @@ const AgencyManager = () => {
   const handleSetDefault = async (agency) => {
     if (!confirm(`Set "${agency.name}" as the default agency?`)) return;
 
-    const updatedAgencies = agencies.map(a => ({
-      ...a,
-      isDefault: a.id === agency.id,
-      // Ensure default agency is active
-      active: a.id === agency.id ? true : a.active,
-      updatedAt: new Date().toISOString()
-    }));
+    const now = new Date().toISOString();
 
-    await saveItems(updatedAgencies);
+    try {
+      // Unset current default
+      for (const a of agencies) {
+        if (a.isDefault && a.id !== agency.id) {
+          await updateAgencyApi({ ...a, isDefault: false, updatedAt: now });
+        }
+      }
+
+      // Set new default (and ensure it's active)
+      await updateAgencyApi({
+        ...agency,
+        isDefault: true,
+        active: true,
+        updatedAt: now
+      });
+
+      // Reload agencies
+      await loadItems();
+    } catch (error) {
+      console.error("Error setting default agency:", error);
+    }
   };
 
   return (

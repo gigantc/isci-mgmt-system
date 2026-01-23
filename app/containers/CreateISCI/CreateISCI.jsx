@@ -55,22 +55,22 @@ const CreateISCI = () => {
       updatedAt: new Date().toISOString(),
     };
 
-    const updatedCodes = [...codes, newCode];
-
     try {
       const response = await fetch("/api/isci", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedCodes),
+        body: JSON.stringify(newCode),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+
+      if (response.ok && result.success) {
         // Success! Navigate back to dashboard
         navigate("/");
       } else {
-        console.error("Failed to save ISCI code");
+        console.error("Failed to save ISCI code:", result.error);
         // TODO: Show error message to user
       }
     } catch (err) {

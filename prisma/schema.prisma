@@ -35,6 +35,15 @@ model Brand {
   isciCodes ISCICode[]
 }
 
+model Agency {
+  id        String   @id
+  name      String   @unique
+  isDefault Boolean  @default(false)
+  active    Boolean  @default(true)
+  createdAt DateTime
+  updatedAt DateTime
+}
+
 model ISCICode {
   id               String    @id
   code             String    @unique

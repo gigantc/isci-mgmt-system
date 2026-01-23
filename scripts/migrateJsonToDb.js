@@ -15,10 +15,12 @@ async function migrate() {
     // Load JSON files
     const brandsPath = path.join(__dirname, "../data/brands.json");
     const usersPath = path.join(__dirname, "../data/users.json");
+    const agenciesPath = path.join(__dirname, "../data/agencies.json");
     const isciCodesPath = path.join(__dirname, "../data/isci-codes.json");
 
     const brandsJson = JSON.parse(await fs.readFile(brandsPath, "utf-8"));
     const usersJson = JSON.parse(await fs.readFile(usersPath, "utf-8"));
+    const agenciesJson = JSON.parse(await fs.readFile(agenciesPath, "utf-8"));
     const isciCodesJson = JSON.parse(await fs.readFile(isciCodesPath, "utf-8"));
 
     // 1. Migrate Brands
@@ -60,7 +62,23 @@ async function migrate() {
     }
     console.log(`✅ Migrated ${usersJson.length} users\n`);
 
-    // 3. Migrate ISCI Codes
+    // 3. Migrate Agencies
+    console.log("🏢 Migrating agencies...");
+    for (const agency of agenciesJson) {
+      await prisma.agency.create({
+        data: {
+          id: agency.id,
+          name: agency.name,
+          isDefault: agency.isDefault,
+          active: agency.active,
+          createdAt: new Date(agency.createdAt),
+          updatedAt: new Date(agency.updatedAt),
+        },
+      });
+    }
+    console.log(`✅ Migrated ${agenciesJson.length} agencies\n`);
+
+    // 4. Migrate ISCI Codes
     console.log("📝 Migrating ISCI codes...");
     for (const code of isciCodesJson) {
       await prisma.iSCICode.create({

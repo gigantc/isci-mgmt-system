@@ -1,32 +1,95 @@
-import { readFile, writeFile } from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
+/**
+ * API Route: /api/agencies
+ *
+ * RESTful CRUD operations for agencies.
+ * - GET: Fetch all agencies
+ * - POST: Create a new agency
+ * - PUT: Update an existing agency
+ * - DELETE: Delete an agency
+ */
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { prisma } from "@/lib/prisma";
 
-const AGENCIES_FILE = path.join(__dirname, "../../data/agencies.json");
-
-// GET /api/agencies - Returns all agencies
+/**
+ * loader function - GET /api/agencies
+ * Fetches all agencies
+ */
 export async function loader() {
   try {
-    const data = await readFile(AGENCIES_FILE, "utf-8");
-    const agencies = JSON.parse(data);
-    return agencies;
+    const agencies = await prisma.agency.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return Response.json(agencies);
   } catch (error) {
     console.error("Error reading agencies:", error);
-    return [];
+    return Response.json([], { status: 500 });
   }
 }
 
-// POST /api/agencies - Save agencies
+/**
+ * action function - POST/PUT/DELETE /api/agencies
+ * Handles create, update, and delete operations
+ */
 export async function action({ request }) {
+  const method = request.method;
+
   try {
-    const agencies = await request.json();
-    await writeFile(AGENCIES_FILE, JSON.stringify(agencies, null, 2));
-    return { success: true };
+    // CREATE - POST /api/agencies
+    if (method === "POST") {
+      const data = await request.json();
+      console.log("📝 Creating new agency:", data.name);
+
+      const agency = await prisma.agency.create({
+        data: {
+          id: data.id,
+          name: data.name,
+          isDefault: data.isDefault || false,
+          active: data.active !== undefined ? data.active : true,
+          createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+          updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+        },
+      });
+
+      console.log("✅ Created agency:", agency.name);
+      return Response.json({ success: true, agency });
+    }
+
+    // UPDATE - PUT /api/agencies
+    if (method === "PUT") {
+      const data = await request.json();
+      console.log("📝 Updating agency:", data.id);
+
+      const agency = await prisma.agency.update({
+        where: { id: data.id },
+        data: {
+          name: data.name,
+          isDefault: data.isDefault,
+          active: data.active,
+          updatedAt: new Date(),
+        },
+      });
+
+      console.log("✅ Updated agency:", agency.name);
+      return Response.json({ success: true, agency });
+    }
+
+    // DELETE - DELETE /api/agencies
+    if (method === "DELETE") {
+      const data = await request.json();
+      console.log("🗑️ Deleting agency:", data.id);
+
+      await prisma.agency.delete({
+        where: { id: data.id },
+      });
+
+      console.log("✅ Deleted agency:", data.id);
+      return Response.json({ success: true });
+    }
+
+    return Response.json({ success: false, error: "Method not allowed" }, { status: 405 });
   } catch (error) {
-    console.error("Error saving agencies:", error);
-    return { success: false, error: error.message };
+    console.error("❌ Error in agencies API:", error);
+    console.error("Error details:", error.message);
+    return Response.json({ success: false, error: error.message }, { status: 500 });
   }
 }

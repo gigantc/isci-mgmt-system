@@ -1,86 +1,201 @@
 /**
  * API Route: /api/isci
  *
- * This is where the backend magic happens! 🪄
- * This file handles reading and writing ISCI codes to our JSON file.
- *
- * Think of this as the librarian who knows where all the books (ISCI codes) are kept
- * and can fetch them or update them for you.
- *
- * Currently using a JSON file, but future devs could swap this out for a database!
+ * RESTful CRUD operations for ISCI codes.
+ * - GET: Fetch all ISCI codes with brand names
+ * - POST: Create a new ISCI code
+ * - PUT: Update an existing ISCI code
+ * - DELETE: Delete an ISCI code
  */
 
-import { readFile, writeFile } from "fs/promises";
-import { join } from "path";
-
-// Where our data lives! (It's a JSON file in the /data folder)
-// process.cwd() gives us the project root directory
-const DATA_FILE = join(process.cwd(), "data", "isci-codes.json");
+import { prisma } from "@/lib/prisma";
 
 /**
- * loader function
- *
- * This handles GET requests to /api/isci
- * When the frontend says "Give me all the ISCI codes!", this is what runs.
- *
- * React Router calls functions named "loader" automatically when someone visits the route.
+ * loader function - GET /api/isci
+ * Fetches all ISCI codes with their brand relationship
  */
 export async function loader() {
   try {
-    // Read the JSON file from disk
-    // "utf-8" means "read this as text, not as binary data"
-    const data = await readFile(DATA_FILE, "utf-8");
+    const codes = await prisma.iSCICode.findMany({
+      include: { brand: true },
+      orderBy: { createdAt: "desc" },
+    });
 
-    // Parse the JSON string into a JavaScript array
-    const codes = JSON.parse(data);
+    // Denormalize brand name for frontend compatibility
+    const codesWithBrandName = codes.map((code) => ({
+      ...code,
+      brand: code.brand.name,
+    }));
 
-    // Send it back as JSON
-    // Response.json() creates an HTTP response with JSON content
-    return Response.json(codes);
+    return Response.json(codesWithBrandName);
   } catch (error) {
-    // Uh oh! Something went wrong reading the file.
-    // Maybe it doesn't exist? Maybe permissions are wrong?
     console.error("Error reading ISCI codes:", error);
-
-    // Return an empty array with a 500 status code
-    // (500 = "Internal Server Error" in HTTP speak)
     return Response.json([], { status: 500 });
   }
 }
 
 /**
- * action function
- *
- * This handles POST requests to /api/isci
- * When the frontend says "Save these ISCI codes!", this is what runs.
- *
- * We take the entire array of codes and overwrite the file.
- * (Not super efficient, but simple! Future devs might want to optimize this.)
- *
- * React Router calls functions named "action" automatically for POST requests.
+ * Helper function to convert spotLength to int or null
+ */
+function parseSpotLength(value) {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+  const parsed = parseInt(value);
+  return isNaN(parsed) ? null : parsed;
+}
+
+/**
+ * action function - POST/PUT/DELETE /api/isci
+ * Handles create, update, and delete operations
  */
 export async function action({ request }) {
+  const method = request.method;
+
   try {
-    // Get the JSON data from the request body
-    // await request.json() reads the body and parses it as JSON
-    const codes = await request.json();
+    // CREATE - POST /api/isci
+    if (method === "POST") {
+      const data = await request.json();
+      console.log("📝 Creating new ISCI code:", data.code);
 
-    // Write it to the file!
-    // JSON.stringify with (codes, null, 2) means:
-    //   - codes: what to convert to JSON
-    //   - null: no custom replacer function (we don't need it)
-    //   - 2: indent with 2 spaces (makes the file human-readable!)
-    await writeFile(DATA_FILE, JSON.stringify(codes, null, 2), "utf-8");
+      // Check if code already exists
+      const existingCode = await prisma.iSCICode.findUnique({
+        where: { code: data.code },
+      });
+      if (existingCode) {
+        return Response.json(
+          { success: false, error: "ISCI code already exists" },
+          { status: 400 }
+        );
+      }
 
-    // Success! Send back a happy response
-    return Response.json({ success: true });
+      // Verify brand exists
+      const brand = await prisma.brand.findUnique({
+        where: { id: data.brandId },
+      });
+      if (!brand) {
+        return Response.json(
+          { success: false, error: "Brand not found" },
+          { status: 400 }
+        );
+      }
+
+      const isciCode = await prisma.iSCICode.create({
+        data: {
+          id: data.id,
+          code: data.code,
+          brandId: data.brandId,
+          assignedEditor: data.assignedEditor || null,
+          campaignName: data.campaignName || null,
+          spotTitle: data.spotTitle,
+          spotLength: parseSpotLength(data.spotLength),
+          description: data.description || null,
+          language: data.language || "English",
+          closedCaptioning: data.closedCaptioning || "No",
+          audio: data.audio || "Stereo LR",
+          airDate: data.airDate || null,
+          aspectRatio: data.aspectRatio || "16:9",
+          version: data.version || "A",
+          channel: data.channel || "Broadcast",
+          status: data.status || "pending",
+          agency: data.agency || null,
+          createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+          updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+          completedAt: data.completedAt ? new Date(data.completedAt) : null,
+        },
+        include: { brand: true },
+      });
+
+      // Return with denormalized brand name
+      const result = {
+        ...isciCode,
+        brand: isciCode.brand.name,
+      };
+
+      console.log("✅ Created ISCI code:", isciCode.code);
+      return Response.json({ success: true, isciCode: result });
+    }
+
+    // UPDATE - PUT /api/isci
+    if (method === "PUT") {
+      const data = await request.json();
+      console.log("📝 Updating ISCI code:", data.id);
+
+      // Check if code is taken by another ISCI code
+      if (data.code) {
+        const existingCode = await prisma.iSCICode.findFirst({
+          where: {
+            code: data.code,
+            NOT: { id: data.id },
+          },
+        });
+        if (existingCode) {
+          return Response.json(
+            { success: false, error: "ISCI code already exists" },
+            { status: 400 }
+          );
+        }
+      }
+
+      // Build update data
+      const updateData = {
+        updatedAt: new Date(),
+      };
+      if (data.code !== undefined) updateData.code = data.code;
+      if (data.brandId !== undefined) updateData.brandId = data.brandId;
+      if (data.assignedEditor !== undefined) updateData.assignedEditor = data.assignedEditor || null;
+      if (data.campaignName !== undefined) updateData.campaignName = data.campaignName || null;
+      if (data.spotTitle !== undefined) updateData.spotTitle = data.spotTitle;
+      if (data.spotLength !== undefined) updateData.spotLength = parseSpotLength(data.spotLength);
+      if (data.description !== undefined) updateData.description = data.description || null;
+      if (data.language !== undefined) updateData.language = data.language;
+      if (data.closedCaptioning !== undefined) updateData.closedCaptioning = data.closedCaptioning;
+      if (data.audio !== undefined) updateData.audio = data.audio;
+      if (data.airDate !== undefined) updateData.airDate = data.airDate || null;
+      if (data.aspectRatio !== undefined) updateData.aspectRatio = data.aspectRatio;
+      if (data.version !== undefined) updateData.version = data.version;
+      if (data.channel !== undefined) updateData.channel = data.channel;
+      if (data.status !== undefined) updateData.status = data.status;
+      if (data.agency !== undefined) updateData.agency = data.agency || null;
+      if (data.completedAt !== undefined) {
+        updateData.completedAt = data.completedAt ? new Date(data.completedAt) : null;
+      }
+
+      const isciCode = await prisma.iSCICode.update({
+        where: { id: data.id },
+        data: updateData,
+        include: { brand: true },
+      });
+
+      // Return with denormalized brand name
+      const result = {
+        ...isciCode,
+        brand: isciCode.brand.name,
+      };
+
+      console.log("✅ Updated ISCI code:", isciCode.code);
+      return Response.json({ success: true, isciCode: result });
+    }
+
+    // DELETE - DELETE /api/isci
+    if (method === "DELETE") {
+      const data = await request.json();
+      console.log("🗑️ Deleting ISCI code:", data.id);
+
+      await prisma.iSCICode.delete({
+        where: { id: data.id },
+      });
+
+      console.log("✅ Deleted ISCI code:", data.id);
+      return Response.json({ success: true });
+    }
+
+    return Response.json({ success: false, error: "Method not allowed" }, { status: 405 });
   } catch (error) {
-    // Something went wrong! Maybe disk is full? File permissions?
-    console.error("Error writing ISCI codes:", error);
-
-    // Send back an error response
+    console.error("❌ Error in ISCI API:", error);
+    console.error("Error details:", error.message);
     return Response.json(
-      { success: false, error: "Failed to save data" },
+      { success: false, error: error.message || "Failed to process request" },
       { status: 500 }
     );
   }
