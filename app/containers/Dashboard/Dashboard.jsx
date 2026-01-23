@@ -127,14 +127,11 @@ const Dashboard = () => {
    * We filter the codes based on what's in the search box.
    * Searches in: ISCI code, brand, spot title, and assigned editor.
    *
-   * The "?." is called optional chaining - it means "only try to call toLowerCase()
-   * if assignedEditor exists" (prevents errors if someone isn't assigned yet)
    */
   const filteredCodes = codes.filter(code =>
     code.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     code.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.spotTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.assignedEditor?.toLowerCase().includes(searchTerm.toLowerCase())
+    code.spotTitle.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Determine the dynamic section title based on current view
@@ -155,12 +152,12 @@ const Dashboard = () => {
           {!isLoading && (
             <div className={styles.searchBarRow}>
               <div className={styles.searchBar}>
-                <input
-                  type="text"
-                  placeholder="Search by code, brand, spot title, or editor..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+                  <input
+                    type="text"
+                    placeholder="Search by code, brand, or spot title..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
               </div>
               <button
                 className={styles.btnCreateNew}
@@ -213,48 +210,6 @@ const Dashboard = () => {
                 .filter(item => item !== null)
             ) : (
               <p className={styles.emptyState}>No recent items</p>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.recentBox}>
-          <h3>Assigned Projects</h3>
-          <div className={styles.recentItems}>
-            {currentUser && codes.length > 0 ? (
-              (() => {
-                const assignedCodes = codes
-                  .filter(code => code.assignedEditor === `${currentUser.firstName} ${currentUser.lastName}`)
-                  .sort((a, b) => {
-                    // Sort by Air Date (most recent first)
-                    const toSortableDate = (value) => {
-                      if (!value || value === "TBD") return 0;
-                      const parsed = Date.parse(value);
-                      return Number.isNaN(parsed) ? 0 : parsed;
-                    };
-                    const aDate = toSortableDate(a.airDate);
-                    const bDate = toSortableDate(b.airDate);
-                    return bDate - aDate;
-                  })
-                  .slice(0, 5);
-
-                if (assignedCodes.length === 0) {
-                  return <p className={styles.emptyState}>No assigned projects</p>;
-                }
-
-                return assignedCodes.map(code => (
-                  <div key={code.id} className={styles.recentItem}>
-                    <div className={styles.recentItemInfo}>
-                      <span className={styles.recentCode}>{code.code}</span>
-                      <span className={styles.recentTitle}>{code.spotTitle}</span>
-                    </div>
-                    <a href={`/edit/${code.code}`} className={styles.recentEditBtn}>
-                      {isAdmin() ? "Edit" : "View"}
-                    </a>
-                  </div>
-                ));
-              })()
-            ) : (
-              <p className={styles.emptyState}>No assigned projects</p>
             )}
           </div>
         </div>

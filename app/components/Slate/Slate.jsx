@@ -45,7 +45,6 @@ const Slate = ({ code }) => {
       code.brand?.replace(/\s+/g, "_") || "Unknown",
       code.spotTitle?.replace(/\s+/g, "_") || "Untitled",
       formatLength(code.spotLength).replace(":", "") + "s",
-      code.assignedEditor?.split(" ")[0] || "Editor",
       code.description ? "With_Details" : "No_Disclaimer"
     ];
     const fullTitle = titleParts.join("_");

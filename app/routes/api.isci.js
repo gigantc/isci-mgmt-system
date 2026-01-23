@@ -10,6 +10,17 @@
 
 import { prisma } from "@/lib/prisma";
 
+const parseEditHistory = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
 /**
  * loader function - GET /api/isci
  * Fetches all ISCI codes with their brand relationship
@@ -25,6 +36,7 @@ export async function loader() {
     const codesWithBrandName = codes.map((code) => ({
       ...code,
       brand: code.brand.name,
+      editHistory: parseEditHistory(code.editHistory),
     }));
 
     return Response.json(codesWithBrandName);
@@ -85,20 +97,23 @@ export async function action({ request }) {
           id: data.id,
           code: data.code,
           brandId: data.brandId,
-          assignedEditor: data.assignedEditor || null,
           campaignName: data.campaignName || null,
+          jobNumber: data.jobNumber || null,
           spotTitle: data.spotTitle,
           spotLength: parseSpotLength(data.spotLength),
           description: data.description || null,
           language: data.language || "English",
           closedCaptioning: data.closedCaptioning || "No",
           audio: data.audio || "Stereo LR",
+          fileFormat: data.fileFormat || "Pro Res",
           airDate: data.airDate || null,
           aspectRatio: data.aspectRatio || "16:9",
-          version: data.version || "A",
           channel: data.channel || "Broadcast",
-          status: data.status || "pending",
           agency: data.agency || null,
+          market: data.market || null,
+          createdBy: data.createdBy || null,
+          updatedBy: data.updatedBy || null,
+          editHistory: JSON.stringify(Array.isArray(data.editHistory) ? data.editHistory : []),
           createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
           updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
           completedAt: data.completedAt ? new Date(data.completedAt) : null,
@@ -143,22 +158,44 @@ export async function action({ request }) {
       };
       if (data.code !== undefined) updateData.code = data.code;
       if (data.brandId !== undefined) updateData.brandId = data.brandId;
-      if (data.assignedEditor !== undefined) updateData.assignedEditor = data.assignedEditor || null;
       if (data.campaignName !== undefined) updateData.campaignName = data.campaignName || null;
+      if (data.jobNumber !== undefined) updateData.jobNumber = data.jobNumber || null;
       if (data.spotTitle !== undefined) updateData.spotTitle = data.spotTitle;
       if (data.spotLength !== undefined) updateData.spotLength = parseSpotLength(data.spotLength);
       if (data.description !== undefined) updateData.description = data.description || null;
       if (data.language !== undefined) updateData.language = data.language;
       if (data.closedCaptioning !== undefined) updateData.closedCaptioning = data.closedCaptioning;
       if (data.audio !== undefined) updateData.audio = data.audio;
+      if (data.fileFormat !== undefined) updateData.fileFormat = data.fileFormat;
       if (data.airDate !== undefined) updateData.airDate = data.airDate || null;
       if (data.aspectRatio !== undefined) updateData.aspectRatio = data.aspectRatio;
-      if (data.version !== undefined) updateData.version = data.version;
       if (data.channel !== undefined) updateData.channel = data.channel;
-      if (data.status !== undefined) updateData.status = data.status;
       if (data.agency !== undefined) updateData.agency = data.agency || null;
+      if (data.market !== undefined) updateData.market = data.market || null;
+      if (data.updatedBy !== undefined) updateData.updatedBy = data.updatedBy || null;
       if (data.completedAt !== undefined) {
         updateData.completedAt = data.completedAt ? new Date(data.completedAt) : null;
+      }
+
+      if (data.updatedBy) {
+        const existing = await prisma.iSCICode.findUnique({
+          where: { id: data.id },
+          select: { editHistory: true },
+        });
+        let history = [];
+        if (existing && existing.editHistory) {
+          try {
+            const parsed = JSON.parse(existing.editHistory);
+            history = Array.isArray(parsed) ? parsed : [];
+          } catch {
+            history = [];
+          }
+        }
+        history.push({
+          user: data.updatedBy,
+          timestamp: new Date().toISOString(),
+        });
+        updateData.editHistory = JSON.stringify(history);
       }
 
       const isciCode = await prisma.iSCICode.update({
@@ -171,6 +208,7 @@ export async function action({ request }) {
       const result = {
         ...isciCode,
         brand: isciCode.brand.name,
+        editHistory: parseEditHistory(isciCode.editHistory),
       };
 
       console.log("✅ Updated ISCI code:", isciCode.code);

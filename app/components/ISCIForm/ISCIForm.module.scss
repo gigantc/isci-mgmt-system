@@ -142,6 +142,10 @@
       }
     }
 
+    .dimmedInput {
+      opacity: 0.2;
+    }
+
     .disabledInput,
     .readonlyInput {
       background-color: rgba(v.$white, 0.02);

@@ -1,0 +1,1 @@
+ALTER TABLE "ISCICode" ADD COLUMN "market" TEXT;

@@ -49,20 +49,23 @@ model ISCICode {
   code             String    @unique
   brandId          String
   brand            Brand     @relation(fields: [brandId], references: [id])
-  assignedEditor   String?
   campaignName     String?
+  jobNumber        String?
   spotTitle        String
   spotLength       Int?
   description      String?
   language         String    @default("English")
-  closedCaptioning String    @default("No")
+  closedCaptioning String    @default("Clean")
   audio            String    @default("Stereo LR")
+  fileFormat       String    @default("Pro Res")
   airDate          String?   // Stored as ISO string for SQLite compatibility
   aspectRatio      String    @default("16:9")
-  version          String    @default("A")
   channel          String    @default("Broadcast")
-  status           String    @default("pending")
   agency           String?
+  market           String?
+  createdBy        String?
+  updatedBy        String?
+  editHistory      String?   @default("[]")
   createdAt        DateTime
   updatedAt        DateTime
   completedAt      DateTime?

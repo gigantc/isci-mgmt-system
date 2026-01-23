@@ -6,6 +6,7 @@
  */
 
 import { prisma } from "@/lib/prisma";
+import { normalizeMarketValue } from "@/utils/markets";
 
 /**
  * POST /api/isci/import - Import ISCI codes from CSV data
@@ -17,6 +18,23 @@ export async function action({ request }) {
     // Parse CSV data
     const lines = csvData.trim().split("\n");
     const headers = lines[0].split(",").map(h => h.replace(/"/g, "").trim());
+    const headerIndex = headers.reduce((acc, header, index) => {
+      acc[header.toLowerCase()] = index;
+      return acc;
+    }, {});
+
+    const getValue = (values, names, fallbackIndex = null) => {
+      for (const name of names) {
+        const index = headerIndex[name.toLowerCase()];
+        if (index !== undefined) {
+          return values[index] || "";
+        }
+      }
+      if (fallbackIndex !== null && values[fallbackIndex] !== undefined) {
+        return values[fallbackIndex] || "";
+      }
+      return "";
+    };
 
     const importedCodes = [];
     const errors = [];
@@ -37,22 +55,21 @@ export async function action({ request }) {
       const values = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g)?.map(v => v.replace(/^"|"$/g, "").trim()) || [];
 
       const code = {
-        code: values[0],
-        brand: values[1],
-        campaignName: values[2] || null,
-        spotTitle: values[3],
-        spotLength: values[4] ? parseInt(values[4]) : null,
-        assignedEditor: values[5] || null,
-        status: values[6] || "pending",
-        channel: values[7] || "Broadcast",
-        aspectRatio: values[8] || "16:9",
-        version: values[9] || "A",
-        language: values[10] || "English",
-        closedCaptioning: values[11] || "No",
-        audio: values[12] || "Stereo LR",
-        airDate: values[13] || null,
-        description: values[14] || null,
-        agency: values[15] || null
+        code: getValue(values, ["ISCI Code", "Code"], 0),
+        brand: getValue(values, ["Brand", "Brand/Client"], 1),
+        campaignName: getValue(values, ["Campaign Name"], 2) || null,
+        spotTitle: getValue(values, ["Spot Title"], 3),
+        spotLength: getValue(values, ["Spot Length"], 4) ? parseInt(getValue(values, ["Spot Length"], 4)) : null,
+        channel: getValue(values, ["Channel", "Placement"], 5) || "Broadcast",
+        aspectRatio: getValue(values, ["Aspect Ratio"], 6) || "16:9",
+        language: getValue(values, ["Language"], 7) || "English",
+        closedCaptioning: getValue(values, ["Closed Captioning", "Accessibility"], 8) || "Clean",
+        audio: getValue(values, ["Audio"], 9) || "Stereo LR",
+        fileFormat: getValue(values, ["File Format"], 10) || "Pro Res",
+        airDate: getValue(values, ["Air Date", "Air/Start Date"], 11) || null,
+        description: getValue(values, ["Description"], 12) || null,
+        agency: getValue(values, ["Agency"]) || null,
+        market: normalizeMarketValue(getValue(values, ["Market"])) || null
       };
 
       // Validation

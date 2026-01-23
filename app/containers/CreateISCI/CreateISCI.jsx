@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
-import { isAuthenticated } from "@/utils/auth";
+import { getUserSession, isAuthenticated } from "@/utils/auth";
 import styles from "./CreateISCI.module.scss";
 
 /**
@@ -48,9 +48,15 @@ const CreateISCI = () => {
    * Save the new code to the server
    */
   const handleCreateCode = async (formData) => {
+    const user = getUserSession();
+    const userDisplayName = user ? `${user.firstName} ${user.lastName}` : "";
+
     const newCode = {
       id: crypto.randomUUID(),
       ...formData,
+      createdBy: userDisplayName || null,
+      updatedBy: userDisplayName || null,
+      editHistory: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
