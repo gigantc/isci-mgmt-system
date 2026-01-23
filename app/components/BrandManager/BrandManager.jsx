@@ -1,7 +1,9 @@
-import { useResourceManager } from "@/hooks";
+import { useResourceManager, useConfirmDialog } from "@/hooks";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import styles from "./BrandManager.module.scss";
 
 const BrandManager = () => {
+  const { dialogProps, confirm } = useConfirmDialog();
   const {
     items: brands,
     formData,
@@ -55,7 +57,16 @@ const BrandManager = () => {
       createdAt: now,
       updatedAt: now,
     }),
-    hasActiveToggle: true
+    hasActiveToggle: true,
+    confirmDelete: async () => {
+      return await confirm({
+        title: "Delete Client",
+        message: "Are you sure you want to delete this client? This action cannot be undone.",
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        isDangerous: true,
+      });
+    }
   });
 
   return (
@@ -207,6 +218,9 @@ const BrandManager = () => {
       </div>
         </>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog {...dialogProps} />
     </div>
   );
 };

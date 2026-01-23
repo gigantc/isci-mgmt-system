@@ -59,7 +59,8 @@ const useResourceManager = (endpoint, options = {}) => {
     updateItem: updateItemFn,
     hasActiveToggle = false,
     onAfterSave,
-    onAfterDelete
+    onAfterDelete,
+    confirmDelete
   } = options;
 
   const [items, setItems] = useState([]);
@@ -75,6 +76,7 @@ const useResourceManager = (endpoint, options = {}) => {
   const updateItemRef = useRef(updateItemFn);
   const onAfterSaveRef = useRef(onAfterSave);
   const onAfterDeleteRef = useRef(onAfterDelete);
+  const confirmDeleteRef = useRef(confirmDelete);
 
   useEffect(() => {
     validateRef.current = validate;
@@ -95,6 +97,10 @@ const useResourceManager = (endpoint, options = {}) => {
   useEffect(() => {
     onAfterDeleteRef.current = onAfterDelete;
   }, [onAfterDelete]);
+
+  useEffect(() => {
+    confirmDeleteRef.current = confirmDelete;
+  }, [confirmDelete]);
 
   // Memoize initialFormData keys for handleEdit optimization
   const initialFormDataKeys = useMemo(
@@ -332,7 +338,19 @@ const useResourceManager = (endpoint, options = {}) => {
    * Delete an item
    */
   const handleDelete = useCallback(async (id, confirmMessage = "Are you sure you want to delete this item?") => {
-    if (!confirm(confirmMessage)) {
+    // Use custom confirm function if provided, otherwise use browser confirm
+    const confirmFn = confirmDeleteRef.current;
+    let confirmed;
+
+    if (confirmFn && typeof confirmFn === "function") {
+      // Custom confirmation (returns a Promise)
+      confirmed = await confirmFn();
+    } else {
+      // Browser confirmation
+      confirmed = confirm(confirmMessage);
+    }
+
+    if (!confirmed) {
       return false;
     }
 
@@ -353,7 +371,7 @@ const useResourceManager = (endpoint, options = {}) => {
       console.error("Error deleting item:", error);
       return false;
     }
-  }, [items, deleteItemApi, onAfterDelete]);
+  }, [items, deleteItemApi]);
 
   /**
    * Toggle active status

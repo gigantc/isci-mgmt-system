@@ -1,0 +1,75 @@
+@use "@/styles/variables" as v;
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.dialog {
+  background-color: v.$gray;
+  border: 1px solid rgba(255, 250, 231, 0.05);
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.2s ease-out;
+}
+
+.header {
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid rgba(255, 250, 231, 0.1);
+
+  h3 {
+    margin: 0;
+    color: v.$white;
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+.body {
+  padding: 24px;
+
+  p {
+    margin: 0;
+    color: v.$white;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+.actions {
+  padding: 16px 24px 24px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

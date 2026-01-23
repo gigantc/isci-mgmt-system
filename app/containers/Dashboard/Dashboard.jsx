@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { isAuthenticated, getUserSession, isAdmin } from "@/utils/auth";
-import { useFetchData } from "@/hooks";
+import { useFetchData, useConfirmDialog } from "@/hooks";
 import styles from "./Dashboard.module.scss";
 
 /**
@@ -35,6 +36,9 @@ const Dashboard = () => {
 
   // Fetch ISCI codes using useFetchData hook
   const { data: codes, loading: isLoading, refetch: loadCodes } = useFetchData("/api/isci");
+
+  // Confirm dialog for deletion
+  const { dialogProps, confirm } = useConfirmDialog();
 
   /**
    * useEffect Hook - Check authentication and load user
@@ -91,8 +95,16 @@ const Dashboard = () => {
    * We ask for confirmation first because we're not monsters.
    */
   const handleDeleteCode = async (id) => {
-    // Show a browser confirmation dialog
-    if (!confirm("Are you sure you want to delete this ISCI code?")) {
+    // Show custom confirmation dialog
+    const confirmed = await confirm({
+      title: "Delete ISCI Code",
+      message: "Are you sure you want to delete this ISCI code? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      isDangerous: true,
+    });
+
+    if (!confirmed) {
       return; // User cancelled - do nothing
     }
 
@@ -248,6 +260,9 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog {...dialogProps} />
 
     </div>
   );

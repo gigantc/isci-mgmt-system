@@ -1,7 +1,9 @@
-import { useResourceManager } from "@/hooks";
+import { useResourceManager, useConfirmDialog } from "@/hooks";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import styles from "./AgencyManager.module.scss";
 
 const AgencyManager = () => {
+  const { dialogProps, confirm } = useConfirmDialog();
   const {
     items: agencies,
     formData,
@@ -41,7 +43,16 @@ const AgencyManager = () => {
       ...data,
       updatedAt: now
     }),
-    hasActiveToggle: true
+    hasActiveToggle: true,
+    confirmDelete: async () => {
+      return await confirm({
+        title: "Delete Agency",
+        message: "Are you sure you want to delete this agency? This action cannot be undone.",
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        isDangerous: true,
+      });
+    }
   });
 
   // Helper to update a single agency via PUT
@@ -324,6 +335,9 @@ const AgencyManager = () => {
           </div>
         </>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog {...dialogProps} />
     </div>
   );
 };
