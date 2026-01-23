@@ -138,7 +138,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
     }
 
     if (!formData.brand.trim()) {
-      newErrors.brand = "Brand/Client is required";
+      newErrors.brand = "Client is required";
     }
 
     if (!formData.spotTitle.trim()) {
@@ -241,10 +241,10 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
         <div className={`${styles.formSection} ${styles.formSectionFull}`}>
           <h3 className={styles.sectionTitle}>Basic Details</h3>
 
-          {/* Brand and ISCI Code side-by-side */}
+          {/* Client and ISCI Code side-by-side */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="brand">Brand / Client *</label>
+              <label htmlFor="brand">Client *</label>
               {code ? (
                 // When editing, show brand as text (can't change brand)
                 <input
@@ -262,7 +262,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                   onChange={handleBrandChange}
                   className={errors.brand ? "error" : ""}
                 >
-                  <option value="">Select a brand...</option>
+                  <option value="">Select a client...</option>
                   {brands.map(brand => (
                     <option key={brand.id} value={brand.id}>
                       {brand.name} ({brand.code})
@@ -272,7 +272,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               )}
               {errors.brand && <span className={styles.errorMessage}>{errors.brand}</span>}
               {!code && brands.length === 0 && (
-                <span className={styles.helpText}>No brands available. <a href="/admin">Add brands in Admin Panel</a></span>
+                <span className={styles.helpText}>No clients available. <a href="/admin">Add clients in Admin Panel</a></span>
               )}
             </div>
 
@@ -300,10 +300,10 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                     maxLength={12}
                     readOnly
                     className={`${errors.code ? "error" : ""} ${styles.readonlyInput}`}
-                    title="Auto-generated based on brand selection"
+                    title="Auto-generated based on client selection"
                   />
                   {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
-                  <span className={styles.helpText}>Auto-generated: [BRAND][YEAR][NUMBER]</span>
+                  <span className={styles.helpText}>Auto-generated: [CLIENT][YEAR][NUMBER]</span>
                 </>
               )}
             </div>

@@ -30,7 +30,7 @@ const Admin = () => {
               className={`${styles.tab} ${activeTab === "brands" ? styles.active : ""}`}
               onClick={() => setActiveTab("brands")}
             >
-              Brand Management
+              Client Management
             </button>
             <button
               className={`${styles.tab} ${activeTab === "agencies" ? styles.active : ""}`}

@@ -18,25 +18,29 @@ const BrandManager = () => {
     handleNew,
     resetForm
   } = useResourceManager("/api/brands", {
-    initialFormData: { name: "", code: "" },
+    initialFormData: { name: "", abbreviation: "", code: "" },
     validate: (data, brands, editingBrand) => {
       const newErrors = {};
 
       if (!data.name.trim()) {
-        newErrors.name = "Brand name is required";
+        newErrors.name = "Client name is required";
+      }
+
+      if (!data.abbreviation.trim()) {
+        newErrors.abbreviation = "Client abbreviation is required";
       }
 
       if (!data.code.trim()) {
-        newErrors.code = "Brand code is required";
+        newErrors.code = "Client code is required";
       } else if (!/^[A-Z]{4}$/.test(data.code)) {
-        newErrors.code = "Brand code must be exactly 4 uppercase letters (e.g., LVCI)";
+        newErrors.code = "Client code must be exactly 4 uppercase letters (e.g., LVCI)";
       } else {
         // Check for duplicate code
         const isDuplicate = brands.some(
           b => b.code === data.code && b.id !== editingBrand?.id
         );
         if (isDuplicate) {
-          newErrors.code = "This brand code is already in use";
+          newErrors.code = "This client code is already in use";
         }
       }
 
@@ -45,6 +49,7 @@ const BrandManager = () => {
     createItem: (data, now) => ({
       id: Date.now().toString(),
       name: data.name,
+      abbreviation: data.abbreviation,
       code: data.code.toUpperCase(),
       active: true,
       createdAt: now,
@@ -56,13 +61,13 @@ const BrandManager = () => {
   return (
     <div className={styles.brandManager}>
       {isLoading ? (
-        <div className={styles.loadingState}>Loading brands...</div>
+        <div className={styles.loadingState}>Loading clients...</div>
       ) : (
         <>
       {showForm && (
         <div className={`${styles.brandFormSection} ${isClosing ? styles.closing : ''}`}>
           <div className={styles.formHeader}>
-            <h2>{editingBrand ? "Edit Brand" : "Add New Brand"}</h2>
+            <h2>{editingBrand ? "Edit Client" : "Add New Client"}</h2>
             <button
               type="button"
               className={styles.btnClose}
@@ -75,7 +80,7 @@ const BrandManager = () => {
         <form onSubmit={handleSubmit} className={styles.brandForm}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="name">Brand Name *</label>
+              <label htmlFor="name">Client Name *</label>
               <input
                 type="text"
                 id="name"
@@ -89,14 +94,28 @@ const BrandManager = () => {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="code">Brand Code (4 letters) *</label>
+              <label htmlFor="abbreviation">Abbreviation *</label>
+              <input
+                type="text"
+                id="abbreviation"
+                name="abbreviation"
+                value={formData.abbreviation}
+                onChange={handleChange}
+                placeholder="e.g., LVCVA"
+                className={errors.abbreviation ? "error" : ""}
+              />
+              {errors.abbreviation && <span className={styles.errorMessage}>{errors.abbreviation}</span>}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="code">Client Code (4 letters) *</label>
               <input
                 type="text"
                 id="code"
                 name="code"
                 value={formData.code}
                 onChange={handleChange}
-                placeholder="e.g., LVCI"
+                placeholder="e.g., LVCR"
                 maxLength={4}
                 style={{ textTransform: "uppercase" }}
                 className={errors.code ? "error" : ""}
@@ -110,7 +129,7 @@ const BrandManager = () => {
               Cancel
             </button>
             <button type="submit" className={styles.btnSubmit}>
-              {editingBrand ? "Update" : "Add"} Brand
+              {editingBrand ? "Update" : "Add"} Client
             </button>
           </div>
         </form>
@@ -119,24 +138,25 @@ const BrandManager = () => {
 
       <div className={styles.brandsListSection}>
         <div className={styles.listHeader}>
-          <h2>All Brands ({brands.length})</h2>
+          <h2>All Clients ({brands.length})</h2>
           {!showForm && (
             <button
               className={styles.btnAddNew}
               onClick={handleNew}
             >
-              + Add New Brand
+              + Add New Client
             </button>
           )}
         </div>
         {brands.length === 0 ? (
-          <p className={styles.emptyState}>No brands yet. Add your first one above!</p>
+          <p className={styles.emptyState}>No clients yet. Add your first one above!</p>
         ) : (
           <div className={styles.brandsTableWrapper}>
             <table>
               <thead>
                 <tr>
-                  <th>Brand Name</th>
+                  <th>Client Name</th>
+                  <th>Abbreviation</th>
                   <th>Code</th>
                   <th>Status</th>
                   <th>Created</th>
@@ -147,6 +167,7 @@ const BrandManager = () => {
                 {brands.map(brand => (
                   <tr key={brand.id} className={!brand.active ? "inactive" : ""}>
                     <td>{brand.name}</td>
+                    <td>{brand.abbreviation || "—"}</td>
                     <td className={styles.codeCell}>{brand.code}</td>
                     <td>
                       <span className={`${styles.statusBadge} ${brand.active ? styles.active : styles.inactive}`}>

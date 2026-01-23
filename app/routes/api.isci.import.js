@@ -56,7 +56,7 @@ export async function action({ request }) {
 
       const code = {
         code: getValue(values, ["ISCI Code", "Code"], 0),
-        brand: getValue(values, ["Brand", "Brand/Client"], 1),
+        brand: getValue(values, ["Client", "Brand", "Brand/Client"], 1),
         campaignName: getValue(values, ["Campaign Name"], 2) || null,
         spotTitle: getValue(values, ["Spot Title"], 3),
         spotLength: getValue(values, ["Spot Length"], 4) ? parseInt(getValue(values, ["Spot Length"], 4)) : null,
@@ -74,14 +74,14 @@ export async function action({ request }) {
 
       // Validation
       if (!code.code || !code.brand || !code.spotTitle) {
-        errors.push({ row: i + 1, error: "Missing required fields (Code, Brand, Spot Title)" });
+        errors.push({ row: i + 1, error: "Missing required fields (Code, Client, Spot Title)" });
         continue;
       }
 
       // Look up brand ID
       const brandId = brandNameToId[code.brand.toLowerCase()];
       if (!brandId) {
-        errors.push({ row: i + 1, error: `Brand "${code.brand}" not found` });
+        errors.push({ row: i + 1, error: `Client "${code.brand}" not found` });
         continue;
       }
 

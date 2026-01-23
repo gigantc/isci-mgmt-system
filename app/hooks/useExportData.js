@@ -30,7 +30,7 @@ import { useState, useCallback, useMemo, useEffect, useRef } from "react";
  * } = useExportData(codes, {
  *   initialFilters: { status: "all", brand: "all" },
  *   filterFunction: (codes, filters) => codes.filter(c => ...),
- *   csvHeaders: ["Code", "Brand", "Status"],
+ *   csvHeaders: ["Code", "Client", "Status"],
  *   csvRowMapper: (code) => [code.code, code.brand, code.status],
  *   filenamePrefix: "isci-codes"
  * });

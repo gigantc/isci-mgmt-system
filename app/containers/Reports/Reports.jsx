@@ -57,7 +57,7 @@ const Reports = () => {
           if (codeDate < startDate || codeDate > endDate) return false;
         }
 
-        // Brand filter
+        // Client filter
         if (filters.brand !== "all" && code.brand !== filters.brand) {
           return false;
         }
@@ -77,7 +77,7 @@ const Reports = () => {
     },
     csvHeaders: [
       "ISCI Code",
-      "Brand",
+      "Client",
       "Campaign Name",
       "Spot Title",
       "Spot Length",
@@ -227,11 +227,11 @@ const Reports = () => {
                         </>
                       )}
 
-                      {/* Brand Filter */}
+                      {/* Client Filter */}
                       <div className={styles.filterGroup}>
-                        <label>Brand</label>
+                        <label>Client</label>
                         <select name="brand" value={filters.brand} onChange={handleFilterChange}>
-                          <option value="all">All Brands</option>
+                          <option value="all">All Clients</option>
                           {brands.map(brand => (
                             <option key={brand.id} value={brand.name}>
                               {brand.name}

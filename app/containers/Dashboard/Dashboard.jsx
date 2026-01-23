@@ -56,7 +56,7 @@ const Dashboard = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        loadCodes();
+        loadCodes({ silent: true });
         // Reload user session to get updated recentlyViewed
         const updatedUser = getUserSession();
         if (updatedUser) {
@@ -66,7 +66,7 @@ const Dashboard = () => {
     };
 
     const handleFocus = () => {
-      loadCodes();
+      loadCodes({ silent: true });
       // Reload user session to get updated recentlyViewed
       const updatedUser = getUserSession();
       if (updatedUser) {
@@ -154,7 +154,7 @@ const Dashboard = () => {
               <div className={styles.searchBar}>
                   <input
                     type="text"
-                    placeholder="Search by code, brand, or spot title..."
+                    placeholder="Search by code, client, or spot title..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />

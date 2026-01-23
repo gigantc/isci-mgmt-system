@@ -66,8 +66,11 @@ const useFetchData = (endpoint, options = {}) => {
     transformRef.current = transform;
   }, [transform]);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
+  const fetchData = useCallback(async (options = {}) => {
+    const { silent = false } = options;
+    if (!silent) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -97,7 +100,9 @@ const useFetchData = (endpoint, options = {}) => {
       setError(err);
       setData(stableInitialValue); // Reset to initial value on error
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, [endpoint, stableInitialValue]);
 

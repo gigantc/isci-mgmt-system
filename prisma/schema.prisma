@@ -25,12 +25,13 @@ model User {
 }
 
 model Brand {
-  id        String     @id
-  name      String
-  code      String     @unique
-  active    Boolean    @default(true)
-  createdAt DateTime
-  updatedAt DateTime
+  id           String     @id
+  name         String
+  abbreviation String?
+  code         String     @unique
+  active       Boolean    @default(true)
+  createdAt    DateTime
+  updatedAt    DateTime
 
   isciCodes ISCICode[]
 }

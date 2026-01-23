@@ -97,7 +97,11 @@ const CreateISCI = () => {
    */
   const handleSubmitClick = () => {
     if (formRef.current) {
-      formRef.current.requestSubmit();
+      if (typeof formRef.current.requestSubmit === "function") {
+        formRef.current.requestSubmit();
+      } else {
+        formRef.current.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      }
     }
   };
 

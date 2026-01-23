@@ -45,7 +45,7 @@ export async function action({ request }) {
       });
       if (existingBrand) {
         return Response.json(
-          { success: false, error: "Brand code already exists" },
+          { success: false, error: "Client code already exists" },
           { status: 400 }
         );
       }
@@ -80,7 +80,7 @@ export async function action({ request }) {
         });
         if (existingBrand) {
           return Response.json(
-            { success: false, error: "Brand code already exists" },
+            { success: false, error: "Client code already exists" },
             { status: 400 }
           );
         }

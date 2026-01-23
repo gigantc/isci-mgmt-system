@@ -87,7 +87,7 @@ export async function action({ request }) {
       });
       if (!brand) {
         return Response.json(
-          { success: false, error: "Brand not found" },
+          { success: false, error: "Client not found" },
           { status: 400 }
         );
       }
