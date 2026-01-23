@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 /**
  * useFetchData - Custom hook for fetching data from API endpoints
@@ -50,7 +50,7 @@ const useFetchData = (endpoint, options = {}) => {
   const [loading, setLoading] = useState(fetchOnMount);
   const [error, setError] = useState(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -81,14 +81,13 @@ const useFetchData = (endpoint, options = {}) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [endpoint, filter, transform, initialValue]);
 
   useEffect(() => {
     if (fetchOnMount) {
       fetchData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [endpoint, ...dependencies]);
+  }, [fetchOnMount, fetchData, ...dependencies]);
 
   return {
     data,

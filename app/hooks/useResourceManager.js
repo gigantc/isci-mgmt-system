@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 /**
  * useResourceManager - Custom hook for managing CRUD operations on resources
@@ -69,6 +69,12 @@ const useResourceManager = (endpoint, options = {}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+
+  // Memoize initialFormData keys for handleEdit optimization
+  const initialFormDataKeys = useMemo(
+    () => Object.keys(initialFormData),
+    [initialFormData]
+  );
 
   /**
    * Load resources from API
@@ -282,15 +288,15 @@ const useResourceManager = (endpoint, options = {}) => {
   const handleEdit = useCallback((item) => {
     setEditingItem(item);
 
-    // Copy only the fields that exist in initialFormData
-    const formFields = Object.keys(initialFormData).reduce((acc, key) => {
+    // Copy only the fields that exist in initialFormData (using memoized keys)
+    const formFields = initialFormDataKeys.reduce((acc, key) => {
       acc[key] = item[key] !== undefined ? item[key] : initialFormData[key];
       return acc;
     }, {});
 
     setFormData(formFields);
     setShowForm(true);
-  }, [initialFormData]);
+  }, [initialFormData, initialFormDataKeys]);
 
   /**
    * Delete an item

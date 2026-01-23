@@ -1226,10 +1226,33 @@ This project is maintained for internal video editing workflow management. When 
 
 ---
 
-**Last Updated**: January 22, 2026
-**Version**: 0.8.0-alpha - Production Deployment
+**Last Updated**: January 23, 2026
+**Version**: 0.9.1-alpha - Database Migration & Quick Wins
 
 ## Changelog
+
+### v0.9.1-alpha - Database Migration & Quick Wins (January 23, 2026)
+- **Database Migration**: Migrated from JSON file storage to Prisma + SQLite/PostgreSQL
+  - Added Prisma ORM with SQLite for local development
+  - Created database models: User, Brand, Agency, ISCICode
+  - Refactored all API routes to use Prisma instead of JSON files
+  - Created data migration script for JSON to database
+- **RESTful API Refactoring**: Converted from "delete all, recreate all" to proper CRUD
+  - All API routes now support individual POST (create), PUT (update), DELETE operations
+  - Fixed data loss issues when updating agencies and users
+  - Updated useResourceManager hook to use new API pattern
+  - Updated CreateISCI, EditISCI, Dashboard containers for new API
+- **Quick Wins - Code Quality Improvements**:
+  - Added `useMemo` optimization to useResourceManager hook
+  - Fixed dependency arrays in useFetchData hook
+  - Created API utilities (`app/utils/api.js`) for error handling
+  - Added ErrorBoundary component for graceful error handling
+- **New Files**:
+  - `app/utils/api.js` - API error handling utilities
+  - `app/components/ErrorBoundary/` - React Error Boundary component
+  - `prisma/schema.prisma` - Database schema
+  - `app/lib/prisma.js` - Prisma client instance
+  - `scripts/migrateJsonToDb.js` - Data migration script
 
 ### v0.8.0-alpha - Production Deployment (January 22, 2026)
 - **AWS EC2 Deployment**: Successfully deployed to production on Ubuntu 24.04 LTS
