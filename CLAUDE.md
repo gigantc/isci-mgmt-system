@@ -494,6 +494,7 @@ Brands are managed separately from ISCI codes to enable code auto-generation.
 {
   id: string,              // UUID
   name: string,            // Full brand/client name (required)
+  abbreviation: string,    // Brand abbreviation (optional, e.g., "LVCVA")
   code: string,            // 4-letter brand code (required, unique)
   active: boolean,         // Whether brand is available for new codes
   createdAt: string,       // ISO timestamp
@@ -505,9 +506,14 @@ Brands are managed separately from ISCI codes to enable code auto-generation.
 - Exactly 4 uppercase letters (A-Z)
 - Must be unique across all brands
 - Validated with regex: `/^[A-Z]{4}$/`
-- Examples: `LVCI`, `NIKE`, `APPL`, `COCA`, `TOYT`
+- Examples: `LVCR`, `NIKE`, `APPL`, `COCA`, `TOYT`
 
-**Storage**: `data/brands.json`
+**Example**:
+- Name: "Las Vegas Convention and Visitors Authority"
+- Abbreviation: "LVCVA"
+- Code: "LVCR"
+
+**Storage**: Prisma database (Brand model)
 
 ### ISCI Status Types
 
@@ -837,7 +843,8 @@ import styles from "./Component.module.scss";
 **Global Button Classes** (non-modular, available everywhere):
 - `.btn-primary` - Primary action button (yellow background)
 - `.btn-secondary` - Secondary action button (subtle background)
-- `.btn-text` - Text-only button (transparent background)
+- `.btn-danger` - Dangerous action button (red background, for delete operations)
+- `.btn-text` - Text-only button (transparent background, uppercase)
 
 ### Path Aliasing
 
@@ -1231,7 +1238,7 @@ This project is maintained for internal video editing workflow management. When 
 
 ## Changelog
 
-### v0.9.1-alpha - Database Migration & Quick Wins (January 23, 2026)
+### v0.9.1-alpha - Database Migration & UX Improvements (January 23, 2026)
 - **Database Migration**: Migrated from JSON file storage to Prisma + SQLite/PostgreSQL
   - Added Prisma ORM with SQLite for local development
   - Created database models: User, Brand, Agency, ISCICode
@@ -1242,12 +1249,19 @@ This project is maintained for internal video editing workflow management. When 
   - Fixed data loss issues when updating agencies and users
   - Updated useResourceManager hook to use new API pattern
   - Updated CreateISCI, EditISCI, Dashboard containers for new API
-- **Quick Wins - Code Quality Improvements**:
-  - Added `useMemo` optimization to useResourceManager hook
-  - Fixed dependency arrays in useFetchData hook
-  - Created API utilities (`app/utils/api.js`) for error handling
-  - Added ErrorBoundary component for graceful error handling
+- **Client Data Model Updates**:
+  - Added `abbreviation` field to Brand model (e.g., "LVCVA" for Las Vegas Convention and Visitors Authority)
+  - Updated BrandManager component with abbreviation field in forms and tables
+  - Changed UI terminology from "Brand" to "Client" throughout BrandManager
+- **Custom Confirmation Dialogs**: Replaced browser alerts with styled confirmation dialogs
+  - Created ConfirmDialog component with dark mode theme styling
+  - Created useConfirmDialog hook with Promise-based API
+  - Added `btn-danger` global button class for delete actions
+  - Updated all deletion flows: Dashboard (ISCI codes), BrandManager, UserManager, AgencyManager
+  - Updated useResourceManager hook to support custom confirmDelete function
 - **New Files**:
+  - `app/components/ConfirmDialog/` - Custom confirmation dialog component
+  - `app/hooks/useConfirmDialog.js` - Confirmation dialog state management hook
   - `app/utils/api.js` - API error handling utilities
   - `app/components/ErrorBoundary/` - React Error Boundary component
   - `prisma/schema.prisma` - Database schema
