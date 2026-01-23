@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 /**
  * useFormState - Custom hook for managing form state
@@ -47,6 +47,22 @@ const useFormState = (initialState, options = {}) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const initialStateRef = useRef(initialState);
+  const validateRef = useRef(validate);
+  const onSubmitRef = useRef(onSubmit);
+
+  useEffect(() => {
+    initialStateRef.current = initialState;
+  }, [initialState]);
+
+  useEffect(() => {
+    validateRef.current = validate;
+  }, [validate]);
+
+  useEffect(() => {
+    onSubmitRef.current = onSubmit;
+  }, [onSubmit]);
+
   /**
    * Handle input change for a single field
    * Supports both direct values and event objects
@@ -88,20 +104,21 @@ const useFormState = (initialState, options = {}) => {
    * Reset form to initial state
    */
   const resetForm = useCallback((newInitialState = initialState) => {
-    setFormData(newInitialState);
+    setFormData(newInitialState || initialStateRef.current);
     setErrors({});
     setIsSubmitting(false);
-  }, [initialState]);
+  }, []);
 
   /**
    * Validate form data
    */
   const validateForm = useCallback(() => {
-    if (!validate || typeof validate !== "function") {
+    const validator = validateRef.current;
+    if (!validator || typeof validator !== "function") {
       return true;
     }
 
-    const validationErrors = validate(formData);
+    const validationErrors = validator(formData);
 
     if (validationErrors && Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -110,7 +127,7 @@ const useFormState = (initialState, options = {}) => {
 
     setErrors({});
     return true;
-  }, [formData, validate]);
+  }, [formData]);
 
   /**
    * Handle form submission
@@ -126,10 +143,11 @@ const useFormState = (initialState, options = {}) => {
     }
 
     // Call onSubmit if provided
-    if (onSubmit && typeof onSubmit === "function") {
+    const submitHandler = onSubmitRef.current;
+    if (submitHandler && typeof submitHandler === "function") {
       setIsSubmitting(true);
       try {
-        await onSubmit(formData);
+        await submitHandler(formData);
         return true;
       } catch (error) {
         console.error("Form submission error:", error);
@@ -144,7 +162,7 @@ const useFormState = (initialState, options = {}) => {
     }
 
     return true;
-  }, [formData, validateForm, onSubmit]);
+  }, [formData, validateForm]);
 
   /**
    * Set a specific error

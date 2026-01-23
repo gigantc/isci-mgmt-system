@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ISCIStatus } from "@/types/isci";
 import { getUserSession } from "@/utils/auth";
 import { useFetchData } from "@/hooks";
@@ -6,6 +6,7 @@ import styles from "./ISCIForm.module.scss";
 
 const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef, viewOnly = false }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [isAirDateTbd, setIsAirDateTbd] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
     brandId: "",
@@ -28,15 +29,25 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
 
   const [errors, setErrors] = useState({});
 
+  const activeBrandsFilter = useCallback(
+    (data) => data.filter(b => b.active),
+    []
+  );
+
+  const activeAgenciesFilter = useCallback(
+    (data) => data.filter(a => a.active),
+    []
+  );
+
   // Fetch brands, users, and agencies using useFetchData hook
   const { data: brands } = useFetchData("/api/brands", {
-    filter: (data) => data.filter(b => b.active)
+    filter: activeBrandsFilter
   });
 
   const { data: users } = useFetchData("/api/users");
 
   const { data: agencies } = useFetchData("/api/agencies", {
-    filter: (data) => data.filter(a => a.active)
+    filter: activeAgenciesFilter
   });
 
   useEffect(() => {
@@ -55,6 +66,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
 
   useEffect(() => {
     if (code) {
+      const isTbdDate = code.airDate === "TBD";
       // Editing existing code
       setFormData({
         code: code.code,
@@ -69,12 +81,15 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
         closedCaptioning: code.closedCaptioning || "No",
         audio: code.audio || "Stereo LR",
         agency: code.agency || "",
-        airDate: code.airDate ? code.airDate.split('T')[0] : "",
+        airDate: !code.airDate || isTbdDate ? "" : code.airDate.split('T')[0],
         aspectRatio: code.aspectRatio || "16:9",
         version: code.version || "A",
         channel: code.channel || "Broadcast",
         status: code.status,
       });
+      setIsAirDateTbd(isTbdDate);
+    } else {
+      setIsAirDateTbd(false);
     }
   }, [code]);
 
@@ -183,15 +198,30 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
       [name]: value,
     }));
 
+    if (name === "airDate" && value) {
+      setIsAirDateTbd(false);
+    }
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleAirDateTbdChange = (e) => {
+    const checked = e.target.checked;
+    setIsAirDateTbd(checked);
+    if (checked) {
+      setFormData(prev => ({ ...prev, airDate: "" }));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formData);
+      onSubmit({
+        ...formData,
+        airDate: isAirDateTbd ? "TBD" : formData.airDate,
+      });
     }
   };
 
@@ -330,8 +360,17 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                   name="airDate"
                   value={formData.airDate}
                   onChange={handleChange}
-                  disabled={viewOnly}
+                  disabled={viewOnly || isAirDateTbd}
                 />
+                <label className={styles.tbdToggle}>
+                  <input
+                    type="checkbox"
+                    checked={isAirDateTbd}
+                    onChange={handleAirDateTbdChange}
+                    disabled={viewOnly}
+                  />
+                  TBD
+                </label>
               </div>
 
               <div className={styles.formGroup}>

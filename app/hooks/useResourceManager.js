@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
 /**
  * useResourceManager - Custom hook for managing CRUD operations on resources
@@ -70,6 +70,32 @@ const useResourceManager = (endpoint, options = {}) => {
   const [showForm, setShowForm] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
+  const validateRef = useRef(validate);
+  const createItemRef = useRef(createItemFn);
+  const updateItemRef = useRef(updateItemFn);
+  const onAfterSaveRef = useRef(onAfterSave);
+  const onAfterDeleteRef = useRef(onAfterDelete);
+
+  useEffect(() => {
+    validateRef.current = validate;
+  }, [validate]);
+
+  useEffect(() => {
+    createItemRef.current = createItemFn;
+  }, [createItemFn]);
+
+  useEffect(() => {
+    updateItemRef.current = updateItemFn;
+  }, [updateItemFn]);
+
+  useEffect(() => {
+    onAfterSaveRef.current = onAfterSave;
+  }, [onAfterSave]);
+
+  useEffect(() => {
+    onAfterDeleteRef.current = onAfterDelete;
+  }, [onAfterDelete]);
+
   // Memoize initialFormData keys for handleEdit optimization
   const initialFormDataKeys = useMemo(
     () => Object.keys(initialFormData),
@@ -99,11 +125,12 @@ const useResourceManager = (endpoint, options = {}) => {
    * Validate form data
    */
   const validateForm = useCallback(() => {
-    if (!validate || typeof validate !== "function") {
+    const validator = validateRef.current;
+    if (!validator || typeof validator !== "function") {
       return true;
     }
 
-    const validationErrors = validate(formData, items, editingItem);
+    const validationErrors = validator(formData, items, editingItem);
 
     if (validationErrors && Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -112,7 +139,7 @@ const useResourceManager = (endpoint, options = {}) => {
 
     setErrors({});
     return true;
-  }, [formData, items, editingItem, validate]);
+  }, [formData, items, editingItem]);
 
   /**
    * Create a new item via API (POST)
@@ -230,9 +257,10 @@ const useResourceManager = (endpoint, options = {}) => {
       if (editingItem) {
         // Update existing item via PUT
         let itemData;
-        if (updateItemFn && typeof updateItemFn === "function") {
+        const updateFn = updateItemRef.current;
+        if (updateFn && typeof updateFn === "function") {
           // Use custom item update function
-          itemData = updateItemFn(editingItem, formData, now);
+          itemData = updateFn(editingItem, formData, now);
         } else {
           // Default update (spread formData over existing item)
           itemData = { ...editingItem, ...formData, updatedAt: now };
@@ -249,9 +277,10 @@ const useResourceManager = (endpoint, options = {}) => {
       } else {
         // Create new item via POST
         let newItem;
-        if (createItemFn && typeof createItemFn === "function") {
+        const createFn = createItemRef.current;
+        if (createFn && typeof createFn === "function") {
           // Use custom item creation function
-          newItem = createItemFn(formData, now);
+          newItem = createFn(formData, now);
         } else {
           // Default item creation
           newItem = {
@@ -270,8 +299,9 @@ const useResourceManager = (endpoint, options = {}) => {
       }
 
       resetForm();
-      if (onAfterSave && typeof onAfterSave === "function") {
-        onAfterSave(items);
+      const afterSave = onAfterSaveRef.current;
+      if (afterSave && typeof afterSave === "function") {
+        afterSave(items);
       }
 
       return true;
@@ -280,7 +310,7 @@ const useResourceManager = (endpoint, options = {}) => {
       setErrors({ submit: error.message });
       return false;
     }
-  }, [formData, editingItem, items, validateForm, createItemApi, updateItemApi, createItemFn, updateItemFn, onAfterSave, resetForm]);
+  }, [formData, editingItem, items, validateForm, createItemApi, updateItemApi, resetForm]);
 
   /**
    * Start editing an item
@@ -313,8 +343,9 @@ const useResourceManager = (endpoint, options = {}) => {
       const updatedItems = items.filter(item => item.id !== id);
       setItems(updatedItems);
 
-      if (onAfterDelete && typeof onAfterDelete === "function") {
-        onAfterDelete(updatedItems);
+      const afterDelete = onAfterDeleteRef.current;
+      if (afterDelete && typeof afterDelete === "function") {
+        afterDelete(updatedItems);
       }
 
       return true;

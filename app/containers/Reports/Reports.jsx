@@ -54,7 +54,7 @@ const Reports = () => {
           } else if (filters.dateType === "updated") {
             codeDate = new Date(code.updatedAt);
           } else if (filters.dateType === "air") {
-            if (!code.airDate) return false;
+            if (!code.airDate || code.airDate === "TBD") return false;
             codeDate = new Date(code.airDate);
           }
 

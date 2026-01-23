@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
 /**
  * useFetchData - Custom hook for fetching data from API endpoints
@@ -55,6 +55,17 @@ const useFetchData = (endpoint, options = {}) => {
   const [loading, setLoading] = useState(fetchOnMount);
   const [error, setError] = useState(null);
 
+  const filterRef = useRef(filter);
+  const transformRef = useRef(transform);
+
+  useEffect(() => {
+    filterRef.current = filter;
+  }, [filter]);
+
+  useEffect(() => {
+    transformRef.current = transform;
+  }, [transform]);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -69,13 +80,15 @@ const useFetchData = (endpoint, options = {}) => {
       let result = await response.json();
 
       // Apply filter if provided
-      if (filter && typeof filter === "function") {
-        result = filter(result);
+      const filterFn = filterRef.current;
+      if (filterFn && typeof filterFn === "function") {
+        result = filterFn(result);
       }
 
       // Apply transform if provided
-      if (transform && typeof transform === "function") {
-        result = transform(result);
+      const transformFn = transformRef.current;
+      if (transformFn && typeof transformFn === "function") {
+        result = transformFn(result);
       }
 
       setData(result);
@@ -86,7 +99,7 @@ const useFetchData = (endpoint, options = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [endpoint, filter, transform, stableInitialValue]);
+  }, [endpoint, stableInitialValue]);
 
   useEffect(() => {
     if (fetchOnMount) {

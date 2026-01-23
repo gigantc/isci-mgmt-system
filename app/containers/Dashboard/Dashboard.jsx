@@ -226,10 +226,14 @@ const Dashboard = () => {
                   .filter(code => code.assignedEditor === `${currentUser.firstName} ${currentUser.lastName}`)
                   .sort((a, b) => {
                     // Sort by Air Date (most recent first)
-                    if (!a.airDate && !b.airDate) return 0;
-                    if (!a.airDate) return 1;
-                    if (!b.airDate) return -1;
-                    return new Date(b.airDate) - new Date(a.airDate);
+                    const toSortableDate = (value) => {
+                      if (!value || value === "TBD") return 0;
+                      const parsed = Date.parse(value);
+                      return Number.isNaN(parsed) ? 0 : parsed;
+                    };
+                    const aDate = toSortableDate(a.airDate);
+                    const bDate = toSortableDate(b.airDate);
+                    return bDate - aDate;
                   })
                   .slice(0, 5);
 

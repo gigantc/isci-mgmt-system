@@ -15,7 +15,10 @@ const ISCIList = ({ codes, onDelete }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString();
+    if (dateString === "TBD") return "TBD";
+    const parsed = Date.parse(dateString);
+    if (Number.isNaN(parsed)) return "N/A";
+    return new Date(parsed).toLocaleDateString();
   };
 
   const handleSort = (column) => {
@@ -60,10 +63,16 @@ const ISCIList = ({ codes, onDelete }) => {
           aValue = a.spotLength || 0;
           bValue = b.spotLength || 0;
           break;
-        case "airDate":
-          aValue = a.airDate ? new Date(a.airDate).getTime() : 0;
-          bValue = b.airDate ? new Date(b.airDate).getTime() : 0;
+        case "airDate": {
+          const toSortableDate = (value) => {
+            if (!value || value === "TBD") return 0;
+            const parsed = Date.parse(value);
+            return Number.isNaN(parsed) ? 0 : parsed;
+          };
+          aValue = toSortableDate(a.airDate);
+          bValue = toSortableDate(b.airDate);
           break;
+        }
         case "status":
           aValue = a.status;
           bValue = b.status;
