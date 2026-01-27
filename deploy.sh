@@ -74,7 +74,7 @@ echo -e "${GREEN}✓ Data backed up to: $BACKUP_DIR/data_$DATE.tar.gz${NC}"
 echo ""
 
 # Step 4: Build application
-echo -e "${YELLOW}[4/6] Building application...${NC}"
+echo -e "${YELLOW}[4/7] Building application...${NC}"
 npm run build || {
     echo -e "${RED}Build failed${NC}"
     exit 1
@@ -82,15 +82,28 @@ npm run build || {
 echo -e "${GREEN}✓ Build completed${NC}"
 echo ""
 
-# Step 5: Create logs directory if it doesn't exist
-echo -e "${YELLOW}[5/6] Setting up logs directory...${NC}"
+# Step 5: Run database migrations
+echo -e "${YELLOW}[5/7] Running database migrations...${NC}"
+npx prisma generate || {
+    echo -e "${RED}Prisma generate failed${NC}"
+    exit 1
+}
+npx prisma migrate deploy || {
+    echo -e "${RED}Database migration failed${NC}"
+    exit 1
+}
+echo -e "${GREEN}✓ Database migrations completed${NC}"
+echo ""
+
+# Step 6: Create logs directory if it doesn't exist
+echo -e "${YELLOW}[6/7] Setting up logs directory...${NC}"
 mkdir -p logs
 chmod 755 logs
 echo -e "${GREEN}✓ Logs directory ready${NC}"
 echo ""
 
-# Step 6: Restart PM2
-echo -e "${YELLOW}[6/6] Restarting application...${NC}"
+# Step 7: Restart PM2
+echo -e "${YELLOW}[7/7] Restarting application...${NC}"
 
 # Check if PM2 process exists
 if pm2 describe isci-mgmt > /dev/null 2>&1; then
