@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
 import { getUserSession, isAuthenticated } from "@/utils/auth";
+import { generateUUID } from "@/utils/uuid";
 import styles from "./CreateISCI.module.scss";
 
 /**
@@ -52,7 +53,7 @@ const CreateISCI = () => {
     const userDisplayName = user ? `${user.firstName} ${user.lastName}` : "";
 
     const newCode = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       ...formData,
       createdBy: userDisplayName || null,
       updatedBy: userDisplayName || null,
