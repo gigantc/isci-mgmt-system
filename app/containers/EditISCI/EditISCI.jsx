@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
-import { ISCIStatus } from "@/types/isci";
 import ISCIForm from "@/components/ISCIForm";
 import Slate from "@/components/Slate";
 import { isAuthenticated, getUserSession, saveUserSession, isAdmin } from "@/utils/auth";
@@ -24,6 +23,38 @@ const EditISCI = () => {
   const [allCodes, setAllCodes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "N/A";
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${month}.${day}.${year}`;
+  };
+
+  const formatTime = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "";
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${ampm}`;
+  };
+
+  const getEditHistory = () => {
+    if (!code || !code.editHistory) return [];
+    if (Array.isArray(code.editHistory)) return code.editHistory;
+    try {
+      const parsed = JSON.parse(code.editHistory);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -108,34 +139,32 @@ const EditISCI = () => {
   const handleUpdateCode = async (formData) => {
     if (!code) return;
 
+    const user = getUserSession();
+    const userDisplayName = user ? `${user.firstName} ${user.lastName}` : "";
+
     const updatedCode = {
       ...code,
       ...formData,
+      updatedBy: userDisplayName || null,
       updatedAt: new Date().toISOString(),
-      completedAt: formData.status === ISCIStatus.COMPLETED
-        ? new Date().toISOString()
-        : code.completedAt,
     };
-
-    // Replace the old code with updated one in the array
-    const updatedCodes = allCodes.map(c =>
-      c.id === code.id ? updatedCode : c
-    );
 
     try {
       const response = await fetch("/api/isci", {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedCodes),
+        body: JSON.stringify(updatedCode),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+
+      if (response.ok && result.success) {
         // Success! Navigate back to dashboard
         navigate("/");
       } else {
-        console.error("Failed to save ISCI code");
+        console.error("Failed to save ISCI code:", result.error);
         // TODO: Show error message to user
       }
     } catch (err) {
@@ -156,7 +185,11 @@ const EditISCI = () => {
    */
   const handleSubmitClick = () => {
     if (formRef.current) {
-      formRef.current.requestSubmit();
+      if (typeof formRef.current.requestSubmit === "function") {
+        formRef.current.requestSubmit();
+      } else {
+        formRef.current.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      }
     }
   };
 
@@ -208,7 +241,36 @@ const EditISCI = () => {
                 formRef={formRef}
                 viewOnly={!userIsAdmin}
               />
-              <Slate code={code} />
+              <div className={styles.slateHistoryRow}>
+                <Slate code={code} />
+                <div className={styles.auditSection}>
+                  <h3>History</h3>
+                  <div className={styles.auditGrid}>
+                    <div className={styles.auditItem}>
+                      <span className={styles.auditLabel}>Created By:</span>
+                      <span className={styles.auditValue}>{code.createdBy || "Unknown"}</span>
+                    </div>
+                    <div className={styles.auditItem}>
+                      <span className={styles.auditLabel}>Date Created:</span>
+                      <span className={styles.auditValue}>{formatDate(code.createdAt)}</span>
+                    </div>
+                  </div>
+                  <div className={styles.auditHistory}>
+                    {getEditHistory().length > 0 ? (
+                      getEditHistory()
+                        .slice()
+                        .reverse()
+                        .map((entry, index) => (
+                          <p key={`${entry.timestamp}-${index}`} className={styles.auditEntry}>
+                            edited by {entry.user || "Unknown"} on {formatDate(entry.timestamp)} at {formatTime(entry.timestamp)}
+                          </p>
+                        ))
+                    ) : (
+                      <p className={styles.auditEmpty}>No edits yet</p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </>
           )}
         </div>

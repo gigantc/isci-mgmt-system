@@ -10,8 +10,8 @@
   .gridContainer {
     position: relative;
     display: grid;
-    grid-template-columns: 130px 140px 200px 150px 1fr 100px 160px 130px;
-    min-width: 1400px;
+    grid-template-columns: 130px 200px 180px 160px 1fr 100px 160px;
+    min-width: 1260px;
     font-size: 0.9rem;
     gap: 0;
   }
@@ -116,45 +116,6 @@
     padding: 0.75rem 1rem;
     border-bottom: 1px solid v.$border-color-light;
     white-space: nowrap;
-  }
-
-  .statusBadge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: capitalize;
-
-    &.statusPending {
-      background-color: rgba(v.$teal, 0.15);
-      color: v.$teal;
-      border: 1px solid rgba(v.$teal, 0.3);
-    }
-
-    &.statusInProgress {
-      background-color: rgba(v.$orange, 0.15);
-      color: v.$orange;
-      border: 1px solid rgba(v.$orange, 0.3);
-    }
-
-    &.statusInReview {
-      background-color: rgba(v.$red, 0.15);
-      color: v.$red;
-      border: 1px solid rgba(v.$red, 0.3);
-    }
-
-    &.statusCompleted {
-      background-color: rgba(v.$yellow, 0.15);
-      color: v.$yellow;
-      border: 1px solid rgba(v.$yellow, 0.3);
-    }
-
-    &.statusArchived {
-      background-color: rgba(v.$gray, 0.15);
-      color: v.$gray;
-      border: 1px solid rgba(v.$gray, 0.3);
-    }
   }
 
   .btnEdit{

@@ -1,11 +1,4 @@
-import { readFile, writeFile } from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const USERS_FILE = path.join(__dirname, "../../data/users.json");
+import { prisma } from "@/lib/prisma";
 
 // POST /api/user/recently-viewed - Add an ISCI code to user's recently viewed list
 export async function action({ request }) {
@@ -16,39 +9,36 @@ export async function action({ request }) {
       return { success: false, message: "Missing userId or isciCode" };
     }
 
-    // Read all users
-    const data = await readFile(USERS_FILE, "utf-8");
-    const users = JSON.parse(data);
-
     // Find the user
-    const userIndex = users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
       return { success: false, message: "User not found" };
     }
 
-    const user = users[userIndex];
-
-    // Initialize recentlyViewed if it doesn't exist
-    if (!user.recentlyViewed) {
-      user.recentlyViewed = [];
-    }
+    // Parse recentlyViewed from JSON string
+    let recentlyViewed = JSON.parse(user.recentlyViewed || "[]");
 
     // Remove the code if it already exists (to avoid duplicates)
-    user.recentlyViewed = user.recentlyViewed.filter(code => code !== isciCode);
+    recentlyViewed = recentlyViewed.filter((code) => code !== isciCode);
 
     // Add the code to the beginning of the array
-    user.recentlyViewed.unshift(isciCode);
+    recentlyViewed.unshift(isciCode);
 
     // Keep only the last 10 items
-    user.recentlyViewed = user.recentlyViewed.slice(0, 10);
+    recentlyViewed = recentlyViewed.slice(0, 10);
 
-    // Update the user in the array
-    users[userIndex] = user;
+    // Update the user with the new recentlyViewed array
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        recentlyViewed: JSON.stringify(recentlyViewed),
+      },
+    });
 
-    // Save back to file
-    await writeFile(USERS_FILE, JSON.stringify(users, null, 2));
-
-    return { success: true, recentlyViewed: user.recentlyViewed };
+    return { success: true, recentlyViewed };
   } catch (error) {
     console.error("Error updating recently viewed:", error);
     return { success: false, message: error.message };

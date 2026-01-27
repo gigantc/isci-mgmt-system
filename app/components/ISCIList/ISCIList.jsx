@@ -8,14 +8,12 @@ const ISCIList = ({ codes, onDelete }) => {
   const userIsAdmin = isAdmin();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
-  const getStatusBadgeClass = (status) => {
-    const statusKey = `status${status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('')}`;
-    return `${styles.statusBadge} ${styles[statusKey] || ''}`;
-  };
-
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString();
+    if (dateString === "TBD") return "TBD";
+    const parsed = Date.parse(dateString);
+    if (Number.isNaN(parsed)) return "N/A";
+    return new Date(parsed).toLocaleDateString();
   };
 
   const handleSort = (column) => {
@@ -40,10 +38,6 @@ const ISCIList = ({ codes, onDelete }) => {
           aValue = a.code;
           bValue = b.code;
           break;
-        case "editor":
-          aValue = a.assignedEditor || "";
-          bValue = b.assignedEditor || "";
-          break;
         case "brand":
           aValue = a.brand;
           bValue = b.brand;
@@ -51,6 +45,10 @@ const ISCIList = ({ codes, onDelete }) => {
         case "campaign":
           aValue = a.campaignName || "";
           bValue = b.campaignName || "";
+          break;
+        case "jobNumber":
+          aValue = a.jobNumber || "";
+          bValue = b.jobNumber || "";
           break;
         case "spotTitle":
           aValue = a.spotTitle;
@@ -60,14 +58,16 @@ const ISCIList = ({ codes, onDelete }) => {
           aValue = a.spotLength || 0;
           bValue = b.spotLength || 0;
           break;
-        case "airDate":
-          aValue = a.airDate ? new Date(a.airDate).getTime() : 0;
-          bValue = b.airDate ? new Date(b.airDate).getTime() : 0;
+        case "airDate": {
+          const toSortableDate = (value) => {
+            if (!value || value === "TBD") return 0;
+            const parsed = Date.parse(value);
+            return Number.isNaN(parsed) ? 0 : parsed;
+          };
+          aValue = toSortableDate(a.airDate);
+          bValue = toSortableDate(b.airDate);
           break;
-        case "status":
-          aValue = a.status;
-          bValue = b.status;
-          break;
+        }
         default:
           return 0;
       }
@@ -104,14 +104,14 @@ const ISCIList = ({ codes, onDelete }) => {
           <span onClick={() => handleSort("code")} className={styles.sortable}>
             ISCI Code {getSortIndicator("code")}
           </span>
-          <span onClick={() => handleSort("editor")} className={styles.sortable}>
-            Editor {getSortIndicator("editor")}
-          </span>
           <span onClick={() => handleSort("brand")} className={styles.sortable}>
-            Brand/Client {getSortIndicator("brand")}
+            Client {getSortIndicator("brand")}
           </span>
           <span onClick={() => handleSort("campaign")} className={styles.sortable}>
             Campaign {getSortIndicator("campaign")}
+          </span>
+          <span onClick={() => handleSort("jobNumber")} className={styles.sortable}>
+            Job Number {getSortIndicator("jobNumber")}
           </span>
           <span onClick={() => handleSort("spotTitle")} className={styles.sortable}>
             Spot Title {getSortIndicator("spotTitle")}
@@ -121,9 +121,6 @@ const ISCIList = ({ codes, onDelete }) => {
           </span>
           <span onClick={() => handleSort("airDate")} className={styles.sortable}>
             Air/Start Date {getSortIndicator("airDate")}
-          </span>
-          <span onClick={() => handleSort("status")} className={styles.sortable}>
-            Status {getSortIndicator("status")}
           </span>
         </div>
 
@@ -152,17 +149,12 @@ const ISCIList = ({ codes, onDelete }) => {
                     )}
                 </div>
               </span>
-              <span>{code.assignedEditor || "Unassigned"}</span>
               <span>{code.brand}</span>
               <span>{code.campaignName || "N/A"}</span>
+              <span>{code.jobNumber || "N/A"}</span>
               <span className={styles.spotTitleCell}>{code.spotTitle}</span>
               <span>{code.spotLength ? `${code.spotLength}s` : "N/A"}</span>
               <span>{formatDate(code.airDate)}</span>
-              <span>
-                <div className={getStatusBadgeClass(code.status)}>
-                  {code.status.replace('_', ' ')}
-                </div>
-              </span>
             </div>
           </div>
         ))}

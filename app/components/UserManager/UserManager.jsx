@@ -1,7 +1,9 @@
-import { useResourceManager } from "@/hooks";
+import { useResourceManager, useConfirmDialog } from "@/hooks";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import styles from "./UserManager.module.scss";
 
 const UserManager = () => {
+  const { dialogProps, confirm } = useConfirmDialog();
   const {
     items: users,
     formData,
@@ -78,7 +80,16 @@ const UserManager = () => {
       // Only update password if provided
       ...(data.password ? { password: data.password } : {}),
       profileUpdatedAt: now
-    })
+    }),
+    confirmDelete: async () => {
+      return await confirm({
+        title: "Delete User",
+        message: "Are you sure you want to delete this user? This action cannot be undone.",
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        isDangerous: true,
+      });
+    }
   });
 
   return (
@@ -252,6 +263,9 @@ const UserManager = () => {
           </div>
         </>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog {...dialogProps} />
     </div>
   );
 };

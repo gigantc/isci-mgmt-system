@@ -1,47 +1,54 @@
-import { useState, useEffect } from "react";
-import { ISCIStatus } from "@/types/isci";
-import { getUserSession } from "@/utils/auth";
+import { useState, useEffect, useCallback } from "react";
 import { useFetchData } from "@/hooks";
+import { MARKET_OPTIONS, getMarketLabel, normalizeMarketValue } from "@/utils/markets";
 import styles from "./ISCIForm.module.scss";
 
 const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef, viewOnly = false }) => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [isAirDateTbd, setIsAirDateTbd] = useState(false);
+  const [aspectRatioChoice, setAspectRatioChoice] = useState("16:9");
+  const [customAspectRatio, setCustomAspectRatio] = useState("");
+  const [spotLengthChoice, setSpotLengthChoice] = useState("");
+  const [customSpotLength, setCustomSpotLength] = useState("");
   const [formData, setFormData] = useState({
     code: "",
     brandId: "",
-    assignedEditor: "",
     brand: "",
     campaignName: "",
+    jobNumber: "",
     spotTitle: "",
     spotLength: "",
     description: "",
     language: "English",
-    closedCaptioning: "No",
+    closedCaptioning: "Clean",
     audio: "Stereo LR",
+    fileFormat: "Pro Res",
     agency: "",
+    market: "",
     airDate: "",
     aspectRatio: "16:9",
-    version: "A",
     channel: "Broadcast",
-    status: ISCIStatus.PENDING,
   });
 
   const [errors, setErrors] = useState({});
 
+  const activeBrandsFilter = useCallback(
+    (data) => data.filter(b => b.active),
+    []
+  );
+
+  const activeAgenciesFilter = useCallback(
+    (data) => data.filter(a => a.active),
+    []
+  );
+
   // Fetch brands, users, and agencies using useFetchData hook
   const { data: brands } = useFetchData("/api/brands", {
-    filter: (data) => data.filter(b => b.active)
+    filter: activeBrandsFilter
   });
-
-  const { data: users } = useFetchData("/api/users");
 
   const { data: agencies } = useFetchData("/api/agencies", {
-    filter: (data) => data.filter(a => a.active)
+    filter: activeAgenciesFilter
   });
-
-  useEffect(() => {
-    setCurrentUser(getUserSession());
-  }, []);
 
   // Set default agency when agencies load and we're creating a new code
   useEffect(() => {
@@ -55,53 +62,45 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
 
   useEffect(() => {
     if (code) {
+      const isTbdDate = code.airDate === "TBD";
+      const supportedAspectRatios = ["16:9", "9:16", "4:5", "1:1", "2.39:1"];
+      const isCustomAspectRatio = code.aspectRatio && !supportedAspectRatios.includes(code.aspectRatio);
+      const supportedSpotLengths = ["6", "10", "15", "30", "45", "60"];
+      const codeSpotLength = code.spotLength ? String(code.spotLength) : "";
+      const isCustomSpotLength = codeSpotLength && !supportedSpotLengths.includes(codeSpotLength);
       // Editing existing code
       setFormData({
         code: code.code,
         brandId: code.brandId || "",
-        assignedEditor: code.assignedEditor || "",
         brand: code.brand,
         campaignName: code.campaignName || "",
+        jobNumber: code.jobNumber || "",
         spotTitle: code.spotTitle,
         spotLength: code.spotLength || "",
         description: code.description || "",
         language: code.language || "English",
-        closedCaptioning: code.closedCaptioning || "No",
+        closedCaptioning: code.closedCaptioning || "Clean",
         audio: code.audio || "Stereo LR",
+        fileFormat: code.fileFormat || "Pro Res",
         agency: code.agency || "",
-        airDate: code.airDate ? code.airDate.split('T')[0] : "",
+        market: normalizeMarketValue(code.market),
+        airDate: !code.airDate || isTbdDate ? "" : code.airDate.split('T')[0],
         aspectRatio: code.aspectRatio || "16:9",
-        version: code.version || "A",
         channel: code.channel || "Broadcast",
-        status: code.status,
       });
+      setIsAirDateTbd(isTbdDate);
+      setAspectRatioChoice(isCustomAspectRatio ? "custom" : (code.aspectRatio || "16:9"));
+      setCustomAspectRatio(isCustomAspectRatio ? code.aspectRatio : "");
+      setSpotLengthChoice(isCustomSpotLength ? "custom" : codeSpotLength);
+      setCustomSpotLength(isCustomSpotLength ? codeSpotLength : "");
+    } else {
+      setIsAirDateTbd(false);
+      setAspectRatioChoice("16:9");
+      setCustomAspectRatio("");
+      setSpotLengthChoice("");
+      setCustomSpotLength("");
     }
   }, [code]);
-
-  // Sort users with current user first, then alphabetically
-  const getSortedUsers = () => {
-    if (!users || users.length === 0) return [];
-
-    const currentUserFullName = currentUser
-      ? `${currentUser.firstName} ${currentUser.lastName}`
-      : null;
-
-    const sorted = [...users].sort((a, b) => {
-      const aFullName = `${a.firstName} ${a.lastName}`;
-      const bFullName = `${b.firstName} ${b.lastName}`;
-
-      // Current user always first
-      if (currentUserFullName) {
-        if (aFullName === currentUserFullName) return -1;
-        if (bFullName === currentUserFullName) return 1;
-      }
-
-      // Then alphabetically by full name
-      return aFullName.localeCompare(bFullName);
-    });
-
-    return sorted;
-  };
 
   const generateISCICode = (brandCode) => {
     const currentYear = new Date().getFullYear().toString().slice(-2); // Last 2 digits of year
@@ -139,7 +138,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
     }
 
     if (!formData.brand.trim()) {
-      newErrors.brand = "Brand/Client is required";
+      newErrors.brand = "Client is required";
     }
 
     if (!formData.spotTitle.trim()) {
@@ -183,16 +182,51 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
       [name]: value,
     }));
 
+    if (name === "airDate" && value) {
+      setIsAirDateTbd(false);
+    }
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleAirDateTbdChange = (e) => {
+    const checked = e.target.checked;
+    setIsAirDateTbd(checked);
+    if (checked) {
+      setFormData(prev => ({ ...prev, airDate: "" }));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formData);
+      onSubmit({
+        ...formData,
+        airDate: isAirDateTbd ? "TBD" : formData.airDate,
+        aspectRatio: aspectRatioChoice === "custom" ? customAspectRatio.trim() : aspectRatioChoice,
+        spotLength: spotLengthChoice === "custom" ? customSpotLength.trim() : spotLengthChoice,
+      });
     }
+  };
+
+  const handleAspectRatioChange = (e) => {
+    const { value } = e.target;
+    setAspectRatioChoice(value);
+    setFormData(prev => ({
+      ...prev,
+      aspectRatio: value === "custom" ? prev.aspectRatio : value,
+    }));
+  };
+
+  const handleSpotLengthChange = (e) => {
+    const { value } = e.target;
+    setSpotLengthChoice(value);
+    setFormData(prev => ({
+      ...prev,
+      spotLength: value === "custom" ? prev.spotLength : value,
+    }));
   };
 
   return (
@@ -207,10 +241,10 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
         <div className={`${styles.formSection} ${styles.formSectionFull}`}>
           <h3 className={styles.sectionTitle}>Basic Details</h3>
 
-          {/* Brand and ISCI Code side-by-side */}
+          {/* Client and ISCI Code side-by-side */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="brand">Brand / Client *</label>
+              <label htmlFor="brand">Client *</label>
               {code ? (
                 // When editing, show brand as text (can't change brand)
                 <input
@@ -228,7 +262,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                   onChange={handleBrandChange}
                   className={errors.brand ? "error" : ""}
                 >
-                  <option value="">Select a brand...</option>
+                  <option value="">Select a client...</option>
                   {brands.map(brand => (
                     <option key={brand.id} value={brand.id}>
                       {brand.name} ({brand.code})
@@ -238,7 +272,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               )}
               {errors.brand && <span className={styles.errorMessage}>{errors.brand}</span>}
               {!code && brands.length === 0 && (
-                <span className={styles.helpText}>No brands available. <a href="/admin">Add brands in Admin Panel</a></span>
+                <span className={styles.helpText}>No clients available. <a href="/admin">Add clients in Admin Panel</a></span>
               )}
             </div>
 
@@ -266,110 +300,112 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                     maxLength={12}
                     readOnly
                     className={`${errors.code ? "error" : ""} ${styles.readonlyInput}`}
-                    title="Auto-generated based on brand selection"
+                    title="Auto-generated based on client selection"
                   />
                   {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
-                  <span className={styles.helpText}>Auto-generated: [BRAND][YEAR][NUMBER]</span>
+                  <span className={styles.helpText}>Auto-generated: [CLIENT][YEAR][NUMBER]</span>
                 </>
               )}
             </div>
           </div>
 
-          {/* Campaign Name full-width */}
-          <div className={styles.formGroup}>
-            <label htmlFor="campaignName">Campaign Name</label>
-            <input
-              type="text"
-              id="campaignName"
-              name="campaignName"
-              value={formData.campaignName}
-              onChange={handleChange}
-              placeholder="Campaign Name"
-              disabled={viewOnly}
-            />
+          {/* Campaign Name + Job Number */}
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label htmlFor="campaignName">Campaign Name</label>
+              <input
+                type="text"
+                id="campaignName"
+                name="campaignName"
+                value={formData.campaignName}
+                onChange={handleChange}
+                placeholder="Campaign Name"
+                disabled={viewOnly}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="jobNumber">Job Number</label>
+              <input
+                type="text"
+                id="jobNumber"
+                name="jobNumber"
+                value={formData.jobNumber}
+                onChange={handleChange}
+                placeholder="Job Number"
+                disabled={viewOnly}
+              />
+            </div>
           </div>
         </div>
 
         {/* 2x2 GRID: Four Half-Width Sections */}
         <div className={styles.formSectionsRow}>
 
-          {/* TOP LEFT: Status */}
+          {/* TOP LEFT: Demographics */}
           <div className={`${styles.formSection} ${styles.formSectionHalf}`}>
-            <h3 className={styles.sectionTitle}>Status</h3>
+            <h3 className={styles.sectionTitle}>Demographics</h3>
 
-            {/* Assigned Editor full-width */}
+            {/* Air Date */}
             <div className={styles.formGroup}>
-              <label htmlFor="assignedEditor">Assigned Editor</label>
-              <select
-                id="assignedEditor"
-                name="assignedEditor"
-                value={formData.assignedEditor}
+              <label htmlFor="airDate">Date (Air/Start Date)</label>
+              <input
+                type="date"
+                id="airDate"
+                name="airDate"
+                value={formData.airDate}
                 onChange={handleChange}
-                disabled={viewOnly}
-              >
-                <option value="">Select Editor</option>
-                {getSortedUsers().map(user => {
-                  const fullName = `${user.firstName} ${user.lastName}`;
-                  return (
-                    <option key={user.id} value={fullName}>
-                      {fullName}
-                      {currentUser && fullName === `${currentUser.firstName} ${currentUser.lastName}` ? ' (You)' : ''}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-
-            {/* Air Date and Status side-by-side */}
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="airDate">Date (Air/Start Date)</label>
+                disabled={viewOnly || isAirDateTbd}
+                className={isAirDateTbd ? styles.dimmedInput : undefined}
+              />
+              <label className={styles.tbdToggle}>
                 <input
-                  type="date"
-                  id="airDate"
-                  name="airDate"
-                  value={formData.airDate}
-                  onChange={handleChange}
+                  type="checkbox"
+                  checked={isAirDateTbd}
+                  onChange={handleAirDateTbdChange}
                   disabled={viewOnly}
                 />
-              </div>
+                TBD
+              </label>
+            </div>
 
+            <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label htmlFor="status">Status</label>
+                <label htmlFor="agency">Agency</label>
                 <select
-                  id="status"
-                  name="status"
-                  value={formData.status}
+                  id="agency"
+                  name="agency"
+                  value={formData.agency}
                   onChange={handleChange}
                   disabled={viewOnly}
                 >
-                  <option value={ISCIStatus.PENDING}>Pending</option>
-                  <option value={ISCIStatus.IN_PROGRESS}>In Progress</option>
-                  <option value={ISCIStatus.IN_REVIEW}>In Review</option>
-                  <option value={ISCIStatus.COMPLETED}>Completed</option>
-                  <option value={ISCIStatus.ARCHIVED}>Archived</option>
+                  <option value="">Select Agency</option>
+                  {agencies.map(agency => (
+                    <option key={agency.id} value={agency.name}>
+                      {agency.name}{agency.isDefault ? ' (Default)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="market">Market</label>
+                <select
+                  id="market"
+                  name="market"
+                  value={formData.market}
+                  onChange={handleChange}
+                  disabled={viewOnly}
+                >
+                  <option value="">Select Market</option>
+                  {MARKET_OPTIONS.map(option => (
+                    <option key={option.code} value={option.code}>
+                      {getMarketLabel(option.code)}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
 
-            {/* Agency full-width */}
-            <div className={styles.formGroup}>
-              <label htmlFor="agency">Agency</label>
-              <select
-                id="agency"
-                name="agency"
-                value={formData.agency}
-                onChange={handleChange}
-                disabled={viewOnly}
-              >
-                <option value="">Select Agency</option>
-                {agencies.map(agency => (
-                  <option key={agency.id} value={agency.name}>
-                    {agency.name}{agency.isDefault ? ' (Default)' : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
           {/* TOP RIGHT: Spot Details */}
@@ -411,20 +447,30 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
             
             <div className={styles.formGroup}>
               <label htmlFor="language">Language</label>
-              <input
-                type="text"
+              <select
                 id="language"
                 name="language"
                 value={formData.language}
                 onChange={handleChange}
-                placeholder="English"
                 disabled={viewOnly}
-              />
+              >
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Italian">Italian</option>
+                <option value="Portuguese">Portuguese</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Korean">Korean</option>
+                <option value="Mandarin">Mandarin</option>
+                <option value="Cantonese">Cantonese</option>
+                <option value="Arabic">Arabic</option>
+              </select>
             </div>
 
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label htmlFor="closedCaptioning">Closed Captioning</label>
+                <label htmlFor="closedCaptioning">Accessibility</label>
                 <select
                   id="closedCaptioning"
                   name="closedCaptioning"
@@ -432,22 +478,27 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                   onChange={handleChange}
                   disabled={viewOnly}
                 >
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
+                  <option value="Closed Captions">Closed Captions</option>
+                  <option value="Subtitles">Subtitles</option>
+                  <option value="Clean">Clean</option>
                 </select>
               </div>
 
               <div className={styles.formGroup}>
                 <label htmlFor="audio">Audio</label>
-                <input
-                  type="text"
+                <select
                   id="audio"
                   name="audio"
                   value={formData.audio}
                   onChange={handleChange}
-                  placeholder="Stereo LR"
                   disabled={viewOnly}
-                />
+                >
+                  <option value="Stereo LR">Stereo LR</option>
+                  <option value="Broadcast">Broadcast</option>
+                  <option value="Digital Streaming">Digital Streaming</option>
+                  <option value="Cinema 5:1">Cinema 5:1</option>
+                  <option value="Digital">Digital</option>
+                </select>
               </div>
             </div>
           </div>
@@ -462,32 +513,44 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                 <select
                   id="aspectRatio"
                   name="aspectRatio"
-                  value={formData.aspectRatio}
-                  onChange={handleChange}
+                  value={aspectRatioChoice}
+                  onChange={handleAspectRatioChange}
                   disabled={viewOnly}
                 >
                   <option value="16:9">16:9</option>
                   <option value="9:16">9:16</option>
-                  <option value="4:3">4:3</option>
+                  <option value="4:5">4:5</option>
                   <option value="1:1">1:1</option>
                   <option value="2.39:1">2.39:1</option>
+                  <option value="custom">Custom</option>
                 </select>
+                {aspectRatioChoice === "custom" && (
+                  <input
+                    type="text"
+                    name="customAspectRatio"
+                    value={customAspectRatio}
+                    onChange={(e) => setCustomAspectRatio(e.target.value)}
+                    placeholder="e.g., 3:2 or 1.85:1"
+                    disabled={viewOnly}
+                  />
+                )}
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="version">Version / Cut</label>
+                <label htmlFor="fileFormat">File Format</label>
                 <select
-                  id="version"
-                  name="version"
-                  value={formData.version}
+                  id="fileFormat"
+                  name="fileFormat"
+                  value={formData.fileFormat}
                   onChange={handleChange}
                   disabled={viewOnly}
                 >
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
+                  <option value="Pro Res">Pro Res</option>
+                  <option value="MP4">MP4</option>
+                  <option value="MP3">MP3</option>
+                  <option value="QT">QT</option>
+                  <option value="WAV">WAV</option>
+                  <option value="H.264">H.264</option>
                 </select>
               </div>
             </div>
@@ -499,8 +562,8 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                 <select
                   id="spotLength"
                   name="spotLength"
-                  value={formData.spotLength}
-                  onChange={handleChange}
+                  value={spotLengthChoice}
+                  onChange={handleSpotLengthChange}
                   disabled={viewOnly}
                 >
                   <option value="">Select length</option>
@@ -510,11 +573,22 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                   <option value="30">30</option>
                   <option value="45">45</option>
                   <option value="60">60</option>
+                  <option value="custom">Other</option>
                 </select>
+                {spotLengthChoice === "custom" && (
+                  <input
+                    type="text"
+                    name="customSpotLength"
+                    value={customSpotLength}
+                    onChange={(e) => setCustomSpotLength(e.target.value)}
+                    placeholder="e.g., 75"
+                    disabled={viewOnly}
+                  />
+                )}
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="channel">Output: Channel</label>
+                <label htmlFor="channel">Placement</label>
                 <select
                   id="channel"
                   name="channel"
@@ -525,9 +599,18 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                   <option value="Broadcast">Broadcast</option>
                   <option value="CTV">CTV</option>
                   <option value="Digital">Digital</option>
-                  <option value="Social">Social</option>
+                  <option value="Direct TV">Direct TV</option>
+                  <option value="Hulu">Hulu</option>
                   <option value="OLV">OLV</option>
+                  <option value="OTT">OTT</option>
+                  <option value="Pre-Roll">Pre-Roll</option>
                   <option value="Radio">Radio</option>
+                  <option value="Social">Social</option>
+                  <option value="Sojern">Sojern</option>
+                  <option value="Streaming Radio">Streaming Radio</option>
+                  <option value="Terrestrial Radio">Terrestrial Radio</option>
+                  <option value="Trade Desk">Trade Desk</option>
+                  <option value="YouTube">YouTube</option>
                 </select>
               </div>
             </div>

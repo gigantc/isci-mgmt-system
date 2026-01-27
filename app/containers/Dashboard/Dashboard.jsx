@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { isAuthenticated, getUserSession, isAdmin } from "@/utils/auth";
-import { useFetchData } from "@/hooks";
+import { useFetchData, useConfirmDialog } from "@/hooks";
 import styles from "./Dashboard.module.scss";
 
 /**
@@ -36,6 +37,9 @@ const Dashboard = () => {
   // Fetch ISCI codes using useFetchData hook
   const { data: codes, loading: isLoading, refetch: loadCodes } = useFetchData("/api/isci");
 
+  // Confirm dialog for deletion
+  const { dialogProps, confirm } = useConfirmDialog();
+
   /**
    * useEffect Hook - Check authentication and load user
    */
@@ -56,7 +60,7 @@ const Dashboard = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        loadCodes();
+        loadCodes({ silent: true });
         // Reload user session to get updated recentlyViewed
         const updatedUser = getUserSession();
         if (updatedUser) {
@@ -66,7 +70,7 @@ const Dashboard = () => {
     };
 
     const handleFocus = () => {
-      loadCodes();
+      loadCodes({ silent: true });
       // Reload user session to get updated recentlyViewed
       const updatedUser = getUserSession();
       if (updatedUser) {
@@ -85,50 +89,47 @@ const Dashboard = () => {
   }, [loadCodes]);
 
   /**
-   * saveCodes
-   *
-   * Saves the entire array of codes back to the server.
-   * We send ALL the codes, not just the ones that changed.
-   * (Simple but not super efficient - future devs might want to improve this!)
-   */
-  const saveCodes = async (updatedCodes) => {
-    try {
-      // Make a POST request with the updated codes
-      const response = await fetch("/api/isci", {
-        method: "POST",                              // POST = "I'm sending you data"
-        headers: {
-          "Content-Type": "application/json",        // "This data is JSON, FYI"
-        },
-        body: JSON.stringify(updatedCodes),          // Turn our array into a JSON string
-      });
-
-      if (response.ok) {
-        // Success! Refetch codes to update local state
-        loadCodes();
-      } else {
-        console.error("Failed to save ISCI codes");
-      }
-    } catch (error) {
-      console.error("Error saving ISCI codes:", error);
-      // TODO: Show an error toast notification?
-    }
-  };
-
-  /**
    * handleDeleteCode
    *
    * DANGER ZONE! 🚨 Permanently deletes an ISCI code.
    * We ask for confirmation first because we're not monsters.
    */
-  const handleDeleteCode = (id) => {
-    // Show a browser confirmation dialog
-    if (confirm("Are you sure you want to delete this ISCI code?")) {
-      // Filter out the code with the matching ID
-      // .filter() keeps everything EXCEPT the one we want to delete
-      const updatedCodes = codes.filter(code => code.id !== id);
-      saveCodes(updatedCodes);
+  const handleDeleteCode = async (id) => {
+    // Show custom confirmation dialog
+    const confirmed = await confirm({
+      title: "Delete ISCI Code",
+      message: "Are you sure you want to delete this ISCI code? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      isDangerous: true,
+    });
+
+    if (!confirmed) {
+      return; // User cancelled - do nothing
     }
-    // If they clicked "Cancel", nothing happens! Crisis averted.
+
+    try {
+      const response = await fetch("/api/isci", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Success! Refetch codes to update local state
+        loadCodes();
+      } else {
+        console.error("Failed to delete ISCI code:", result.error);
+        // TODO: Show an error toast notification
+      }
+    } catch (error) {
+      console.error("Error deleting ISCI code:", error);
+      // TODO: Show an error toast notification
+    }
   };
 
   /**
@@ -138,14 +139,11 @@ const Dashboard = () => {
    * We filter the codes based on what's in the search box.
    * Searches in: ISCI code, brand, spot title, and assigned editor.
    *
-   * The "?." is called optional chaining - it means "only try to call toLowerCase()
-   * if assignedEditor exists" (prevents errors if someone isn't assigned yet)
    */
   const filteredCodes = codes.filter(code =>
     code.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     code.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.spotTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.assignedEditor?.toLowerCase().includes(searchTerm.toLowerCase())
+    code.spotTitle.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Determine the dynamic section title based on current view
@@ -166,12 +164,12 @@ const Dashboard = () => {
           {!isLoading && (
             <div className={styles.searchBarRow}>
               <div className={styles.searchBar}>
-                <input
-                  type="text"
-                  placeholder="Search by code, brand, spot title, or editor..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+                  <input
+                    type="text"
+                    placeholder="Search by code, client, or spot title..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
               </div>
               <button
                 className={styles.btnCreateNew}
@@ -229,44 +227,6 @@ const Dashboard = () => {
         </div>
 
         <div className={styles.recentBox}>
-          <h3>Assigned Projects</h3>
-          <div className={styles.recentItems}>
-            {currentUser && codes.length > 0 ? (
-              (() => {
-                const assignedCodes = codes
-                  .filter(code => code.assignedEditor === `${currentUser.firstName} ${currentUser.lastName}`)
-                  .sort((a, b) => {
-                    // Sort by Air Date (most recent first)
-                    if (!a.airDate && !b.airDate) return 0;
-                    if (!a.airDate) return 1;
-                    if (!b.airDate) return -1;
-                    return new Date(b.airDate) - new Date(a.airDate);
-                  })
-                  .slice(0, 5);
-
-                if (assignedCodes.length === 0) {
-                  return <p className={styles.emptyState}>No assigned projects</p>;
-                }
-
-                return assignedCodes.map(code => (
-                  <div key={code.id} className={styles.recentItem}>
-                    <div className={styles.recentItemInfo}>
-                      <span className={styles.recentCode}>{code.code}</span>
-                      <span className={styles.recentTitle}>{code.spotTitle}</span>
-                    </div>
-                    <a href={`/edit/${code.code}`} className={styles.recentEditBtn}>
-                      {isAdmin() ? "Edit" : "View"}
-                    </a>
-                  </div>
-                ));
-              })()
-            ) : (
-              <p className={styles.emptyState}>No assigned projects</p>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.recentBox}>
           <h3>Recently Created</h3>
           <div className={styles.recentItems}>
             {codes.length > 0 ? (
@@ -300,6 +260,9 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog {...dialogProps} />
 
     </div>
   );

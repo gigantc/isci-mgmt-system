@@ -2,22 +2,24 @@
 
 .slateContainer {
   background: rgba(v.$white, 0.02);
-  border-radius: 32px;
+  border-radius: 16px;
   border: 1px solid v.$border-color;
-  padding: 2rem;
-  margin-top: 2rem;
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
 
   .slateHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid v.$border-color-light;
 
     h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1rem;
+      font-weight: 600;
       color: v.$text-primary;
       margin: 0;
+      text-transform: none;
+      letter-spacing: 0.04em;
     }
 
     .btnExport {

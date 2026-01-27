@@ -9,6 +9,7 @@ import {
 } from "react-router";
 
 import Header from "@/containers/Header";
+import AppErrorBoundary from "@/components/ErrorBoundary";
 import "./styles/app.scss";
 
 export const links = () => [
@@ -50,10 +51,10 @@ export default function App() {
   const showHeader = location.pathname !== "/login";
 
   return (
-    <>
+    <AppErrorBoundary>
       {showHeader && <Header />}
       <Outlet />
-    </>
+    </AppErrorBoundary>
   );
 }
 

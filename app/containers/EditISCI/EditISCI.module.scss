@@ -71,4 +71,73 @@
       font-size: 1.125rem;
     }
   }
+
+  .slateHistoryRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+    align-items: start;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .auditSection {
+    padding: 1.5rem;
+    border-radius: 16px;
+    background-color: v.$gray_dark;
+    border: 1px solid v.$border-color-light;
+    min-height: 100%;
+
+    h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1rem;
+      text-transform: none;
+      color: v.$text-primary;
+      letter-spacing: 0.04em;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid v.$border-color-light;
+    }
+  }
+
+  .auditGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .auditItem {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+
+  .auditLabel {
+    font-weight: 600;
+    color: v.$text-secondary;
+  }
+
+  .auditValue {
+    color: v.$text-primary;
+  }
+
+  .auditHistory {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: rgba(255, 250, 231, 0.7);
+    font-size: 0.9rem;
+  }
+
+  .auditEntry {
+    color: rgba(255, 250, 231, 0.7);
+  }
+
+  .auditEmpty {
+    color: v.$text-secondary;
+    font-style: italic;
+  }
 }

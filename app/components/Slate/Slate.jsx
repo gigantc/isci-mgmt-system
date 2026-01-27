@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react";
+import { getMarketLabel } from "@/utils/markets";
 import styles from "./Slate.module.scss";
 
 const Slate = ({ code }) => {
@@ -6,8 +7,10 @@ const Slate = ({ code }) => {
 
   // Format date as MM-DD-YY
   const formatDate = (dateString) => {
-    if (!dateString) return "TBD";
-    const date = new Date(dateString);
+    if (!dateString || dateString === "TBD") return "TBD";
+    const parsed = Date.parse(dateString);
+    if (Number.isNaN(parsed)) return "TBD";
+    const date = new Date(parsed);
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     const year = String(date.getFullYear()).slice(-2);
@@ -17,7 +20,9 @@ const Slate = ({ code }) => {
   // Format spot length as :30 format
   const formatLength = (length) => {
     if (!length) return "N/A";
-    return `:${length}`;
+    const numeric = Number(length);
+    if (Number.isNaN(numeric)) return String(length);
+    return numeric < 10 ? `0${numeric}` : `${numeric}`;
   };
 
   useEffect(() => {
@@ -43,28 +48,33 @@ const Slate = ({ code }) => {
       code.brand?.replace(/\s+/g, "_") || "Unknown",
       code.spotTitle?.replace(/\s+/g, "_") || "Untitled",
       formatLength(code.spotLength).replace(":", "") + "s",
-      code.assignedEditor?.split(" ")[0] || "Editor",
       code.description ? "With_Details" : "No_Disclaimer"
     ];
     const fullTitle = titleParts.join("_");
 
     // Field data
     const fields = [
-      { label: "Client:", value: code.brand || "N/A" },
-      { label: "Title:", value: fullTitle },
-      { label: "ISCI:", value: code.code || "N/A" },
+      { label: "ISCI CODE:", value: code.code || "N/A" },
+      { label: "CLIENT:", value: code.brand || "N/A" },
+      { label: "CAMPAIGN:", value: code.campaignName || "N/A" },
+      { label: "SPOT TITLE:", value: code.spotTitle || "N/A" },
       { label: "LENGTH:", value: formatLength(code.spotLength) },
+      { label: "AIR DATE:", value: formatDate(code.airDate) },
       { label: "AUDIO:", value: code.audio || "STEREO LR" },
+      { label: "LANGUAGE:", value: code.language || "ENGLISH" },
+      { label: "MARKET:", value: getMarketLabel(code.market) || "N/A" },
+      { label: "ASPECT RATIO:", value: code.aspectRatio || "N/A" },
       { label: "AGENCY:", value: code.agency || "N/A" },
-      { label: "DATE:", value: formatDate(code.airDate) }
+      { label: "DELIVERY FORMAT:", value: code.fileFormat || "N/A" },
+      { label: "ACCESSIBILITY:", value: code.closedCaptioning || "N/A" }
     ];
 
     // Starting position - more centered
-    let y = 200;
-    const lineHeight = 100;
-    const labelX = 240;
-    const valueX = 600;
-    const maxWidth = 1680; // Maximum width for text (1920 - 240 margin)
+    let y = 140;
+    const lineHeight = 70;
+    const labelX = 200;
+    const valueX = 620;
+    const maxWidth = 1720; // Maximum width for text (1920 - 200 margin)
 
     // Helper function to wrap text if it's too long
     const wrapText = (text, maxWidth) => {
@@ -90,24 +100,24 @@ const Slate = ({ code }) => {
     // Draw each field
     fields.forEach((field, index) => {
       // Label
-      ctx.font = "bold 48px Inter, sans-serif";
+      ctx.font = "bold 34px Inter, sans-serif";
       ctx.fillText(field.label, labelX, y);
 
       // Value - special handling for Title field
-      ctx.font = "400 48px Inter, sans-serif";
+      ctx.font = "400 34px Inter, sans-serif";
 
-      if (field.label === "Title:") {
+      if (field.label === "SPOT TITLE:") {
         // Wrap title if it's too long
         const availableWidth = maxWidth - valueX;
         const lines = wrapText(field.value, availableWidth);
 
         lines.forEach((line, lineIndex) => {
-          ctx.fillText(line, valueX, y + (lineIndex * 60));
+          ctx.fillText(line, valueX, y + (lineIndex * 46));
         });
 
         // Add extra spacing if title wrapped to multiple lines
         if (lines.length > 1) {
-          y += (lines.length - 1) * 60;
+          y += (lines.length - 1) * 46;
         }
       } else {
         ctx.fillText(field.value, valueX, y);

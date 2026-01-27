@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id
+  email            String    @unique
+  password         String
+  firstName        String
+  lastName         String
+  userType         String    // "admin" or "editor"
+  recentlyViewed   String    @default("[]") // JSON string array of ISCI codes
+  profileImage     String?
+  createdAt        DateTime
+  updatedAt        DateTime
+  profileUpdatedAt DateTime?
+}
+
+model Brand {
+  id           String     @id
+  name         String
+  abbreviation String?
+  code         String     @unique
+  active       Boolean    @default(true)
+  createdAt    DateTime
+  updatedAt    DateTime
+
+  isciCodes ISCICode[]
+}
+
+model Agency {
+  id        String   @id
+  name      String   @unique
+  isDefault Boolean  @default(false)
+  active    Boolean  @default(true)
+  createdAt DateTime
+  updatedAt DateTime
+}
+
+model ISCICode {
+  id               String    @id
+  code             String    @unique
+  brandId          String
+  brand            Brand     @relation(fields: [brandId], references: [id])
+  campaignName     String?
+  jobNumber        String?
+  spotTitle        String
+  spotLength       Int?
+  description      String?
+  language         String    @default("English")
+  closedCaptioning String    @default("Clean")
+  audio            String    @default("Stereo LR")
+  fileFormat       String    @default("Pro Res")
+  airDate          String?   // Stored as ISO string for SQLite compatibility
+  aspectRatio      String    @default("16:9")
+  channel          String    @default("Broadcast")
+  agency           String?
+  market           String?
+  createdBy        String?
+  updatedBy        String?
+  editHistory      String?   @default("[]")
+  createdAt        DateTime
+  updatedAt        DateTime
+  completedAt      DateTime?
+
+  @@index([brandId])
+}

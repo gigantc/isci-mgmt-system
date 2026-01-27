@@ -1,0 +1,64 @@
+@use "@/styles/variables" as v;
+
+.errorBoundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: v.$black;
+}
+
+.errorContent {
+  max-width: 600px;
+  text-align: center;
+  padding: 3rem;
+  background-color: v.$gray;
+  border-radius: 8px;
+
+  h1 {
+    color: v.$red;
+    margin-bottom: 1rem;
+    font-size: 1.75rem;
+  }
+
+  p {
+    color: v.$white;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+  }
+}
+
+.errorDetails {
+  text-align: left;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+
+  summary {
+    cursor: pointer;
+    color: v.$orange;
+    margin-bottom: 1rem;
+    font-weight: 500;
+
+    &:hover {
+      color: v.$yellow;
+    }
+  }
+
+  pre {
+    font-size: 0.75rem;
+    color: v.$white;
+    opacity: 0.7;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+.errorActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}

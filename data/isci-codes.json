@@ -3,7 +3,6 @@
     "id": "1",
     "code": "LVCI2501",
     "brandId": "1",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "Visit Las Vegas",
     "spotTitle": "LVCI_Visit_Las_Vegas_15s_Broadcast",
@@ -20,13 +19,13 @@
     "createdAt": "2025-06-21T23:27:48.815Z",
     "updatedAt": "2025-11-12T16:40:51.530Z",
     "completedAt": "2025-11-06T14:45:35.840Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "2",
     "code": "LVCI2502",
     "brandId": "1",
-    "assignedEditor": "James Wilson",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "What Happens Here",
     "spotTitle": "LVCI_What_Happens_Here_30s_Digital",
@@ -42,13 +41,13 @@
     "status": "pending",
     "createdAt": "2025-08-07T00:13:02.673Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "3",
     "code": "LVCI2503",
     "brandId": "1",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "What Happens Here",
     "spotTitle": "LVCI_What_Happens_Here_10s_Social",
@@ -65,13 +64,13 @@
     "createdAt": "2024-07-07T19:57:51.465Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-09-02T00:34:50.247Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "4",
     "code": "LVCI2504",
     "brandId": "1",
-    "assignedEditor": "Mike Chen",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "Visit Las Vegas",
     "spotTitle": "LVCI_Visit_Las_Vegas_45s_CTV",
@@ -87,13 +86,13 @@
     "status": "in_review",
     "createdAt": "2024-12-26T04:01:33.668Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "5",
     "code": "LVCI2505",
     "brandId": "1",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "New Fab",
     "spotTitle": "LVCI_New_Fab_15s_OLV",
@@ -109,13 +108,13 @@
     "status": "in_progress",
     "createdAt": "2025-02-19T21:39:21.594Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "6",
     "code": "LVCI2506",
     "brandId": "1",
-    "assignedEditor": "Maria Garcia",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "What Happens Here",
     "spotTitle": "LVCI_What_Happens_Here_30s_OLV",
@@ -131,13 +130,13 @@
     "status": "pending",
     "createdAt": "2025-06-08T02:40:46.335Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Maria Garcia"
   },
   {
     "id": "7",
     "code": "LVCI2507",
     "brandId": "1",
-    "assignedEditor": "David Lee",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "Visit Las Vegas",
     "spotTitle": "LVCI_Visit_Las_Vegas_30s_Broadcast",
@@ -154,13 +153,13 @@
     "createdAt": "2024-03-07T07:39:30.327Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-06-18T04:45:11.157Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "8",
     "code": "LVCI2508",
     "brandId": "1",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "Convention Spotlight",
     "spotTitle": "LVCI_Convention_Spotlight_30s_Social",
@@ -177,13 +176,13 @@
     "createdAt": "2025-01-13T04:49:06.682Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-12-05T04:17:03.784Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "9",
     "code": "LVCI2509",
     "brandId": "1",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "Convention Spotlight",
     "spotTitle": "LVCI_Convention_Spotlight_10s_CTV",
@@ -199,13 +198,13 @@
     "status": "in_progress",
     "createdAt": "2024-12-11T15:28:46.376Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "10",
     "code": "LVCI2510",
     "brandId": "1",
-    "assignedEditor": "Steve McVideo",
     "brand": "Las Vegas Convention and Visitors Authority",
     "campaignName": "Visit Las Vegas",
     "spotTitle": "LVCI_Visit_Las_Vegas_60s_Broadcast",
@@ -221,13 +220,13 @@
     "status": "in_review",
     "createdAt": "2025-04-09T11:18:38.115Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Steve McVideo"
   },
   {
     "id": "11",
     "code": "NIKE2501",
     "brandId": "2",
-    "assignedEditor": "Lisa Park",
     "brand": "Nike",
     "campaignName": "Air Max",
     "spotTitle": "NIKE_Air_Max_10s_Social",
@@ -243,13 +242,13 @@
     "status": "pending",
     "createdAt": "2025-11-04T05:56:31.032Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "12",
     "code": "NIKE2502",
     "brandId": "2",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Nike",
     "campaignName": "Just Do It",
     "spotTitle": "NIKE_Just_Do_It_45s_Radio",
@@ -266,13 +265,13 @@
     "createdAt": "2025-02-26T20:07:37.150Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-05-01T14:37:47.952Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "13",
     "code": "NIKE2503",
     "brandId": "2",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Nike",
     "campaignName": "Just Do It",
     "spotTitle": "NIKE_Just_Do_It_6s_Social",
@@ -289,13 +288,13 @@
     "createdAt": "2025-12-13T05:40:15.397Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-04-30T15:58:52.898Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "14",
     "code": "NIKE2504",
     "brandId": "2",
-    "assignedEditor": "Lisa Park",
     "brand": "Nike",
     "campaignName": "Victory",
     "spotTitle": "NIKE_Victory_30s_CTV",
@@ -311,13 +310,13 @@
     "status": "in_progress",
     "createdAt": "2024-03-10T06:02:14.174Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "15",
     "code": "NIKE2505",
     "brandId": "2",
-    "assignedEditor": "David Lee",
     "brand": "Nike",
     "campaignName": "Air Max",
     "spotTitle": "NIKE_Air_Max_45s_Radio",
@@ -334,13 +333,13 @@
     "createdAt": "2024-02-01T17:17:20.959Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-03-20T14:49:10.394Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "16",
     "code": "NIKE2506",
     "brandId": "2",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Nike",
     "campaignName": "Victory",
     "spotTitle": "NIKE_Victory_15s_CTV",
@@ -357,13 +356,13 @@
     "createdAt": "2024-06-01T08:29:11.183Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-09-23T03:26:22.767Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "17",
     "code": "NIKE2507",
     "brandId": "2",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Nike",
     "campaignName": "React",
     "spotTitle": "NIKE_React_60s_Social",
@@ -379,13 +378,13 @@
     "status": "pending",
     "createdAt": "2024-05-17T05:11:42.436Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "18",
     "code": "NIKE2508",
     "brandId": "2",
-    "assignedEditor": "James Wilson",
     "brand": "Nike",
     "campaignName": "Pegasus",
     "spotTitle": "NIKE_Pegasus_6s_Digital",
@@ -401,13 +400,13 @@
     "status": "pending",
     "createdAt": "2024-07-11T10:56:32.082Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "19",
     "code": "APPL2501",
     "brandId": "3",
-    "assignedEditor": "Mike Chen",
     "brand": "Apple",
     "campaignName": "Shot on iPhone",
     "spotTitle": "APPL_Shot_on_iPhone_45s_Radio",
@@ -423,13 +422,13 @@
     "status": "pending",
     "createdAt": "2024-11-21T22:16:38.331Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "20",
     "code": "APPL2502",
     "brandId": "3",
-    "assignedEditor": "Emily Rodriguez",
     "brand": "Apple",
     "campaignName": "Privacy",
     "spotTitle": "APPL_Privacy_30s_OLV",
@@ -445,13 +444,13 @@
     "status": "in_progress",
     "createdAt": "2025-07-02T07:23:40.329Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Emily Rodriguez"
   },
   {
     "id": "21",
     "code": "APPL2503",
     "brandId": "3",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Apple",
     "campaignName": "Innovation",
     "spotTitle": "APPL_Innovation_30s_CTV",
@@ -467,13 +466,13 @@
     "status": "in_review",
     "createdAt": "2024-06-23T04:23:08.107Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "22",
     "code": "APPL2504",
     "brandId": "3",
-    "assignedEditor": "Maria Garcia",
     "brand": "Apple",
     "campaignName": "Innovation",
     "spotTitle": "APPL_Innovation_6s_Digital",
@@ -490,13 +489,13 @@
     "createdAt": "2025-12-29T07:44:29.620Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-10-29T02:55:15.422Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Maria Garcia"
   },
   {
     "id": "23",
     "code": "APPL2505",
     "brandId": "3",
-    "assignedEditor": "Mike Chen",
     "brand": "Apple",
     "campaignName": "Innovation",
     "spotTitle": "APPL_Innovation_30s_CTV",
@@ -512,13 +511,13 @@
     "status": "in_progress",
     "createdAt": "2025-04-10T18:49:19.448Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "24",
     "code": "APPL2506",
     "brandId": "3",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Apple",
     "campaignName": "Shot on iPhone",
     "spotTitle": "APPL_Shot_on_iPhone_6s_CTV",
@@ -534,13 +533,13 @@
     "status": "in_progress",
     "createdAt": "2024-12-28T20:14:42.465Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "25",
     "code": "APPL2507",
     "brandId": "3",
-    "assignedEditor": "Emily Rodriguez",
     "brand": "Apple",
     "campaignName": "Shot on iPhone",
     "spotTitle": "APPL_Shot_on_iPhone_45s_OLV",
@@ -556,13 +555,13 @@
     "status": "pending",
     "createdAt": "2024-03-03T21:39:59.966Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Emily Rodriguez"
   },
   {
     "id": "26",
     "code": "APPL2508",
     "brandId": "3",
-    "assignedEditor": "Lisa Park",
     "brand": "Apple",
     "campaignName": "Think Different",
     "spotTitle": "APPL_Think_Different_30s_Social",
@@ -579,13 +578,13 @@
     "createdAt": "2024-07-06T21:30:52.045Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-09-25T01:02:56.962Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "27",
     "code": "APPL2509",
     "brandId": "3",
-    "assignedEditor": "Emily Rodriguez",
     "brand": "Apple",
     "campaignName": "Privacy",
     "spotTitle": "APPL_Privacy_60s_Broadcast",
@@ -601,13 +600,13 @@
     "status": "in_progress",
     "createdAt": "2025-09-08T08:19:13.235Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Emily Rodriguez"
   },
   {
     "id": "28",
     "code": "COCA2501",
     "brandId": "4",
-    "assignedEditor": "David Lee",
     "brand": "Coca-Cola",
     "campaignName": "Share a Coke",
     "spotTitle": "COCA_Share_a_Coke_6s_Broadcast",
@@ -624,13 +623,13 @@
     "createdAt": "2025-01-04T17:12:40.757Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-07-11T05:36:47.555Z",
-    "agency": "House of V"
+    "agency": "House of V",
+    "createdBy": "David Lee"
   },
   {
     "id": "29",
     "code": "COCA2502",
     "brandId": "4",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Coca-Cola",
     "campaignName": "Open Happiness",
     "spotTitle": "COCA_Open_Happiness_30s_CTV",
@@ -647,13 +646,13 @@
     "createdAt": "2024-03-08T14:28:32.518Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-06-27T20:32:42.151Z",
-    "agency": "House of V"
+    "agency": "House of V",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "30",
     "code": "COCA2503",
     "brandId": "4",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Coca-Cola",
     "campaignName": "Taste the Feeling",
     "spotTitle": "COCA_Taste_the_Feeling_15s_OLV",
@@ -669,13 +668,13 @@
     "status": "in_progress",
     "createdAt": "2024-04-07T01:07:00.662Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "House of V"
+    "agency": "House of V",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "31",
     "code": "COCA2504",
     "brandId": "4",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Coca-Cola",
     "campaignName": "Share a Coke",
     "spotTitle": "COCA_Share_a_Coke_60s_OLV",
@@ -691,13 +690,13 @@
     "status": "pending",
     "createdAt": "2024-02-22T17:32:36.458Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "House of V"
+    "agency": "House of V",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "32",
     "code": "COCA2505",
     "brandId": "4",
-    "assignedEditor": "Mike Chen",
     "brand": "Coca-Cola",
     "campaignName": "Share a Coke",
     "spotTitle": "COCA_Share_a_Coke_30s_Social",
@@ -714,13 +713,13 @@
     "createdAt": "2024-09-02T19:49:58.264Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-10-23T16:24:06.147Z",
-    "agency": "House of V"
+    "agency": "House of V",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "33",
     "code": "COCA2506",
     "brandId": "4",
-    "assignedEditor": "David Lee",
     "brand": "Coca-Cola",
     "campaignName": "Open Happiness",
     "spotTitle": "COCA_Open_Happiness_6s_OLV",
@@ -736,13 +735,13 @@
     "status": "in_review",
     "createdAt": "2024-07-01T04:24:13.478Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "House of V"
+    "agency": "House of V",
+    "createdBy": "David Lee"
   },
   {
     "id": "34",
     "code": "COCA2507",
     "brandId": "4",
-    "assignedEditor": "David Lee",
     "brand": "Coca-Cola",
     "campaignName": "Share a Coke",
     "spotTitle": "COCA_Share_a_Coke_10s_CTV",
@@ -759,13 +758,13 @@
     "createdAt": "2024-10-05T02:57:57.748Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-12-03T21:57:20.128Z",
-    "agency": "House of V"
+    "agency": "House of V",
+    "createdBy": "David Lee"
   },
   {
     "id": "35",
     "code": "TOYT2501",
     "brandId": "5",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Toyota",
     "campaignName": "Let's Go Places",
     "spotTitle": "TOYT_Let's_Go_Places_30s_Social",
@@ -782,13 +781,13 @@
     "createdAt": "2025-03-30T22:08:48.613Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-07-22T00:40:27.464Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "36",
     "code": "TOYT2502",
     "brandId": "5",
-    "assignedEditor": "James Wilson",
     "brand": "Toyota",
     "campaignName": "Let's Go Places",
     "spotTitle": "TOYT_Let's_Go_Places_60s_OLV",
@@ -804,13 +803,13 @@
     "status": "in_review",
     "createdAt": "2025-08-08T12:09:25.858Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "37",
     "code": "TOYT2503",
     "brandId": "5",
-    "assignedEditor": "Emily Rodriguez",
     "brand": "Toyota",
     "campaignName": "Let's Go Places",
     "spotTitle": "TOYT_Let's_Go_Places_30s_Radio",
@@ -826,13 +825,13 @@
     "status": "in_progress",
     "createdAt": "2024-01-06T19:32:22.849Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Emily Rodriguez"
   },
   {
     "id": "38",
     "code": "TOYT2504",
     "brandId": "5",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Toyota",
     "campaignName": "Camry",
     "spotTitle": "TOYT_Camry_30s_OLV",
@@ -849,13 +848,13 @@
     "createdAt": "2024-04-23T14:47:53.763Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-05-26T11:50:25.900Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "39",
     "code": "TOYT2505",
     "brandId": "5",
-    "assignedEditor": "James Wilson",
     "brand": "Toyota",
     "campaignName": "Camry",
     "spotTitle": "TOYT_Camry_45s_OLV",
@@ -872,13 +871,13 @@
     "createdAt": "2025-12-19T00:16:39.140Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-11-17T22:54:28.219Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "40",
     "code": "TOYT2506",
     "brandId": "5",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Toyota",
     "campaignName": "Let's Go Places",
     "spotTitle": "TOYT_Let's_Go_Places_60s_CTV",
@@ -894,13 +893,13 @@
     "status": "in_review",
     "createdAt": "2025-02-23T19:31:25.078Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "41",
     "code": "MSFT2501",
     "brandId": "6",
-    "assignedEditor": "David Lee",
     "brand": "Microsoft",
     "campaignName": "Surface Pro",
     "spotTitle": "MSFT_Surface_Pro_45s_Digital",
@@ -917,13 +916,13 @@
     "createdAt": "2024-07-23T23:18:36.301Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-06-13T13:47:46.923Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "42",
     "code": "MSFT2502",
     "brandId": "6",
-    "assignedEditor": "Lisa Park",
     "brand": "Microsoft",
     "campaignName": "Xbox Game Pass",
     "spotTitle": "MSFT_Xbox_Game_Pass_45s_Radio",
@@ -939,13 +938,13 @@
     "status": "in_review",
     "createdAt": "2024-05-13T18:59:50.577Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "43",
     "code": "MSFT2503",
     "brandId": "6",
-    "assignedEditor": "James Wilson",
     "brand": "Microsoft",
     "campaignName": "Xbox Game Pass",
     "spotTitle": "MSFT_Xbox_Game_Pass_10s_OLV",
@@ -962,13 +961,13 @@
     "createdAt": "2025-10-21T18:58:47.842Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-05-28T13:29:04.577Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "44",
     "code": "MSFT2504",
     "brandId": "6",
-    "assignedEditor": "Lisa Park",
     "brand": "Microsoft",
     "campaignName": "Xbox Game Pass",
     "spotTitle": "MSFT_Xbox_Game_Pass_15s_Social",
@@ -984,13 +983,13 @@
     "status": "pending",
     "createdAt": "2025-04-28T17:39:29.525Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "45",
     "code": "MSFT2505",
     "brandId": "6",
-    "assignedEditor": "David Lee",
     "brand": "Microsoft",
     "campaignName": "Xbox Game Pass",
     "spotTitle": "MSFT_Xbox_Game_Pass_15s_OLV",
@@ -1006,13 +1005,13 @@
     "status": "pending",
     "createdAt": "2025-12-13T01:57:59.438Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "46",
     "code": "MSFT2506",
     "brandId": "6",
-    "assignedEditor": "James Wilson",
     "brand": "Microsoft",
     "campaignName": "Xbox Game Pass",
     "spotTitle": "MSFT_Xbox_Game_Pass_60s_Digital",
@@ -1028,13 +1027,13 @@
     "status": "in_progress",
     "createdAt": "2025-03-24T12:48:17.893Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "47",
     "code": "MSFT2507",
     "brandId": "6",
-    "assignedEditor": "David Lee",
     "brand": "Microsoft",
     "campaignName": "Xbox Game Pass",
     "spotTitle": "MSFT_Xbox_Game_Pass_6s_OLV",
@@ -1051,13 +1050,13 @@
     "createdAt": "2025-05-12T10:53:27.005Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-06-05T21:01:52.320Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "48",
     "code": "MSFT2508",
     "brandId": "6",
-    "assignedEditor": "Emily Rodriguez",
     "brand": "Microsoft",
     "campaignName": "Surface Pro",
     "spotTitle": "MSFT_Surface_Pro_45s_OLV",
@@ -1074,13 +1073,13 @@
     "createdAt": "2025-03-23T12:12:58.703Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-09-30T06:22:22.583Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Emily Rodriguez"
   },
   {
     "id": "49",
     "code": "AMZN2501",
     "brandId": "7",
-    "assignedEditor": "Lisa Park",
     "brand": "Amazon",
     "campaignName": "Prime Day",
     "spotTitle": "AMZN_Prime_Day_6s_Broadcast",
@@ -1096,13 +1095,13 @@
     "status": "in_review",
     "createdAt": "2025-02-13T11:47:32.820Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "50",
     "code": "AMZN2502",
     "brandId": "7",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Amazon",
     "campaignName": "Delivering Smiles",
     "spotTitle": "AMZN_Delivering_Smiles_15s_Digital",
@@ -1118,13 +1117,13 @@
     "status": "pending",
     "createdAt": "2025-02-24T07:57:17.205Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "51",
     "code": "AMZN2503",
     "brandId": "7",
-    "assignedEditor": "James Wilson",
     "brand": "Amazon",
     "campaignName": "Alexa Skills",
     "spotTitle": "AMZN_Alexa_Skills_6s_Broadcast",
@@ -1141,13 +1140,13 @@
     "createdAt": "2025-04-24T03:46:38.231Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-12-16T07:39:23.889Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "52",
     "code": "AMZN2504",
     "brandId": "7",
-    "assignedEditor": "Lisa Park",
     "brand": "Amazon",
     "campaignName": "Alexa Skills",
     "spotTitle": "AMZN_Alexa_Skills_30s_Social",
@@ -1163,13 +1162,13 @@
     "status": "in_progress",
     "createdAt": "2025-05-31T23:42:23.989Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "53",
     "code": "AMZN2505",
     "brandId": "7",
-    "assignedEditor": "James Wilson",
     "brand": "Amazon",
     "campaignName": "Prime Day",
     "spotTitle": "AMZN_Prime_Day_10s_Social",
@@ -1185,13 +1184,13 @@
     "status": "pending",
     "createdAt": "2025-03-17T09:27:03.202Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "54",
     "code": "AMZN2506",
     "brandId": "7",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Amazon",
     "campaignName": "Delivering Smiles",
     "spotTitle": "AMZN_Delivering_Smiles_6s_Digital",
@@ -1207,13 +1206,13 @@
     "status": "in_review",
     "createdAt": "2024-09-29T02:05:27.051Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "55",
     "code": "AMZN2507",
     "brandId": "7",
-    "assignedEditor": "Mike Chen",
     "brand": "Amazon",
     "campaignName": "Alexa Skills",
     "spotTitle": "AMZN_Alexa_Skills_30s_OLV",
@@ -1230,13 +1229,13 @@
     "createdAt": "2025-10-09T23:34:15.715Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-09-27T18:25:49.931Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "56",
     "code": "NFLX2501",
     "brandId": "8",
-    "assignedEditor": "Mike Chen",
     "brand": "Netflix",
     "campaignName": "Coming Soon",
     "spotTitle": "NFLX_Coming_Soon_60s_CTV",
@@ -1252,13 +1251,13 @@
     "status": "pending",
     "createdAt": "2024-01-04T06:25:15.182Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "57",
     "code": "NFLX2502",
     "brandId": "8",
-    "assignedEditor": "David Lee",
     "brand": "Netflix",
     "campaignName": "Netflix and Chill",
     "spotTitle": "NFLX_Netflix_and_Chill_60s_Digital",
@@ -1275,13 +1274,13 @@
     "createdAt": "2024-08-30T07:28:33.127Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-08-25T23:32:52.437Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "58",
     "code": "NFLX2503",
     "brandId": "8",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Netflix",
     "campaignName": "Netflix and Chill",
     "spotTitle": "NFLX_Netflix_and_Chill_30s_Radio",
@@ -1298,13 +1297,13 @@
     "createdAt": "2024-03-18T22:55:07.795Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-11-12T14:05:32.149Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "59",
     "code": "NFLX2504",
     "brandId": "8",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Netflix",
     "campaignName": "Binge Watch",
     "spotTitle": "NFLX_Binge_Watch_30s_Social",
@@ -1321,13 +1320,13 @@
     "createdAt": "2024-08-10T12:56:18.923Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-12-08T05:35:40.945Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "60",
     "code": "NFLX2505",
     "brandId": "8",
-    "assignedEditor": "James Wilson",
     "brand": "Netflix",
     "campaignName": "Originals",
     "spotTitle": "NFLX_Originals_30s_Social",
@@ -1344,13 +1343,13 @@
     "createdAt": "2024-04-10T01:03:42.437Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-08-24T16:18:46.148Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "61",
     "code": "NFLX2506",
     "brandId": "8",
-    "assignedEditor": "Mike Chen",
     "brand": "Netflix",
     "campaignName": "Coming Soon",
     "spotTitle": "NFLX_Coming_Soon_10s_Radio",
@@ -1367,13 +1366,13 @@
     "createdAt": "2025-10-05T16:24:15.877Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-12-25T19:38:18.981Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "62",
     "code": "NFLX2507",
     "brandId": "8",
-    "assignedEditor": "Lisa Park",
     "brand": "Netflix",
     "campaignName": "Netflix and Chill",
     "spotTitle": "NFLX_Netflix_and_Chill_30s_Radio",
@@ -1389,13 +1388,13 @@
     "status": "in_review",
     "createdAt": "2024-11-03T19:47:52.514Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "63",
     "code": "NFLX2508",
     "brandId": "8",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Netflix",
     "campaignName": "Originals",
     "spotTitle": "NFLX_Originals_45s_Digital",
@@ -1411,13 +1410,13 @@
     "status": "in_progress",
     "createdAt": "2025-11-09T15:52:38.272Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "64",
     "code": "NFLX2509",
     "brandId": "8",
-    "assignedEditor": "Lisa Park",
     "brand": "Netflix",
     "campaignName": "Netflix and Chill",
     "spotTitle": "NFLX_Netflix_and_Chill_15s_Radio",
@@ -1434,13 +1433,13 @@
     "createdAt": "2024-01-18T03:30:27.218Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-10-24T06:56:20.380Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "65",
     "code": "STBK2501",
     "brandId": "9",
-    "assignedEditor": "David Lee",
     "brand": "Starbucks",
     "campaignName": "Summer Refresh",
     "spotTitle": "STBK_Summer_Refresh_6s_Social",
@@ -1457,13 +1456,13 @@
     "createdAt": "2025-02-14T09:31:11.507Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-05-27T15:50:43.743Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "66",
     "code": "STBK2502",
     "brandId": "9",
-    "assignedEditor": "Sarah Johnson",
     "brand": "Starbucks",
     "campaignName": "Every Cup Counts",
     "spotTitle": "STBK_Every_Cup_Counts_15s_CTV",
@@ -1479,13 +1478,13 @@
     "status": "in_review",
     "createdAt": "2024-06-28T00:54:24.033Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "67",
     "code": "STBK2503",
     "brandId": "9",
-    "assignedEditor": "Maria Garcia",
     "brand": "Starbucks",
     "campaignName": "Every Cup Counts",
     "spotTitle": "STBK_Every_Cup_Counts_15s_CTV",
@@ -1501,13 +1500,13 @@
     "status": "pending",
     "createdAt": "2025-05-23T09:15:48.406Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Maria Garcia"
   },
   {
     "id": "68",
     "code": "STBK2504",
     "brandId": "9",
-    "assignedEditor": "Mike Chen",
     "brand": "Starbucks",
     "campaignName": "Pumpkin Spice",
     "spotTitle": "STBK_Pumpkin_Spice_10s_Broadcast",
@@ -1524,13 +1523,13 @@
     "createdAt": "2025-03-01T05:30:45.462Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-03-09T08:25:28.550Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "69",
     "code": "STBK2505",
     "brandId": "9",
-    "assignedEditor": "Lisa Park",
     "brand": "Starbucks",
     "campaignName": "Summer Refresh",
     "spotTitle": "STBK_Summer_Refresh_10s_Broadcast",
@@ -1546,13 +1545,13 @@
     "status": "in_review",
     "createdAt": "2025-06-15T01:37:35.260Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "70",
     "code": "STBK2506",
     "brandId": "9",
-    "assignedEditor": "Mike Chen",
     "brand": "Starbucks",
     "campaignName": "Pumpkin Spice",
     "spotTitle": "STBK_Pumpkin_Spice_10s_Radio",
@@ -1568,13 +1567,13 @@
     "status": "pending",
     "createdAt": "2024-10-31T17:59:15.203Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "71",
     "code": "MCDO2501",
     "brandId": "10",
-    "assignedEditor": "James Wilson",
     "brand": "McDonald's",
     "campaignName": "McDelivery",
     "spotTitle": "MCDO_McDelivery_45s_Broadcast",
@@ -1590,13 +1589,13 @@
     "status": "in_review",
     "createdAt": "2025-09-10T12:27:17.828Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "72",
     "code": "MCDO2502",
     "brandId": "10",
-    "assignedEditor": "Lisa Park",
     "brand": "McDonald's",
     "campaignName": "I'm Lovin' It",
     "spotTitle": "MCDO_I'm_Lovin'_It_15s_Digital",
@@ -1612,13 +1611,13 @@
     "status": "in_progress",
     "createdAt": "2024-08-24T16:32:25.709Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "73",
     "code": "MCDO2503",
     "brandId": "10",
-    "assignedEditor": "Sarah Johnson",
     "brand": "McDonald's",
     "campaignName": "McDelivery",
     "spotTitle": "MCDO_McDelivery_10s_Broadcast",
@@ -1634,13 +1633,13 @@
     "status": "in_review",
     "createdAt": "2024-12-17T11:59:40.981Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "74",
     "code": "MCDO2504",
     "brandId": "10",
-    "assignedEditor": "Emily Rodriguez",
     "brand": "McDonald's",
     "campaignName": "I'm Lovin' It",
     "spotTitle": "MCDO_I'm_Lovin'_It_30s_Radio",
@@ -1656,13 +1655,13 @@
     "status": "in_review",
     "createdAt": "2024-06-06T15:01:20.441Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Emily Rodriguez"
   },
   {
     "id": "75",
     "code": "MCDO2505",
     "brandId": "10",
-    "assignedEditor": "David Lee",
     "brand": "McDonald's",
     "campaignName": "All Day Breakfast",
     "spotTitle": "MCDO_All_Day_Breakfast_30s_Digital",
@@ -1678,13 +1677,13 @@
     "status": "pending",
     "createdAt": "2024-10-20T04:36:54.974Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "76",
     "code": "PEPS2501",
     "brandId": "11",
-    "assignedEditor": "Sarah Johnson",
     "brand": "PepsiCo",
     "campaignName": "Mountain Dew",
     "spotTitle": "PEPS_Mountain_Dew_10s_OLV",
@@ -1700,13 +1699,13 @@
     "status": "in_review",
     "createdAt": "2025-01-23T10:12:03.428Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Sarah Johnson"
   },
   {
     "id": "77",
     "code": "PEPS2502",
     "brandId": "11",
-    "assignedEditor": "James Wilson",
     "brand": "PepsiCo",
     "campaignName": "Gatorade",
     "spotTitle": "PEPS_Gatorade_6s_Radio",
@@ -1722,13 +1721,13 @@
     "status": "in_review",
     "createdAt": "2024-08-03T15:45:19.791Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "78",
     "code": "PEPS2503",
     "brandId": "11",
-    "assignedEditor": "Mike Chen",
     "brand": "PepsiCo",
     "campaignName": "Mountain Dew",
     "spotTitle": "PEPS_Mountain_Dew_10s_Social",
@@ -1744,13 +1743,13 @@
     "status": "in_progress",
     "createdAt": "2025-07-24T05:26:39.343Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "79",
     "code": "PEPS2504",
     "brandId": "11",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "PepsiCo",
     "campaignName": "Pepsi Zero Sugar",
     "spotTitle": "PEPS_Pepsi_Zero_Sugar_30s_CTV",
@@ -1766,13 +1765,13 @@
     "status": "in_review",
     "createdAt": "2024-06-16T23:31:06.959Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "80",
     "code": "PEPS2505",
     "brandId": "11",
-    "assignedEditor": "Mike Chen",
     "brand": "PepsiCo",
     "campaignName": "Gatorade",
     "spotTitle": "PEPS_Gatorade_6s_Social",
@@ -1788,13 +1787,13 @@
     "status": "in_progress",
     "createdAt": "2024-10-12T16:08:12.484Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "81",
     "code": "FORD2501",
     "brandId": "12",
-    "assignedEditor": "Lisa Park",
     "brand": "Ford",
     "campaignName": "Built Ford Tough",
     "spotTitle": "FORD_Built_Ford_Tough_10s_Broadcast",
@@ -1810,13 +1809,13 @@
     "status": "pending",
     "createdAt": "2025-07-22T07:56:58.691Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "82",
     "code": "FORD2502",
     "brandId": "12",
-    "assignedEditor": "Mike Chen",
     "brand": "Ford",
     "campaignName": "Built Ford Tough",
     "spotTitle": "FORD_Built_Ford_Tough_15s_Broadcast",
@@ -1832,13 +1831,13 @@
     "status": "pending",
     "createdAt": "2024-10-17T12:49:11.031Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "83",
     "code": "FORD2503",
     "brandId": "12",
-    "assignedEditor": "Mike Chen",
     "brand": "Ford",
     "campaignName": "Mustang Mach-E",
     "spotTitle": "FORD_Mustang_Mach-E_10s_Digital",
@@ -1855,13 +1854,13 @@
     "createdAt": "2025-08-21T11:03:14.886Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-12-30T10:23:04.926Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "84",
     "code": "FORD2504",
     "brandId": "12",
-    "assignedEditor": "David Lee",
     "brand": "Ford",
     "campaignName": "Mustang Mach-E",
     "spotTitle": "FORD_Mustang_Mach-E_45s_CTV",
@@ -1878,13 +1877,13 @@
     "createdAt": "2024-02-26T19:26:17.674Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-02-05T16:04:27.452Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "85",
     "code": "FORD2505",
     "brandId": "12",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Ford",
     "campaignName": "Built Ford Tough",
     "spotTitle": "FORD_Built_Ford_Tough_10s_Broadcast",
@@ -1900,13 +1899,13 @@
     "status": "in_progress",
     "createdAt": "2025-11-19T14:45:38.288Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "86",
     "code": "FORD2506",
     "brandId": "12",
-    "assignedEditor": "Lisa Park",
     "brand": "Ford",
     "campaignName": "F-150",
     "spotTitle": "FORD_F-150_15s_Broadcast",
@@ -1923,13 +1922,13 @@
     "createdAt": "2025-12-01T12:33:54.948Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-03-02T21:14:40.532Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "87",
     "code": "BMWW2501",
     "brandId": "13",
-    "assignedEditor": "Lisa Park",
     "brand": "BMW",
     "campaignName": "Electric Dreams",
     "spotTitle": "BMWW_Electric_Dreams_10s_CTV",
@@ -1946,13 +1945,13 @@
     "createdAt": "2024-02-29T02:29:35.760Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-11-06T19:59:05.945Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "88",
     "code": "BMWW2502",
     "brandId": "13",
-    "assignedEditor": "Mike Chen",
     "brand": "BMW",
     "campaignName": "M Series",
     "spotTitle": "BMWW_M_Series_6s_Social",
@@ -1968,13 +1967,13 @@
     "status": "in_progress",
     "createdAt": "2025-05-26T22:43:33.583Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "89",
     "code": "BMWW2503",
     "brandId": "13",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "BMW",
     "campaignName": "M Series",
     "spotTitle": "BMWW_M_Series_6s_Digital",
@@ -1991,13 +1990,13 @@
     "createdAt": "2024-03-29T20:45:53.995Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-08-24T12:56:30.909Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "90",
     "code": "BMWW2504",
     "brandId": "13",
-    "assignedEditor": "Mike Chen",
     "brand": "BMW",
     "campaignName": "X Series",
     "spotTitle": "BMWW_X_Series_30s_Radio",
@@ -2014,13 +2013,13 @@
     "createdAt": "2025-06-01T17:06:40.901Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-08-06T17:10:02.823Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "91",
     "code": "BMWW2505",
     "brandId": "13",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "BMW",
     "campaignName": "M Series",
     "spotTitle": "BMWW_M_Series_45s_CTV",
@@ -2036,13 +2035,13 @@
     "status": "in_progress",
     "createdAt": "2025-06-25T03:39:24.231Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "92",
     "code": "BMWW2506",
     "brandId": "13",
-    "assignedEditor": "James Wilson",
     "brand": "BMW",
     "campaignName": "X Series",
     "spotTitle": "BMWW_X_Series_10s_OLV",
@@ -2059,13 +2058,13 @@
     "createdAt": "2024-12-11T19:38:37.375Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-11-06T20:34:15.762Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "93",
     "code": "BMWW2507",
     "brandId": "13",
-    "assignedEditor": "David Lee",
     "brand": "BMW",
     "campaignName": "Ultimate Driving Machine",
     "spotTitle": "BMWW_Ultimate_Driving_Machine_10s_OLV",
@@ -2082,13 +2081,13 @@
     "createdAt": "2025-03-28T07:27:34.454Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-07-23T15:40:42.708Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "David Lee"
   },
   {
     "id": "94",
     "code": "ADID2501",
     "brandId": "14",
-    "assignedEditor": "James Wilson",
     "brand": "Adidas",
     "campaignName": "Ultraboost",
     "spotTitle": "ADID_Ultraboost_6s_Broadcast",
@@ -2105,13 +2104,13 @@
     "createdAt": "2024-03-07T16:22:37.012Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-01-10T03:54:14.410Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "James Wilson"
   },
   {
     "id": "95",
     "code": "ADID2502",
     "brandId": "14",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Adidas",
     "campaignName": "Running",
     "spotTitle": "ADID_Running_15s_Social",
@@ -2128,13 +2127,13 @@
     "createdAt": "2024-07-14T04:49:18.829Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2026-12-18T11:10:25.682Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "96",
     "code": "ADID2503",
     "brandId": "14",
-    "assignedEditor": "Mike Chen",
     "brand": "Adidas",
     "campaignName": "Running",
     "spotTitle": "ADID_Running_30s_CTV",
@@ -2150,13 +2149,13 @@
     "status": "pending",
     "createdAt": "2024-01-07T15:03:34.541Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Mike Chen"
   },
   {
     "id": "97",
     "code": "ADID2504",
     "brandId": "14",
-    "assignedEditor": "Kevin Nguyen",
     "brand": "Adidas",
     "campaignName": "Running",
     "spotTitle": "ADID_Running_30s_Social",
@@ -2172,13 +2171,13 @@
     "status": "pending",
     "createdAt": "2025-05-22T05:52:33.855Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Kevin Nguyen"
   },
   {
     "id": "98",
     "code": "TLSA2501",
     "brandId": "15",
-    "assignedEditor": "Emily Rodriguez",
     "brand": "Tesla",
     "campaignName": "Autopilot",
     "spotTitle": "TLSA_Autopilot_30s_CTV",
@@ -2194,13 +2193,13 @@
     "status": "in_progress",
     "createdAt": "2025-12-21T19:23:38.643Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Emily Rodriguez"
   },
   {
     "id": "99",
     "code": "TLSA2502",
     "brandId": "15",
-    "assignedEditor": "Lisa Park",
     "brand": "Tesla",
     "campaignName": "Autopilot",
     "spotTitle": "TLSA_Autopilot_45s_Radio",
@@ -2216,13 +2215,13 @@
     "status": "in_review",
     "createdAt": "2025-11-22T22:24:00.855Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Lisa Park"
   },
   {
     "id": "100",
     "code": "TLSA2503",
     "brandId": "15",
-    "assignedEditor": "Steve McVideo",
     "brand": "Tesla",
     "campaignName": "Electric Future",
     "spotTitle": "TLSA_Electric_Future_45s_Radio",
@@ -2239,13 +2238,13 @@
     "createdAt": "2024-06-04T11:09:08.573Z",
     "updatedAt": "2025-11-12T16:40:51.531Z",
     "completedAt": "2025-09-16T06:19:17.906Z",
-    "agency": "R&R Partners"
+    "agency": "R&R Partners",
+    "createdBy": "Steve McVideo"
   },
   {
     "id": "9678d452-a8e8-48b3-862c-6f7ce79c0d23",
     "code": "NIKE2509",
     "brandId": "2",
-    "assignedEditor": "",
     "brand": "Nike",
     "campaignName": "",
     "spotTitle": "Test_Title",
@@ -2261,6 +2260,7 @@
     "channel": "Broadcast",
     "status": "pending",
     "createdAt": "2025-11-13T18:02:46.852Z",
-    "updatedAt": "2025-11-13T18:02:46.852Z"
+    "updatedAt": "2025-11-13T18:02:46.852Z",
+    "createdBy": ""
   }
 ]

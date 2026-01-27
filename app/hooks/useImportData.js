@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 /**
  * useImportData - Custom hook for handling CSV file imports
@@ -52,6 +52,17 @@ const useImportData = (options = {}) => {
   const [preview, setPreview] = useState(null);
   const [result, setResult] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
+
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+
+  useEffect(() => {
+    onSuccessRef.current = onSuccess;
+  }, [onSuccess]);
+
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
 
   /**
    * Handle file upload and preview generation
@@ -167,8 +178,9 @@ const useImportData = (options = {}) => {
           setResult(importResult);
 
           if (importResult.success) {
-            if (onSuccess && typeof onSuccess === "function") {
-              onSuccess(importResult);
+            const successHandler = onSuccessRef.current;
+            if (successHandler && typeof successHandler === "function") {
+              successHandler(importResult);
             }
 
             // Clear file after successful import
@@ -177,8 +189,9 @@ const useImportData = (options = {}) => {
 
             resolve(true);
           } else {
-            if (onError && typeof onError === "function") {
-              onError(importResult);
+            const errorHandler = onErrorRef.current;
+            if (errorHandler && typeof errorHandler === "function") {
+              errorHandler(importResult);
             }
 
             resolve(false);
@@ -191,8 +204,9 @@ const useImportData = (options = {}) => {
           };
           setResult(errorResult);
 
-          if (onError && typeof onError === "function") {
-            onError(errorResult);
+          const errorHandler = onErrorRef.current;
+          if (errorHandler && typeof errorHandler === "function") {
+            errorHandler(errorResult);
           }
 
           resolve(false);
@@ -209,8 +223,9 @@ const useImportData = (options = {}) => {
         setResult(errorResult);
         setIsImporting(false);
 
-        if (onError && typeof onError === "function") {
-          onError(errorResult);
+        const errorHandler = onErrorRef.current;
+        if (errorHandler && typeof errorHandler === "function") {
+          errorHandler(errorResult);
         }
 
         resolve(false);
@@ -218,7 +233,7 @@ const useImportData = (options = {}) => {
 
       reader.readAsText(file);
     });
-  }, [file, endpoint, mode, onSuccess, onError]);
+  }, [file, endpoint, mode]);
 
   /**
    * Read file contents without importing (for custom processing)

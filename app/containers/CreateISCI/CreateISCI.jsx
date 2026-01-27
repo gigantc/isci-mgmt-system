@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
-import { isAuthenticated } from "@/utils/auth";
+import { getUserSession, isAuthenticated } from "@/utils/auth";
 import styles from "./CreateISCI.module.scss";
 
 /**
@@ -48,14 +48,18 @@ const CreateISCI = () => {
    * Save the new code to the server
    */
   const handleCreateCode = async (formData) => {
+    const user = getUserSession();
+    const userDisplayName = user ? `${user.firstName} ${user.lastName}` : "";
+
     const newCode = {
       id: crypto.randomUUID(),
       ...formData,
+      createdBy: userDisplayName || null,
+      updatedBy: userDisplayName || null,
+      editHistory: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-
-    const updatedCodes = [...codes, newCode];
 
     try {
       const response = await fetch("/api/isci", {
@@ -63,14 +67,16 @@ const CreateISCI = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedCodes),
+        body: JSON.stringify(newCode),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+
+      if (response.ok && result.success) {
         // Success! Navigate back to dashboard
         navigate("/");
       } else {
-        console.error("Failed to save ISCI code");
+        console.error("Failed to save ISCI code:", result.error);
         // TODO: Show error message to user
       }
     } catch (err) {
@@ -91,7 +97,11 @@ const CreateISCI = () => {
    */
   const handleSubmitClick = () => {
     if (formRef.current) {
-      formRef.current.requestSubmit();
+      if (typeof formRef.current.requestSubmit === "function") {
+        formRef.current.requestSubmit();
+      } else {
+        formRef.current.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      }
     }
   };
 

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 
 /**
  * useExportData - Custom hook for handling data export with filtering
@@ -30,7 +30,7 @@ import { useState, useCallback, useMemo } from "react";
  * } = useExportData(codes, {
  *   initialFilters: { status: "all", brand: "all" },
  *   filterFunction: (codes, filters) => codes.filter(c => ...),
- *   csvHeaders: ["Code", "Brand", "Status"],
+ *   csvHeaders: ["Code", "Client", "Status"],
  *   csvRowMapper: (code) => [code.code, code.brand, code.status],
  *   filenamePrefix: "isci-codes"
  * });
@@ -45,6 +45,22 @@ const useExportData = (data = [], options = {}) => {
   } = options;
 
   const [filters, setFilters] = useState(initialFilters);
+
+  const initialFiltersRef = useRef(initialFilters);
+  const filterFunctionRef = useRef(filterFunction);
+  const csvRowMapperRef = useRef(csvRowMapper);
+
+  useEffect(() => {
+    initialFiltersRef.current = initialFilters;
+  }, [initialFilters]);
+
+  useEffect(() => {
+    filterFunctionRef.current = filterFunction;
+  }, [filterFunction]);
+
+  useEffect(() => {
+    csvRowMapperRef.current = csvRowMapper;
+  }, [csvRowMapper]);
 
   /**
    * Handle filter input changes
@@ -65,19 +81,20 @@ const useExportData = (data = [], options = {}) => {
    * Reset all filters to initial state
    */
   const resetFilters = useCallback(() => {
-    setFilters(initialFilters);
-  }, [initialFilters]);
+    setFilters(initialFiltersRef.current);
+  }, []);
 
   /**
    * Get filtered data based on current filters
    */
   const filteredData = useMemo(() => {
-    if (!filterFunction || typeof filterFunction !== "function") {
+    const filterFn = filterFunctionRef.current;
+    if (!filterFn || typeof filterFn !== "function") {
       return data;
     }
 
-    return filterFunction(data, filters);
-  }, [data, filters, filterFunction]);
+    return filterFn(data, filters);
+  }, [data, filters]);
 
   /**
    * Get count of filtered items
@@ -90,12 +107,13 @@ const useExportData = (data = [], options = {}) => {
    * Generate CSV content from data
    */
   const generateCSV = useCallback((dataToExport = filteredData) => {
-    if (!csvRowMapper || typeof csvRowMapper !== "function") {
+    const rowMapper = csvRowMapperRef.current;
+    if (!rowMapper || typeof rowMapper !== "function") {
       throw new Error("csvRowMapper function is required for CSV generation");
     }
 
     // Convert data to CSV rows
-    const rows = dataToExport.map(item => csvRowMapper(item));
+    const rows = dataToExport.map(item => rowMapper(item));
 
     // Escape and quote fields
     const escapeField = (field) => {
@@ -114,7 +132,7 @@ const useExportData = (data = [], options = {}) => {
     ].join("\n");
 
     return csvContent;
-  }, [filteredData, csvHeaders, csvRowMapper]);
+  }, [filteredData, csvHeaders]);
 
   /**
    * Export filtered data to CSV file

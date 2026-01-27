@@ -142,6 +142,10 @@
       }
     }
 
+    .dimmedInput {
+      opacity: 0.2;
+    }
+
     .disabledInput,
     .readonlyInput {
       background-color: rgba(v.$white, 0.02);
@@ -172,6 +176,25 @@
           color: v.$hover;
         }
       }
+    }
+  }
+
+  .tbdToggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: v.$text-secondary;
+
+    input {
+      width: 16px;
+      height: 16px;
+      padding: 0;
+      border: 1px solid v.$border-color;
+      background-color: transparent;
+      accent-color: v.$accent;
+      appearance: auto;
     }
   }
 

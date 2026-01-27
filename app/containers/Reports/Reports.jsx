@@ -11,9 +11,7 @@ const Reports = () => {
   // Fetch data using useFetchData hook
   const { data: codes, loading: codesLoading, refetch: loadData } = useFetchData("/api/isci");
   const { data: brands, loading: brandsLoading } = useFetchData("/api/brands");
-  const { data: users, loading: usersLoading } = useFetchData("/api/users");
-
-  const isLoading = codesLoading || brandsLoading || usersLoading;
+  const isLoading = codesLoading || brandsLoading;
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -35,8 +33,6 @@ const Reports = () => {
       dateType: "all",
       startDate: "",
       endDate: "",
-      status: "all",
-      assignedEditor: "all",
       brand: "all",
       channel: "all",
       spotLength: "all"
@@ -54,24 +50,14 @@ const Reports = () => {
           } else if (filters.dateType === "updated") {
             codeDate = new Date(code.updatedAt);
           } else if (filters.dateType === "air") {
-            if (!code.airDate) return false;
+            if (!code.airDate || code.airDate === "TBD") return false;
             codeDate = new Date(code.airDate);
           }
 
           if (codeDate < startDate || codeDate > endDate) return false;
         }
 
-        // Status filter
-        if (filters.status !== "all" && code.status !== filters.status) {
-          return false;
-        }
-
-        // Assigned Editor filter
-        if (filters.assignedEditor !== "all" && code.assignedEditor !== filters.assignedEditor) {
-          return false;
-        }
-
-        // Brand filter
+        // Client filter
         if (filters.brand !== "all" && code.brand !== filters.brand) {
           return false;
         }
@@ -91,18 +77,17 @@ const Reports = () => {
     },
     csvHeaders: [
       "ISCI Code",
-      "Brand",
+      "Client",
       "Campaign Name",
       "Spot Title",
       "Spot Length",
-      "Assigned Editor",
-      "Status",
       "Channel",
       "Aspect Ratio",
-      "Version",
       "Language",
-      "Closed Captioning",
+      "Accessibility",
       "Audio",
+      "File Format",
+      "Market",
       "Air Date",
       "Description",
       "Created At",
@@ -114,14 +99,13 @@ const Reports = () => {
       code.campaignName || "",
       code.spotTitle,
       code.spotLength || "",
-      code.assignedEditor || "",
-      code.status,
       code.channel,
       code.aspectRatio,
-      code.version,
       code.language,
       code.closedCaptioning,
       code.audio,
+      code.fileFormat || "",
+      code.market || "",
       code.airDate || "",
       code.description || "",
       code.createdAt,
@@ -158,16 +142,17 @@ const Reports = () => {
       "Summer Campaign",
       "Vegas Summer Spots 30s",
       "30",
-      "Sarah Johnson",
-      "pending",
       "Broadcast",
       "16:9",
-      "A",
       "English",
-      "Yes",
+      "Clean",
       "Stereo LR",
+      "Pro Res",
+      "GLOBAL",
       "2025-06-01",
-      "Summer campaign spot"
+      "Summer campaign spot",
+      "2025-05-01",
+      "2025-06-15"
     ];
 
     downloadTemplate(exampleRow);
@@ -242,37 +227,11 @@ const Reports = () => {
                         </>
                       )}
 
-                      {/* Status Filter */}
+                      {/* Client Filter */}
                       <div className={styles.filterGroup}>
-                        <label>Status</label>
-                        <select name="status" value={filters.status} onChange={handleFilterChange}>
-                          <option value="all">All Statuses</option>
-                          <option value="pending">Pending</option>
-                          <option value="in_progress">In Progress</option>
-                          <option value="in_review">In Review</option>
-                          <option value="completed">Completed</option>
-                          <option value="archived">Archived</option>
-                        </select>
-                      </div>
-
-                      {/* Assigned Editor Filter */}
-                      <div className={styles.filterGroup}>
-                        <label>Assigned Editor</label>
-                        <select name="assignedEditor" value={filters.assignedEditor} onChange={handleFilterChange}>
-                          <option value="all">All Editors</option>
-                          {users.map(user => (
-                            <option key={user.id} value={`${user.firstName} ${user.lastName}`}>
-                              {user.firstName} {user.lastName}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Brand Filter */}
-                      <div className={styles.filterGroup}>
-                        <label>Brand</label>
+                        <label>Client</label>
                         <select name="brand" value={filters.brand} onChange={handleFilterChange}>
-                          <option value="all">All Brands</option>
+                          <option value="all">All Clients</option>
                           {brands.map(brand => (
                             <option key={brand.id} value={brand.name}>
                               {brand.name}

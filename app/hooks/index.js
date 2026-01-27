@@ -10,3 +10,4 @@ export { default as useFormState } from "./useFormState";
 export { default as useResourceManager } from "./useResourceManager";
 export { default as useExportData } from "./useExportData";
 export { default as useImportData } from "./useImportData";
+export { default as useConfirmDialog } from "./useConfirmDialog";

@@ -1,6 +1,6 @@
 {
   "name": "isci-mgmt-system",
-  "version": "0.8.0-alpha",
+  "version": "0.9.1-alpha",
   "private": true,
   "type": "module",
   "engines": {
@@ -10,9 +10,12 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "migrate:data": "node scripts/migrateJsonToDb.js",
+    "db:studio": "npx prisma studio"
   },
   "dependencies": {
+    "@prisma/client": "6.19.2",
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
     "isbot": "^5.1.31",
@@ -22,6 +25,8 @@
   },
   "devDependencies": {
     "@react-router/dev": "^7.9.2",
+    "dotenv": "^17.2.3",
+    "prisma": "6.19.2",
     "sass": "^1.93.3",
     "vite": "^7.1.7",
     "vite-plugin-svgr": "^4.5.0"
