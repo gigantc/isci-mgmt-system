@@ -7,8 +7,6 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
   const [isAirDateTbd, setIsAirDateTbd] = useState(false);
   const [aspectRatioChoice, setAspectRatioChoice] = useState("16:9");
   const [customAspectRatio, setCustomAspectRatio] = useState("");
-  const [spotLengthChoice, setSpotLengthChoice] = useState("");
-  const [customSpotLength, setCustomSpotLength] = useState("");
   const [formData, setFormData] = useState({
     code: "",
     brandId: "",
@@ -27,6 +25,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
     airDate: "",
     aspectRatio: "16:9",
     channel: "Broadcast",
+    musicRights: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -65,9 +64,6 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
       const isTbdDate = code.airDate === "TBD";
       const supportedAspectRatios = ["16:9", "9:16", "4:5", "1:1", "2.39:1"];
       const isCustomAspectRatio = code.aspectRatio && !supportedAspectRatios.includes(code.aspectRatio);
-      const supportedSpotLengths = ["6", "10", "15", "30", "45", "60"];
-      const codeSpotLength = code.spotLength ? String(code.spotLength) : "";
-      const isCustomSpotLength = codeSpotLength && !supportedSpotLengths.includes(codeSpotLength);
       // Editing existing code
       setFormData({
         code: code.code,
@@ -87,18 +83,15 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
         airDate: !code.airDate || isTbdDate ? "" : code.airDate.split('T')[0],
         aspectRatio: code.aspectRatio || "16:9",
         channel: code.channel || "Broadcast",
+        musicRights: code.musicRights || "",
       });
       setIsAirDateTbd(isTbdDate);
       setAspectRatioChoice(isCustomAspectRatio ? "custom" : (code.aspectRatio || "16:9"));
       setCustomAspectRatio(isCustomAspectRatio ? code.aspectRatio : "");
-      setSpotLengthChoice(isCustomSpotLength ? "custom" : codeSpotLength);
-      setCustomSpotLength(isCustomSpotLength ? codeSpotLength : "");
     } else {
       setIsAirDateTbd(false);
       setAspectRatioChoice("16:9");
       setCustomAspectRatio("");
-      setSpotLengthChoice("");
-      setCustomSpotLength("");
     }
   }, [code]);
 
@@ -206,7 +199,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
         ...formData,
         airDate: isAirDateTbd ? "TBD" : formData.airDate,
         aspectRatio: aspectRatioChoice === "custom" ? customAspectRatio.trim() : aspectRatioChoice,
-        spotLength: spotLengthChoice === "custom" ? customSpotLength.trim() : spotLengthChoice,
+        spotLength: formData.spotLength ? parseInt(formData.spotLength, 10) : null,
       });
     }
   };
@@ -217,15 +210,6 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
     setFormData(prev => ({
       ...prev,
       aspectRatio: value === "custom" ? prev.aspectRatio : value,
-    }));
-  };
-
-  const handleSpotLengthChange = (e) => {
-    const { value } = e.target;
-    setSpotLengthChoice(value);
-    setFormData(prev => ({
-      ...prev,
-      spotLength: value === "custom" ? prev.spotLength : value,
     }));
   };
 
@@ -244,7 +228,18 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
           {/* Client and ISCI Code side-by-side */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="brand">Client *</label>
+              <label htmlFor="brand">
+                Client *
+                {code && (
+                  <span
+                    className={styles.lockIcon}
+                    title="Changing the client would break the code pattern"
+                    aria-label="Locked"
+                  >
+                    🔒
+                  </span>
+                )}
+              </label>
               {code ? (
                 // When editing, show brand as text (can't change brand)
                 <input
@@ -252,6 +247,7 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                   value={formData.brand}
                   disabled
                   className={styles.disabledInput}
+                  title="Changing the client would break the code pattern"
                 />
               ) : (
                 // When creating, show dropdown
@@ -277,7 +273,18 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="code">ISCI Code *</label>
+              <label htmlFor="code">
+                ISCI Code *
+                {code && (
+                  <span
+                    className={styles.lockIcon}
+                    title="ISCI codes cannot be changed after creation"
+                    aria-label="Locked"
+                  >
+                    🔒
+                  </span>
+                )}
+              </label>
               {code ? (
                 // When editing, show ISCI code as text (can't change code)
                 <input
@@ -501,6 +508,22 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
                 </select>
               </div>
             </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="musicRights">Music Rights</label>
+              <select
+                id="musicRights"
+                name="musicRights"
+                value={formData.musicRights}
+                onChange={handleChange}
+                disabled={viewOnly}
+              >
+                <option value="">Not specified</option>
+                <option value="Licensed">Licensed</option>
+                <option value="Original">Original</option>
+                <option value="None">None</option>
+              </select>
+            </div>
           </div>
 
           {/* BOTTOM RIGHT: Technical Details */}
@@ -559,32 +582,17 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
                 <label htmlFor="spotLength">Spot Length (seconds)</label>
-                <select
+                <input
+                  type="number"
                   id="spotLength"
                   name="spotLength"
-                  value={spotLengthChoice}
-                  onChange={handleSpotLengthChange}
+                  min="1"
+                  step="1"
+                  value={formData.spotLength}
+                  onChange={handleChange}
+                  placeholder="e.g., 30"
                   disabled={viewOnly}
-                >
-                  <option value="">Select length</option>
-                  <option value="6">06</option>
-                  <option value="10">10</option>
-                  <option value="15">15</option>
-                  <option value="30">30</option>
-                  <option value="45">45</option>
-                  <option value="60">60</option>
-                  <option value="custom">Other</option>
-                </select>
-                {spotLengthChoice === "custom" && (
-                  <input
-                    type="text"
-                    name="customSpotLength"
-                    value={customSpotLength}
-                    onChange={(e) => setCustomSpotLength(e.target.value)}
-                    placeholder="e.g., 75"
-                    disabled={viewOnly}
-                  />
-                )}
+                />
               </div>
 
               <div className={styles.formGroup}>

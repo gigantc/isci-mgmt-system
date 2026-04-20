@@ -1,211 +1,279 @@
 @use "@/styles/variables" as v;
 
 .isciDashboard {
-  
-  .dashboardContent {
-    background: v.$black;
-    border-radius: 0px 0px 32px 32px;
-    margin: 0 auto;
-    width: calc(100% - 2rem);
-    height: 70vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  height: calc(100vh - 48px);
+  background: v.$bg-primary;
+  min-height: 0;
+}
+
+.sidebar {
+  border-right: 1px solid v.$border-color;
+  padding: 1rem 0.75rem;
+  overflow-y: auto;
+}
+
+.sbGroup {
+  margin-bottom: 1rem;
+}
+
+.sbLabel {
+  font-size: 0.625rem;
+  color: v.$ink-3;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.5rem;
+  font-weight: 500;
+}
+
+.sbItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3125rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  color: v.$ink-1;
+  cursor: pointer;
+  gap: 0.5rem;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
+
+  &:hover {
+    background: v.$paper-2;
+    color: v.$text-primary;
   }
+}
 
-  .stickyHeader {
-    position: sticky;
-    top: 0;
-    background: v.$black;
-    padding: 2.3rem 3rem 0 3rem;
-    z-index: 10;
+.sbItemOn {
+  background: v.$paper-2;
+  color: v.$text-primary;
+  font-weight: 500;
+}
 
-    h2 {
-      text-transform: uppercase;
-      margin: 0 0 2rem 0;
-    }
-  }
+.sbItemLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  .searchBarRow {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
+.sbDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
-  .searchBar {
-    flex: 1;
+.sbCount {
+  font-family: v.$font-mono;
+  font-size: 0.6875rem;
+  color: v.$ink-3;
+  flex-shrink: 0;
+}
 
-    input {
-      width: 100%;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      border: 1px solid v.$border-color;
-      border-radius: 26px;
-      transition: all 0.2s;
-      background-color: rgba(v.$white, 0.05);
-      color: v.$text-primary;
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
 
-      &:focus {
-        outline: none;
-        border-color: v.$accent;
-        box-shadow: 0 0 0 3px rgba(v.$accent, 0.2);
-      }
+.pgHead {
+  padding: 1.375rem 1.25rem 0.875rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-bottom: 1px solid v.$border-color;
 
-      &::placeholder {
-        color: v.$text-secondary;
-      }
-    }
-  }
-
-  .btnCreateNew {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+  h1 {
+    font-size: 1.375rem;
     font-weight: 600;
-    border: none;
-    border-radius: 26px;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: v.$accent-text;
-    background-color: v.$accent;
-    white-space: nowrap;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.125rem;
+    color: v.$text-primary;
+  }
+}
 
-    &:hover {
-      background-color: v.$hover;
-      color: v.$white;
-    }
+.pgSub {
+  font-size: 0.75rem;
+  color: v.$text-secondary;
+  font-family: v.$font-mono;
+  margin: 0;
 
-    &:active {
-      transform: scale(0.98);
-    }
+  strong {
+    color: v.$text-primary;
+    font-weight: 500;
+  }
+}
+
+.pgActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  border: 1px solid v.$accent;
+  border-radius: 4px;
+  background: v.$accent;
+  color: v.$accent-text;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+
+  &:hover {
+    background: v.$accent-hover;
+    border-color: v.$accent-hover;
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-bottom: 1px solid v.$border-color;
+  background: v.$paper-1;
+}
+
+.search {
+  flex: 1;
+  max-width: 440px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 30px;
+  padding: 0 0.625rem;
+  border: 1px solid v.$border-color;
+  border-radius: 4px;
+  background: v.$bg-primary;
+  transition: border-color 0.12s, box-shadow 0.12s;
+
+  &:focus-within {
+    border-color: v.$accent;
+    box-shadow: 0 0 0 3px v.$accent-ring;
   }
 
-  .scrollableContent {
-    flex: 1;
-    padding: 0 3rem 2rem 3rem;
-    margin:1rem 0 0 0;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .loadingState {
-    text-align: center;
-    padding: 3rem 1rem;
+  svg {
+    width: 14px;
+    height: 14px;
     color: v.$text-secondary;
-    font-size: 1.125rem;
+    flex-shrink: 0;
   }
 
-  .dashBoxes{
-    display:flex;
-    flex-wrap:wrap;
-    height:15vh;
-    justify-content:center;
-    align-items:flex-start;
-    margin:1rem auto 0;
-    width: calc(100% - 2rem);
-    gap:1rem;
+  input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: v.$text-primary;
+    font-size: 0.8125rem;
+    padding: 0;
 
-    .recentBox {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding:2rem;
-      height:100%; width:calc(50% - .5rem);
-      background-color:v.$black;
-      border-radius:32px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-
-      h3 {
-        font-size: 1rem;
-        font-weight: 700;
-        color: v.$text-primary;
-        margin: 0;
-        text-transform:uppercase;
-      }
-
-      .recentItems {
-        display: flex;
-        flex-wrap:wrap;
-        gap: 0.15rem;
-        overflow-y: auto;
-        width:100%;
-        padding:0px;
-        border-radius:0;
-      }
-
-      .recentItem {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.2s;
-        width:100%; height: 50px;
-        padding:0px;
-      }
-
-      .recentItemInfo {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-        flex: 1;
-        min-width: 0;
-        padding:0px;
-        height: 50px;
-
-        .recentCode {
-          font-family: 'Courier New', monospace;
-          font-weight: 600;
-          font-size: 0.875rem;
-          color: v.$accent;
-        }
-
-        .recentCampaign {
-          font-size: 0.75rem;
-          color: v.$text-secondary;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .recentTitle {
-          font-size: 0.8125rem;
-          color: v.$text-primary;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-
-      .recentEditBtn {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        background-color: transparent;
-        color: v.$white;
-        border: none;
-        outline: none;
-        box-shadow:none;
-        text-transform:uppercase;
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.2s;
-        white-space: nowrap;
-        &:hover {
-          color: v.$red;
-        }
-      }
-
-      .emptyState {
-        text-align: center;
-        color: v.$text-secondary;
-        font-size: 0.875rem;
-        padding: 1rem 0;
-        margin: 0;
-      }
-    }
-
-
-
+    &::placeholder { color: v.$text-secondary; }
   }
+}
+
+.density {
+  display: flex;
+  border: 1px solid v.$border-color;
+  border-radius: 4px;
+  overflow: hidden;
+
+  button {
+    width: 28px;
+    height: 28px;
+    background: v.$bg-primary;
+    border: 0;
+    display: grid;
+    place-items: center;
+    color: v.$text-secondary;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+
+    & + button { border-left: 1px solid v.$border-color; }
+    &:hover { color: v.$text-primary; }
+
+    svg { width: 13px; height: 13px; }
+  }
+}
+
+.densityOn {
+  background: v.$paper-2 !important;
+  color: v.$text-primary !important;
+}
+
+.scrollableContent {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.loadingState {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: v.$text-secondary;
+  font-size: 0.875rem;
+}
+
+.footer {
+  border-top: 1px solid v.$border-color;
+  padding: 0.5rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: v.$text-secondary;
+  font-family: v.$font-mono;
+  gap: 1rem;
+}
+
+.footerShortcuts {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 16px;
+    min-width: 16px;
+    padding: 0 4px;
+    background: v.$paper-2;
+    border: 1px solid v.$border-color;
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    font-family: v.$font-mono;
+    font-size: 0.625rem;
+    color: v.$text-secondary;
+    margin-right: 2px;
+    margin-left: 4px;
+
+    &:first-child { margin-left: 0; }
+  }
+}
+
+.emptyState {
+  color: v.$text-secondary;
+  font-size: 0.75rem;
+  margin: 0.5rem 0;
 }

@@ -164,10 +164,22 @@ const Profile = () => {
 
   return (
     <div className={styles.profilePage}>
-
       <div className={styles.pageContent}>
         <div className={styles.stickyHeader}>
-          <h2>Edit Profile</h2>
+          <div className={styles.headerContent}>
+            <div className={styles.crumbs}>
+              <button type="button" onClick={() => navigate("/")}>Dashboard</button>
+              <span className={styles.sep}>/</span>
+              <span>Profile</span>
+            </div>
+            <h1 className={styles.title}>Edit Profile</h1>
+            {currentUser && (
+              <p className={styles.subtitle}>
+                {currentUser.email}
+                {currentUser.userType ? ` · ${currentUser.userType === "admin" ? "Admin" : "Editor"}` : ""}
+              </p>
+            )}
+          </div>
           <div className={styles.headerActions}>
             <button type="button" className="btn-text" onClick={handleCancel}>
               Cancel
@@ -178,7 +190,7 @@ const Profile = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Saving..." : "Save Changes"}
+              {isLoading ? "Saving…" : "Save Changes"}
             </button>
           </div>
         </div>

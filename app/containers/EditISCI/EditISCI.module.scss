@@ -1,143 +1,242 @@
 @use "@/styles/variables" as v;
 
 .editISCI {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 50px);
+  background: v.$black;
+}
 
-  .pageContent {
-    background: v.$black;
-    border-radius: 0px 0px 32px 32px;
-    margin: 0 auto;
-    width: calc(100% - 2rem);
-    height: calc(100vh - 114px - 2rem);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  }
+.pageContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
 
-  .stickyHeader {
-    position: sticky;
-    top: 0;
-    background: v.$black;
-    padding: 2rem 3rem 0 3rem;
-    z-index: 10;
+.stickyHeader {
+  padding: 1.125rem 1.5rem 0.875rem;
+  border-bottom: 1px solid v.$border-color;
+  background: v.$black;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
 
-    .headerContent {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
 
-      h2 {
-        text-transform: uppercase;
-        margin: 0;
-      }
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: v.$text-secondary;
+  font-family: v.$font-mono;
+  margin-bottom: 0.625rem;
+  flex-wrap: wrap;
 
-      .headerActions {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-      }
-    }
-  }
-
-  .scrollableContent {
-    flex: 1;
-    padding: 0 3rem 2rem 3rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .loadingState {
-    text-align: center;
-    padding: 3rem 1rem;
+  a, button {
     color: v.$text-secondary;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+    letter-spacing: 0.02em;
+
+    &:hover { color: v.$accent; }
+  }
+
+  .sep {
+    color: v.$ink-3;
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  color: v.$text-primary;
+}
+
+.titleCode {
+  font-family: v.$font-mono;
+  color: v.$accent;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+}
+
+.titleBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.625rem;
+  font-family: v.$font-mono;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 3px;
+  background: v.$paper-3;
+  color: v.$text-secondary;
+}
+
+.titleBadgeEdit {
+  background: v.$accent-soft;
+  color: v.$accent;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: v.$text-secondary;
+  font-family: v.$font-mono;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.scrollableContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.loadingState {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: v.$text-secondary;
+  font-size: 0.875rem;
+}
+
+.errorState {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: v.$text-secondary;
+
+  h3 {
+    color: v.$red;
+    margin-bottom: 0.75rem;
     font-size: 1.125rem;
   }
 
-  .errorState {
-    text-align: center;
-    padding: 3rem 2rem;
-    color: v.$text-secondary;
-
-    h3 {
-      color: v.$red;
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
-    }
-
-    p {
-      margin-bottom: 2rem;
-      font-size: 1.125rem;
-    }
+  p {
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
   }
+}
 
-  .slateHistoryRow {
-    display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
-    gap: 1.5rem;
-    margin-top: 2rem;
-    align-items: start;
+.editGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 1.75rem;
+  align-items: start;
 
-    @media (max-width: 1200px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .auditSection {
-    padding: 1.5rem;
-    border-radius: 16px;
-    background-color: v.$gray_dark;
-    border: 1px solid v.$border-color-light;
-    min-height: 100%;
-
-    h3 {
-      margin: 0 0 1rem 0;
-      font-size: 1rem;
-      text-transform: none;
-      color: v.$text-primary;
-      letter-spacing: 0.04em;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid v.$border-color-light;
-    }
-  }
-
-  .auditGrid {
-    display: grid;
+  @media (max-width: 1100px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-bottom: 1rem;
   }
+}
 
-  .auditItem {
-    display: flex;
-    gap: 0.5rem;
-    align-items: baseline;
+.formColumn {
+  min-width: 0;
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+
+  @media (max-width: 1100px) {
+    position: static;
   }
+}
 
-  .auditLabel {
+.auditSection {
+  padding: 1rem 1.125rem;
+  border-radius: 8px;
+  background-color: v.$paper-1;
+  border: 1px solid v.$border-color;
+
+  h3 {
+    margin: 0 0 0.75rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: v.$text-secondary;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid v.$border-color;
     font-weight: 600;
-    color: v.$text-secondary;
   }
+}
 
-  .auditValue {
-    color: v.$text-primary;
-  }
+.auditGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
 
-  .auditHistory {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    color: rgba(255, 250, 231, 0.7);
-    font-size: 0.9rem;
-  }
+.auditItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.375rem 0;
+  border-bottom: 1px dashed v.$border-color;
+  font-size: 0.8125rem;
+  gap: 0.75rem;
+}
 
-  .auditEntry {
-    color: rgba(255, 250, 231, 0.7);
-  }
+.auditLabel {
+  font-family: v.$font-mono;
+  font-size: 0.7rem;
+  color: v.$text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
 
-  .auditEmpty {
-    color: v.$text-secondary;
-    font-style: italic;
-  }
+.auditValue {
+  color: v.$text-primary;
+  font-weight: 500;
+  text-align: right;
+}
+
+.auditHistory {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.auditEntry {
+  margin: 0;
+  padding: 0.375rem 0;
+  color: v.$text-secondary;
+  border-bottom: 1px dashed v.$border-color;
+
+  &:last-child { border-bottom: none; }
+}
+
+.auditEmpty {
+  color: v.$ink-3;
+  font-style: italic;
+  font-size: 0.75rem;
+  margin: 0;
 }

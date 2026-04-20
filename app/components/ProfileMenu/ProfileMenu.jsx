@@ -4,7 +4,7 @@ import { clearUserSession } from "@/utils/auth";
 import styles from "./ProfileMenu.module.scss";
 import LogoUrl from "@/assets/Logo.svg?url";
 
-const ProfileMenu = () => {
+const ProfileMenu = ({ profileImage }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -61,15 +61,7 @@ const ProfileMenu = () => {
         aria-label="Profile menu"
         aria-expanded={isOpen}
       >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          className={styles.arrowIcon}
-        >
-          <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <img src={profileImage} alt="" className={styles.avatar} />
       </button>
 
       {isOpen && (
@@ -105,7 +97,7 @@ const ProfileMenu = () => {
             </div>
 
             <div className={styles.aboutBody}>
-              <p className={styles.version}>Version 0.9.0-alpha</p>
+              <p className={styles.version}>Version 1.0.0-beta</p>
               <p className={styles.copyright}>© {currentYear} R&R partners. All Rights Reserved.</p>
               <p className={styles.credit}>Built with ❤️ by Dan Freeman</p>
             </div>

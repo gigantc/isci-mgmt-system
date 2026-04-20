@@ -1,34 +1,32 @@
+import { useState } from "react";
 import { useResourceManager, useConfirmDialog } from "@/hooks";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import Drawer from "@/components/Drawer";
 import styles from "./AgencyManager.module.scss";
 
 const AgencyManager = () => {
   const { dialogProps, confirm } = useConfirmDialog();
+  const [search, setSearch] = useState("");
+
   const {
     items: agencies,
     formData,
     errors,
     isLoading,
     showForm,
-    isClosing,
     editingItem: editingAgency,
     handleChange,
-    handleSubmit: baseHandleSubmit,
     handleEdit,
-    handleDelete: baseHandleDelete,
     handleToggleActive: baseHandleToggleActive,
     handleNew,
     resetForm,
-    setItems: setAgencies,
-    loadItems
+    loadItems,
   } = useResourceManager("/api/agencies", {
     initialFormData: { name: "", isDefault: false },
     validate: (data) => {
-      const newErrors = {};
-      if (!data.name.trim()) {
-        newErrors.name = "Agency name is required";
-      }
-      return newErrors;
+      const e = {};
+      if (!data.name.trim()) e.name = "Agency name is required";
+      return e;
     },
     createItem: (data, now) => ({
       id: Date.now().toString(),
@@ -38,69 +36,40 @@ const AgencyManager = () => {
       createdAt: now,
       updatedAt: now,
     }),
-    updateItem: (existingAgency, data, now) => ({
-      ...existingAgency,
-      ...data,
-      updatedAt: now
-    }),
+    updateItem: (existing, data, now) => ({ ...existing, ...data, updatedAt: now }),
     hasActiveToggle: true,
-    confirmDelete: async () => {
-      return await confirm({
-        title: "Delete Agency",
-        message: "Are you sure you want to delete this agency? This action cannot be undone.",
-        confirmText: "Delete",
-        cancelText: "Cancel",
-        isDangerous: true,
-      });
-    }
   });
 
-  // Helper to update a single agency via PUT
   const updateAgencyApi = async (agency) => {
-    const response = await fetch("/api/agencies", {
+    const res = await fetch("/api/agencies", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(agency),
     });
-    const result = await response.json();
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || "Failed to update agency");
-    }
+    const result = await res.json();
+    if (!res.ok || !result.success) throw new Error(result.error || "Failed to update agency");
     return result;
   };
 
-  // Helper to create a new agency via POST
   const createAgencyApi = async (agency) => {
-    const response = await fetch("/api/agencies", {
+    const res = await fetch("/api/agencies", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(agency),
     });
-    const result = await response.json();
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || "Failed to create agency");
-    }
+    const result = await res.json();
+    if (!res.ok || !result.success) throw new Error(result.error || "Failed to create agency");
     return result;
   };
 
-  // Custom submit handler to handle default agency logic
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validate
-    if (!formData.name.trim()) {
-      return;
-    }
+    if (e && e.preventDefault) e.preventDefault();
+    if (!formData.name.trim()) return;
 
     const now = new Date().toISOString();
-
     try {
       if (editingAgency) {
-        // Update existing agency
-        const updatedAgency = { ...editingAgency, ...formData, updatedAt: now };
-        await updateAgencyApi(updatedAgency);
-
-        // If setting this as default, unset others
+        await updateAgencyApi({ ...editingAgency, ...formData, updatedAt: now });
         if (formData.isDefault) {
           for (const a of agencies) {
             if (a.id !== editingAgency.id && a.isDefault) {
@@ -109,7 +78,6 @@ const AgencyManager = () => {
           }
         }
       } else {
-        // Create new agency
         const newAgency = {
           id: Date.now().toString(),
           name: formData.name,
@@ -118,8 +86,6 @@ const AgencyManager = () => {
           createdAt: now,
           updatedAt: now,
         };
-
-        // If setting as default, unset others first
         if (formData.isDefault) {
           for (const a of agencies) {
             if (a.isDefault) {
@@ -127,216 +93,214 @@ const AgencyManager = () => {
             }
           }
         }
-
         await createAgencyApi(newAgency);
       }
-
-      // Reload agencies and reset form
       await loadItems();
       resetForm();
-    } catch (error) {
-      console.error("Error saving agency:", error);
+    } catch (err) {
+      console.error("Error saving agency:", err);
     }
   };
 
-  // Custom delete handler to prevent deleting default agency
-  const handleDelete = async (id) => {
-    const agencyToDelete = agencies.find(a => a.id === id);
-
-    // Prevent deleting the default agency
-    if (agencyToDelete?.isDefault) {
-      alert("Cannot delete the default agency. Please set another agency as default first.");
-      return;
-    }
-
-    await baseHandleDelete(id, "Are you sure you want to delete this agency?");
-  };
-
-  // Custom toggle handler to prevent deactivating default agency
   const handleToggleActive = async (agency) => {
-    // Prevent deactivating the default agency
     if (agency.isDefault && agency.active) {
-      alert("Cannot deactivate the default agency. Please set another agency as default first.");
+      await confirm({
+        title: "Can't deactivate default",
+        message: "Promote another agency to default before deactivating this one.",
+        confirmText: "OK",
+        cancelText: "",
+      });
       return;
     }
-
     await baseHandleToggleActive(agency);
   };
 
-  // Custom handler for setting default agency
   const handleSetDefault = async (agency) => {
-    if (!confirm(`Set "${agency.name}" as the default agency?`)) return;
+    const ok = await confirm({
+      title: "Set as default agency?",
+      message: `"${agency.name}" will become the default agency for new ISCI codes.`,
+      confirmText: "Set Default",
+      cancelText: "Cancel",
+    });
+    if (!ok) return;
 
     const now = new Date().toISOString();
-
     try {
-      // Unset current default
       for (const a of agencies) {
         if (a.isDefault && a.id !== agency.id) {
           await updateAgencyApi({ ...a, isDefault: false, updatedAt: now });
         }
       }
-
-      // Set new default (and ensure it's active)
-      await updateAgencyApi({
-        ...agency,
-        isDefault: true,
-        active: true,
-        updatedAt: now
-      });
-
-      // Reload agencies
+      await updateAgencyApi({ ...agency, isDefault: true, active: true, updatedAt: now });
       await loadItems();
-    } catch (error) {
-      console.error("Error setting default agency:", error);
+    } catch (err) {
+      console.error("Error setting default agency:", err);
     }
   };
 
+  const filtered = search.trim()
+    ? agencies.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
+    : agencies;
+
   return (
     <div className={styles.agencyManager}>
+      <div className={styles.toolbar}>
+        <div className={styles.searchBox}>
+          <input
+            type="text"
+            placeholder="Search agencies…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <button type="button" className="btn-primary" onClick={handleNew}>
+          + New Agency
+        </button>
+      </div>
+
       {isLoading ? (
-        <div className={styles.loadingState}>Loading agencies...</div>
+        <div className={styles.loadingState}>Loading agencies…</div>
+      ) : filtered.length === 0 ? (
+        <div className={styles.emptyState}>
+          <h3>No agencies yet</h3>
+          <p>Add an agency so it can be selected when creating ISCI codes.</p>
+          <button type="button" className="btn-primary" onClick={handleNew}>
+            + New Agency
+          </button>
+        </div>
       ) : (
-        <>
-          {showForm && (
-            <div className={`${styles.agencyFormSection} ${isClosing ? styles.closing : ''}`}>
-              <div className={styles.formHeader}>
-                <h2>{editingAgency ? "Edit Agency" : "Add New Agency"}</h2>
+        <div className={styles.cards}>
+          {filtered.map((agency) => (
+            <article
+              key={agency.id}
+              className={`${styles.card} ${!agency.active ? styles.cardInactive : ""}`}
+              onClick={() => handleEdit(agency)}
+            >
+              {agency.isDefault && (
+                <span className={styles.favStar} title="Default agency">★</span>
+              )}
+              <div className={styles.cardTop}>
+                <div className={styles.icon}>A</div>
+                <div className={styles.cardInfo}>
+                  <h3>{agency.name}</h3>
+                  <div className={styles.cardSub}>
+                    {agency.isDefault ? (
+                      <span className={styles.defaultLabel}>Default</span>
+                    ) : (
+                      <button
+                        type="button"
+                        className={styles.setDefaultBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSetDefault(agency);
+                        }}
+                      >
+                        Set as default
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className={styles.cardMeta}>
+                <span className={styles.createdText}>
+                  {new Date(agency.createdAt).toLocaleDateString()}
+                </span>
                 <button
                   type="button"
-                  className={styles.btnClose}
-                  onClick={resetForm}
-                  aria-label="Close form"
+                  className={styles.activeToggle}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleActive(agency);
+                  }}
+                  aria-pressed={agency.active}
                 >
-                  ×
-                </button>
-              </div>
-              <form onSubmit={handleSubmit} className={styles.agencyForm}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="name">Agency Name *</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="e.g., R&R Partners"
-                    className={errors.name ? "error" : ""}
-                  />
-                  {errors.name && <span className={styles.errorMessage}>{errors.name}</span>}
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      name="isDefault"
-                      checked={formData.isDefault}
-                      onChange={handleChange}
-                    />
-                    Set as Default Agency
-                  </label>
-                  <span className={styles.helpText}>
-                    The default agency will be auto-selected for new ISCI codes
+                  <span className={`${styles.toggleTrack} ${agency.active ? styles.toggleOn : ""}`}>
+                    <span className={styles.toggleKnob} />
                   </span>
-                </div>
-
-                <div className={styles.formActions}>
-                  <button type="button" className={styles.btnCancel} onClick={resetForm}>
-                    Cancel
-                  </button>
-                  <button type="submit" className={styles.btnSubmit}>
-                    {editingAgency ? "Update" : "Add"} Agency
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          <div className={styles.agenciesListSection}>
-            <div className={styles.listHeader}>
-              <h2>All Agencies ({agencies.length})</h2>
-              {!showForm && (
-                <button
-                  className={styles.btnAddNew}
-                  onClick={handleNew}
-                >
-                  + Add New Agency
+                  <span className={styles.toggleLabel}>
+                    {agency.active ? "Active" : "Inactive"}
+                  </span>
                 </button>
-              )}
-            </div>
-            {agencies.length === 0 ? (
-              <p className={styles.emptyState}>No agencies yet. Add your first one above!</p>
-            ) : (
-              <div className={styles.agenciesTableWrapper}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Agency Name</th>
-                      <th>Default</th>
-                      <th>Status</th>
-                      <th>Created</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {agencies.map(agency => (
-                      <tr key={agency.id} className={!agency.active ? "inactive" : ""}>
-                        <td>{agency.name}</td>
-                        <td>
-                          {agency.isDefault ? (
-                            <span className={styles.defaultBadge}>Default</span>
-                          ) : (
-                            <button
-                              className={styles.btnSetDefault}
-                              onClick={() => handleSetDefault(agency)}
-                              title="Set as default"
-                            >
-                              Set As Default
-                            </button>
-                          )}
-                        </td>
-                        <td>
-                          <span className={`${styles.statusBadge} ${agency.active ? styles.active : styles.inactive}`}>
-                            {agency.active ? "Active" : "Inactive"}
-                          </span>
-                        </td>
-                        <td>{new Date(agency.createdAt).toLocaleDateString()}</td>
-                        <td className={styles.actionsCell}>
-                          <button
-                            className={styles.btnEdit}
-                            onClick={() => handleEdit(agency)}
-                            title="Edit"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className={styles.btnToggle}
-                            onClick={() => handleToggleActive(agency)}
-                            title={agency.active ? "Deactivate" : "Activate"}
-                          >
-                            {agency.active ? "Deactivate" : "Activate"}
-                          </button>
-                          <button
-                            className={styles.btnDelete}
-                            onClick={() => handleDelete(agency.id)}
-                            title="Delete"
-                            disabled={agency.isDefault}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
               </div>
-            )}
-          </div>
-        </>
+            </article>
+          ))}
+        </div>
       )}
 
-      {/* Confirmation Dialog */}
+      <Drawer
+        open={showForm}
+        onClose={resetForm}
+        title={editingAgency ? "Edit Agency" : "New Agency"}
+        subtitle={editingAgency ? (editingAgency.isDefault ? "Default agency" : "Agency") : "Create a new agency"}
+        footer={
+          <>
+            <button type="button" className="btn-text" onClick={resetForm}>
+              Cancel
+            </button>
+            <button type="button" className="btn-primary" onClick={handleSubmit}>
+              {editingAgency ? "Save Changes" : "Create Agency"}
+            </button>
+          </>
+        }
+      >
+        <form onSubmit={handleSubmit} className={styles.drawerForm}>
+          <div className={styles.field}>
+            <label htmlFor="name">Agency Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name || ""}
+              onChange={handleChange}
+              placeholder="e.g., R&R Partners"
+              className={errors.name ? styles.inputError : ""}
+            />
+            {errors.name && <span className={styles.fieldError}>{errors.name}</span>}
+          </div>
+
+          <div className={styles.rowSwitch}>
+            <div>
+              <div className={styles.switchTitle}>Default agency</div>
+              <div className={styles.switchHint}>
+                Auto-selected when creating new ISCI codes.
+              </div>
+            </div>
+            <button
+              type="button"
+              className={`${styles.toggleTrack} ${formData.isDefault ? styles.toggleOn : ""}`}
+              onClick={() =>
+                handleChange({ target: { name: "isDefault", type: "checkbox", checked: !formData.isDefault } })
+              }
+              aria-pressed={formData.isDefault}
+            >
+              <span className={styles.toggleKnob} />
+            </button>
+          </div>
+
+          {editingAgency && (
+            <div className={styles.rowSwitch}>
+              <div>
+                <div className={styles.switchTitle}>Active</div>
+                <div className={styles.switchHint}>
+                  {editingAgency.isDefault
+                    ? "Default agencies can't be deactivated."
+                    : "Inactive agencies are hidden from ISCI creation."}
+                </div>
+              </div>
+              <button
+                type="button"
+                className={`${styles.toggleTrack} ${editingAgency.active ? styles.toggleOn : ""}`}
+                onClick={() => handleToggleActive(editingAgency)}
+                aria-pressed={editingAgency.active}
+                disabled={editingAgency.isDefault && editingAgency.active}
+              >
+                <span className={styles.toggleKnob} />
+              </button>
+            </div>
+          )}
+        </form>
+      </Drawer>
+
       <ConfirmDialog {...dialogProps} />
     </div>
   );

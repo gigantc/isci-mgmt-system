@@ -17,6 +17,8 @@ model User {
   firstName        String
   lastName         String
   userType         String    // "admin" or "editor"
+  active           Boolean   @default(true)
+  lastActiveAt     DateTime?
   recentlyViewed   String    @default("[]") // JSON string array of ISCI codes
   profileImage     String?
   createdAt        DateTime
@@ -29,6 +31,7 @@ model Brand {
   name         String
   abbreviation String?
   code         String     @unique
+  color        String?    // hex color for client dot (e.g. #e89a52); falls back to palette hash
   active       Boolean    @default(true)
   createdAt    DateTime
   updatedAt    DateTime
@@ -62,6 +65,7 @@ model ISCICode {
   airDate          String?   // Stored as ISO string for SQLite compatibility
   aspectRatio      String    @default("16:9")
   channel          String    @default("Broadcast")
+  musicRights      String?   // "Licensed" | "Original" | "None"
   agency           String?
   market           String?
   createdBy        String?

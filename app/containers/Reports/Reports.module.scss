@@ -46,13 +46,13 @@
 
       &:hover {
         color: v.$text-primary;
-        background: rgba(v.$white, 0.03);
+        background: v.$overlay-1;
       }
 
       &.active {
         color: v.$accent;
         border-bottom-color: v.$accent;
-        background: rgba(v.$accent, 0.05);
+        background: v.$accent-subtle;
       }
     }
   }
@@ -79,7 +79,7 @@
   }
 
   .filtersCard {
-    background: rgba(v.$white, 0.02);
+    background: v.$overlay-1;
     border-radius: 8px;
     border: 1px solid v.$border-color;
     padding: 2rem;
@@ -117,14 +117,14 @@
         border-radius: 6px;
         transition: all 0.2s;
         font-family: inherit;
-        background-color: rgba(v.$white, 0.05);
+        background-color: v.$overlay-2;
         color: v.$text-primary;
         cursor: pointer;
 
         &:focus {
           outline: none;
           border-color: v.$accent;
-          box-shadow: 0 0 0 3px rgba(v.$accent, 0.2);
+          box-shadow: 0 0 0 3px v.$accent-ring;
         }
       }
     }
@@ -143,17 +143,17 @@
         cursor: pointer;
         transition: all 0.2s;
         color: v.$text-primary;
-        background-color: rgba(v.$white, 0.05);
+        background-color: v.$overlay-2;
 
         &:hover {
-          background-color: rgba(v.$white, 0.1);
+          background-color: v.$overlay-3;
         }
       }
     }
   }
 
   .exportCard {
-    background: rgba(v.$white, 0.02);
+    background: v.$overlay-1;
     border-radius: 8px;
     border: 1px solid v.$border-color;
     padding: 2rem;
@@ -213,7 +213,7 @@
 
   .importSection {
     .importCard {
-      background: rgba(v.$white, 0.02);
+      background: v.$overlay-1;
       border-radius: 8px;
       border: 1px solid v.$border-color;
       padding: 2rem;
@@ -228,7 +228,7 @@
       .templateSection {
         margin-bottom: 2rem;
         padding: 1rem;
-        background: rgba(v.$white, 0.03);
+        background: v.$overlay-1;
         border-radius: 6px;
         display: flex;
         justify-content: space-between;
@@ -248,10 +248,10 @@
           cursor: pointer;
           transition: all 0.2s;
           color: v.$text-primary;
-          background-color: rgba(v.$white, 0.05);
+          background-color: v.$overlay-2;
 
           &:hover {
-            background-color: rgba(v.$white, 0.1);
+            background-color: v.$overlay-3;
           }
         }
       }
@@ -305,14 +305,14 @@
 
           &:hover {
             border-color: v.$accent;
-            background: rgba(v.$accent, 0.05);
+            background: v.$accent-subtle;
             color: v.$text-primary;
           }
         }
       }
 
       .previewCard {
-        background: rgba(v.$white, 0.03);
+        background: v.$overlay-1;
         border-radius: 6px;
         padding: 1rem;
         margin-bottom: 1.5rem;
@@ -337,8 +337,8 @@
         margin-bottom: 1.5rem;
 
         &.success {
-          background: rgba(v.$teal, 0.1);
-          border: 1px solid rgba(v.$teal, 0.3);
+          background: v.$teal-soft;
+          border: 1px solid v.$teal;
 
           h4 {
             color: v.$teal;
@@ -346,8 +346,8 @@
         }
 
         &.error {
-          background: rgba(v.$red, 0.1);
-          border: 1px solid rgba(v.$red, 0.3);
+          background: v.$red-soft;
+          border: 1px solid v.$red-soft;
 
           h4 {
             color: v.$red;

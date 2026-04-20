@@ -33,9 +33,30 @@ export async function action({ request }) {
         );
       }
 
+      // Block deactivated users (only if the column exists; undefined = old schema)
+      if (user.active === false) {
+        return Response.json(
+          { success: false, message: "This account has been deactivated." },
+          { status: 401 }
+        );
+      }
+
+      // Stamp last-active timestamp. Tolerate pre-migration schemas where
+      // lastActiveAt doesn't exist yet.
+      const now = new Date();
+      try {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { lastActiveAt: now },
+        });
+      } catch (err) {
+        console.warn("Could not stamp lastActiveAt (column may not exist yet):", err.message);
+      }
+
       // Parse recentlyViewed from JSON string to array
       const userWithArray = {
         ...user,
+        lastActiveAt: now,
         recentlyViewed: JSON.parse(user.recentlyViewed || "[]"),
       };
 

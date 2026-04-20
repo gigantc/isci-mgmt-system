@@ -1,0 +1,86 @@
+// Theme tokens — values taken verbatim from design-reference/shared/theme.css.
+// Dark is the default; `html.theme-light` switches to the light palette.
+// Consumed via SCSS aliases in _variables.scss so `v.$foo` callsites keep
+// working while runtime theme-switching works through CSS custom properties.
+
+:root {
+  // Surfaces (dark)
+  --paper: oklch(0.16 0.008 255);
+  --paper-1: oklch(0.195 0.009 255);
+  --paper-2: oklch(0.225 0.01 255);
+  --paper-3: oklch(0.27 0.011 255);
+
+  // Text (dark)
+  --ink: oklch(0.96 0.005 85);
+  --ink-1: oklch(0.82 0.006 85);
+  --ink-2: oklch(0.62 0.007 85);
+  --ink-3: oklch(0.48 0.008 85);
+
+  // Borders
+  --line: oklch(0.3 0.01 255);
+  --line-strong: oklch(0.4 0.012 255);
+
+  // Accent (warm orange)
+  --accent: oklch(0.72 0.18 50);
+  --accent-hover: oklch(0.78 0.19 50);
+  --accent-text: oklch(0.18 0.01 255);
+  --accent-soft: oklch(0.3 0.08 50);
+
+  // Status
+  --ok: oklch(0.6 0.12 155);
+  --warn: oklch(0.7 0.14 80);
+  --danger: oklch(0.58 0.18 25);
+  --danger-hover: oklch(0.52 0.18 25);
+  --ok-soft: oklch(0.3 0.06 155);
+  --warn-soft: oklch(0.32 0.08 80);
+  --danger-soft: oklch(0.3 0.06 25);
+
+  // Derived soft / ring tokens used for faint hovers and focus rings.
+  // In the comp these are effectively aliases of --accent-soft / status-soft.
+  --accent-ring: var(--accent-soft);
+  --accent-subtle: oklch(0.3 0.05 50);
+
+  // Overlays used for subtle surface tints on hover.
+  --overlay-1: oklch(1 0 0 / 0.03);
+  --overlay-2: oklch(1 0 0 / 0.05);
+  --overlay-3: oklch(1 0 0 / 0.1);
+
+  color-scheme: dark;
+}
+
+html.theme-light {
+  --paper: oklch(0.985 0.004 85);
+  --paper-1: oklch(0.97 0.005 85);
+  --paper-2: oklch(0.945 0.006 85);
+  --paper-3: oklch(0.91 0.007 85);
+
+  --ink: oklch(0.22 0.01 255);
+  --ink-1: oklch(0.35 0.01 255);
+  --ink-2: oklch(0.52 0.01 255);
+  --ink-3: oklch(0.68 0.008 255);
+
+  --line: oklch(0.88 0.006 85);
+  --line-strong: oklch(0.78 0.008 85);
+
+  --accent: oklch(0.62 0.18 42);
+  --accent-hover: oklch(0.56 0.19 42);
+  --accent-text: oklch(0.985 0.004 85);
+  --accent-soft: oklch(0.95 0.04 42);
+
+  --ok: oklch(0.6 0.12 155);
+  --warn: oklch(0.7 0.14 80);
+  --danger: oklch(0.58 0.18 25);
+  --danger-hover: oklch(0.52 0.18 25);
+  --ok-soft: oklch(0.94 0.05 155);
+  --warn-soft: oklch(0.96 0.07 80);
+  --danger-soft: oklch(0.95 0.04 25);
+
+  --accent-ring: var(--accent-soft);
+  --accent-subtle: oklch(0.97 0.02 42);
+
+  --overlay-1: oklch(0 0 0 / 0.03);
+  --overlay-2: oklch(0 0 0 / 0.05);
+  --overlay-3: oklch(0 0 0 / 0.08);
+
+  color-scheme: light;
+}

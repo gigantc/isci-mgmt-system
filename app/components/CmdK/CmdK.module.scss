@@ -1,0 +1,148 @@
+@use "@/styles/variables" as v;
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: oklch(0.15 0.02 255 / 0.35);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding-top: 12vh;
+}
+
+.pal {
+  width: 600px;
+  max-width: 90vw;
+  height: fit-content;
+  background: v.$bg-primary;
+  border: 1px solid v.$border-color;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px oklch(0 0 0 / 0.4);
+  overflow: hidden;
+}
+
+.pi {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid v.$border-color;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    color: v.$text-secondary;
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: v.$text-primary;
+    font-size: 0.9375rem;
+    padding: 0;
+
+    &::placeholder { color: v.$text-secondary; }
+  }
+}
+
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 16px;
+  min-width: 16px;
+  padding: 0 4px;
+  background: v.$paper-2;
+  border: 1px solid v.$border-color;
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  font-family: v.$font-mono;
+  font-size: 0.625rem;
+  color: v.$text-secondary;
+}
+
+.pres {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0.375rem;
+}
+
+.grp {
+  font-family: v.$font-mono;
+  font-size: 0.625rem;
+  color: v.$ink-3;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 0.625rem 0.25rem;
+}
+
+.rr {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  color: v.$text-primary;
+}
+
+.rrOn {
+  background: v.$accent-soft;
+}
+
+.rrIcon {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  color: v.$text-secondary;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.co {
+  font-family: v.$font-mono;
+  color: v.$accent;
+  font-weight: 600;
+  font-size: 0.75rem;
+  min-width: 84px;
+  flex-shrink: 0;
+}
+
+.tt {
+  color: v.$text-primary;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub {
+  color: v.$text-secondary;
+  font-family: v.$font-mono;
+  font-size: 0.6875rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50%;
+}
+
+.empty {
+  padding: 1.5rem 1rem;
+  color: v.$text-secondary;
+  text-align: center;
+  font-size: 0.8125rem;
+}

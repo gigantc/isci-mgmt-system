@@ -106,32 +106,37 @@ const CreateISCI = () => {
     }
   };
 
-  // Render page
   return (
     <div className={styles.createISCI}>
-
       <div className={styles.pageContent}>
-        {/* Sticky header section */}
         <div className={styles.stickyHeader}>
           <div className={styles.headerContent}>
-            <h2>Create New ISCI Code</h2>
-            {!isLoading && (
-              <div className={styles.headerActions}>
-                <button type="button" className="btn-text" onClick={handleCancel}>
-                  Cancel
-                </button>
-                <button type="button" className="btn-primary" onClick={handleSubmitClick}>
-                  Create ISCI
-                </button>
-              </div>
-            )}
+            <div className={styles.crumbs}>
+              <button type="button" onClick={() => navigate("/")}>Dashboard</button>
+              <span className={styles.sep}>/</span>
+              <span>New ISCI Code</span>
+            </div>
+            <h1 className={styles.title}>
+              Create ISCI Code
+              <span className={`${styles.titleBadge} ${styles.titleBadgeNew}`}>New</span>
+            </h1>
+            <p className={styles.subtitle}>Select a client to auto-generate the code.</p>
           </div>
+          {!isLoading && (
+            <div className={styles.headerActions}>
+              <button type="button" className="btn-text" onClick={handleCancel}>
+                Cancel
+              </button>
+              <button type="button" className="btn-primary" onClick={handleSubmitClick}>
+                Create ISCI
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Scrollable content area */}
         <div className={styles.scrollableContent}>
           {isLoading ? (
-            <div className={styles.loadingState}>Loading...</div>
+            <div className={styles.loadingState}>Loading…</div>
           ) : (
             <ISCIForm
               code={null}

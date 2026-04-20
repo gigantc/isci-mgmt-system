@@ -1,0 +1,37 @@
+@use "@/styles/variables" as v;
+
+.group {
+  display: inline-flex;
+  gap: 2px;
+  border: 1px solid v.$border-color;
+  border-radius: 20px;
+  padding: 2px;
+  background: transparent;
+}
+
+.option {
+  width: 24px;
+  height: 22px;
+  background: none;
+  border: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: v.$text-secondary;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    color: v.$text-primary;
+  }
+}
+
+.optionActive {
+  background: v.$paper-2;
+  color: v.$text-primary;
+}

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><title>ISCIz — Ledger · Round 02</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared/theme.css"/>
+<style>
+body { padding: 48px 56px 80px; max-width: 1080px; margin: 0 auto; font-family: Inter, sans-serif; }
+.kick { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+h1 { font-size: 42px; line-height: 1.05; letter-spacing: -0.025em; font-weight: 600; margin: 0 0 16px; }
+.lede { font-size: 16px; color: var(--ink-1); max-width: 680px; line-height: 1.55; margin-bottom: 40px; }
+
+.switch { display: flex; gap: 8px; align-items: center; margin-bottom: 36px; }
+.switch span { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--ink-2); margin-right: 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+.switch button { padding: 6px 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 20px; font-size: 12px; cursor: pointer; font-family: inherit; }
+.switch button.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.sec { margin-bottom: 48px; }
+.sec h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-2); margin: 0 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+
+.screens { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.screen { display: block; cursor: pointer; color: inherit; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; transition: transform 0.15s ease, box-shadow 0.15s ease; background: var(--paper); }
+.screen:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--line-strong); }
+.screen .thumb { aspect-ratio: 16/10; background: var(--paper-1); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.screen .meta { padding: 14px 16px; display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); }
+.screen h3 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+.screen .tag { font-family: "JetBrains Mono", monospace; font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+.screen p { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--ink-2); margin: 2px 16px 14px; line-height: 1.5; }
+.screen .new { display: inline-block; background: var(--accent-soft); color: var(--accent); font-family: "JetBrains Mono", monospace; font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 3px; margin-left: 8px; text-transform: uppercase; letter-spacing: 0.08em; vertical-align: middle; }
+
+/* Mini thumbs */
+.th-bar { height: 6px; background: var(--ink); opacity: 0.1; }
+.th-head { height: 26px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 12px; font-family: "JetBrains Mono", monospace; font-size: 9px; color: var(--ink-2); }
+.th-head .sq { width: 10px; height: 10px; background: var(--accent); border-radius: 2px; }
+.th-content { flex: 1; padding: 12px; font-family: "JetBrains Mono", monospace; font-size: 8px; color: var(--ink-1); overflow: hidden; position: relative; }
+.th-row { display: grid; grid-template-columns: 50px 1fr 30px 30px; gap: 6px; padding: 3px 0; border-bottom: 1px solid var(--line); }
+.th-row .c { color: var(--accent); font-weight: 600; }
+.th-row.h { color: var(--ink-3); text-transform: uppercase; font-size: 7px; letter-spacing: 0.08em; padding-bottom: 4px; border-bottom-width: 2px; }
+.th-form { padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
+.th-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+.th-title .mono { color: var(--accent); font-family: monospace; }
+.th-label { font-size: 7px; text-transform: uppercase; color: var(--ink-3); letter-spacing: 0.08em; margin-bottom: 2px; }
+.th-field { height: 14px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 2px; }
+.th-field.mono { background: var(--paper-2); color: var(--accent); font-family: monospace; font-size: 8px; display: flex; align-items: center; padding: 0 6px; }
+.th-slate { position: absolute; right: 12px; bottom: 12px; width: 90px; aspect-ratio: 16/9; background: #000; border-radius: 2px; padding: 6px; font-family: monospace; font-size: 5px; color: #fff; }
+.th-slate .l { color: oklch(0.65 0.02 85); }
+.th-split { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.th-detail { padding: 10px 14px; }
+.th-row-ro { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--line); font-size: 8px; }
+.th-row-ro .k { color: var(--ink-2); }
+.th-row-ro .v { color: var(--ink); font-weight: 500; }
+.th-badge { display: inline-block; padding: 1px 5px; font-size: 7px; background: oklch(0.94 0.04 260); color: oklch(0.5 0.12 260); border-radius: 2px; margin-left: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+[data-theme="dark"] .th-badge { background: oklch(0.3 0.06 260); color: oklch(0.75 0.12 260); }
+.th-badge.new { background: var(--accent-soft); color: var(--accent); }
+
+.changes { background: var(--paper-1); border: 1px solid var(--line); border-radius: 6px; padding: 20px 24px; margin-bottom: 40px; }
+.changes h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-2); margin: 0 0 12px; }
+.changes ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--ink-1); }
+.changes li { padding-left: 18px; position: relative; }
+.changes li:before { content: "+"; position: absolute; left: 0; color: var(--accent); font-weight: 600; }
+.changes li.rm:before { content: "−"; color: var(--danger); }
+
+.note { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--ink-2); padding: 16px 20px; border: 1px dashed var(--line-strong); border-radius: 6px; line-height: 1.6; }
+.note strong { color: var(--ink); }
+.kb { display: inline-block; padding: 1px 5px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 3px; font-size: 10px; font-family: monospace; }
+</style>
+</head>
+<body>
+<div class="kick">ISCIz · Round 02 · Ledger direction locked</div>
+<h1>The Ledger, fleshed out.</h1>
+<p class="lede">Round 02 is six screens wired together: Dashboard, Detail (read-only), Edit, Create, and now Admin (Clients, Agencies, Users). Status is gone. Fuzzy search covers every field, Cmd-K opens a quick palette, rows sort/filter, and the density toggle lives in the toolbar. Click any thumbnail to jump into the live screen, then navigate between the rest from there.</p>
+
+<div class="switch"><span>Theme</span>
+  <button id="light" class="on">Light</button>
+  <button id="dark">Dark</button>
+</div>
+
+<div class="changes">
+  <h2>What changed from Round 01</h2>
+  <ul>
+    <li class="rm">Status field — removed entirely</li>
+    <li>Read-only Detail view (AEs, clients)</li>
+    <li>Create flow with live slate + next-in-sequence</li>
+    <li>Fuzzy search across every searchable field</li>
+    <li>Density toggle · comfy / compact</li>
+    <li>Row sort on every column</li>
+    <li>Facet filters in sidebar (click to apply)</li>
+    <li>Cmd-K palette · quick jump + actions</li>
+    <li>Keyboard nav <span class="kb">↑↓</span> <span class="kb">⏎</span> <span class="kb">E</span> <span class="kb">N</span> <span class="kb">/</span></li>
+    <li>Validation · required fields gate Create</li>
+    <li>Inline row actions · view / edit / copy code</li>
+    <li>Bulk action bar when rows are selected</li>
+  </ul>
+</div>
+
+<div class="sec">
+  <h2>Screens</h2>
+  <div class="screens">
+
+    <a class="screen" href="option-a.html">
+      <div class="thumb">
+        <div class="th-head"><div class="sq"></div><span>ISCIz · Dashboard</span></div>
+        <div class="th-content">
+          <div class="th-row h"><span>ISCI</span><span>CAMPAIGN · TITLE</span><span>LEN</span><span>AIR</span></div>
+          <div class="th-row"><span class="c">ADID2601</span><span>Originals SS26</span><span>15s</span><span>01/30</span></div>
+          <div class="th-row"><span class="c">APPL2504</span><span>Innovations</span><span>6s</span><span>05/28</span></div>
+          <div class="th-row"><span class="c">TLSA2501</span><span>Autopilot</span><span>30s</span><span>08/03</span></div>
+          <div class="th-row"><span class="c">NIKE2503</span><span>Just Do It</span><span>6s</span><span>09/23</span></div>
+          <div class="th-row"><span class="c">BMWW2601</span><span>i5 Launch</span><span>30s</span><span>02/14</span></div>
+          <div class="th-row"><span class="c">FORD2512</span><span>F-150 Lightning</span><span>60s</span><span>11/18</span></div>
+        </div>
+      </div>
+      <div class="meta"><h3>Dashboard</h3><span class="tag">Entry point</span></div>
+      <p>Facet sidebar · fuzzy search · sort · density toggle · bulk select · row actions · Cmd-K.</p>
+    </a>
+
+    <a class="screen" href="option-a.html">
+      <div class="thumb">
+        <div class="th-head"><div class="sq"></div><span>ADID2601 · read only</span></div>
+        <div class="th-detail">
+          <div class="th-title">ISCI <span class="mono">ADID2601</span><span class="th-badge">Read</span></div>
+          <div style="margin-top:10px">
+            <div class="th-row-ro"><span class="k">Client</span><span class="v">Adidas</span></div>
+            <div class="th-row-ro"><span class="k">Campaign</span><span class="v">Originals SS26</span></div>
+            <div class="th-row-ro"><span class="k">Job Number</span><span class="v">123123</span></div>
+            <div class="th-row-ro"><span class="k">Spot Title</span><span class="v">ADID_Orig…_15s_Digital</span></div>
+            <div class="th-row-ro"><span class="k">Length</span><span class="v">15s</span></div>
+            <div class="th-row-ro"><span class="k">Aspect</span><span class="v">16:9</span></div>
+          </div>
+        </div>
+        <div class="th-slate">
+          <div style="font-weight:600;margin-bottom:2px">ADID2601</div>
+          <div class="l">CLIENT: Adidas</div>
+          <div class="l">LEN: 15s</div>
+          <div class="l">AIR: 01/30/26</div>
+        </div>
+      </div>
+      <div class="meta"><h3>Detail <span class="new">New</span></h3><span class="tag">Read-only</span></div>
+      <p>For AEs and clients. No editable fields, slate export, share link, jump-to-edit.</p>
+    </a>
+
+    <a class="screen" href="option-a.html">
+      <div class="thumb">
+        <div class="th-head"><div class="sq"></div><span>Editing ADID2601</span></div>
+        <div class="th-split">
+          <div class="th-form">
+            <div class="th-title">Edit <span class="mono">ADID2601</span></div>
+            <div><div class="th-label">Client</div><div class="th-field"></div></div>
+            <div><div class="th-label">ISCI Code · auto</div><div class="th-field mono">ADID2601</div></div>
+            <div><div class="th-label">Campaign</div><div class="th-field"></div></div>
+            <div><div class="th-label">Job #</div><div class="th-field"></div></div>
+            <div><div class="th-label">Spot title · auto</div><div class="th-field mono">ADID_Orig_15s_Dig…</div></div>
+          </div>
+          <div style="padding:10px 14px 10px 0">
+            <div class="th-label" style="margin-bottom:6px">Slate preview · 16:9</div>
+            <div style="aspect-ratio:16/9;background:#000;border-radius:2px;padding:8px;font-family:monospace;font-size:6px;color:#fff">
+              <div style="font-weight:600;margin-bottom:3px">ADID2601</div>
+              <div class="th-slate" style="position:static;width:auto;padding:0;background:none">
+                <div class="l" style="color:oklch(0.7 0.02 85)">CLIENT: Adidas</div>
+                <div class="l" style="color:oklch(0.7 0.02 85)">CAMPAIGN: Originals</div>
+                <div class="l" style="color:oklch(0.7 0.02 85)">LEN: 15 SEC</div>
+                <div class="l" style="color:oklch(0.7 0.02 85)">ASPECT: 16:9</div>
+              </div>
+            </div>
+            <div style="margin-top:8px"><div class="th-label">Related</div>
+              <div style="font-family:monospace;font-size:8px;color:var(--accent);font-weight:600;padding:2px 0">APPL2504 · 6s</div>
+              <div style="font-family:monospace;font-size:8px;color:var(--accent);font-weight:600;padding:2px 0">TLSA2501 · 30s</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><h3>Edit</h3><span class="tag">Full form</span></div>
+      <p>5 grouped sections · live slate · auto spot-title · duplicate-as-cutdown · activity log.</p>
+    </a>
+
+    <a class="screen" href="option-a.html">
+      <div class="thumb">
+        <div class="th-head"><div class="sq"></div><span>New ISCI · draft</span></div>
+        <div class="th-split">
+          <div class="th-form">
+            <div class="th-title">New <span class="mono">ADID2614</span><span class="th-badge new">Draft</span></div>
+            <div><div class="th-label">Client *</div><div class="th-field"></div></div>
+            <div><div class="th-label">ISCI · auto</div><div class="th-field mono">ADID2614</div></div>
+            <div><div class="th-label">Campaign *</div><div class="th-field"></div></div>
+            <div><div class="th-label">Job # *</div><div class="th-field"></div></div>
+            <div><div class="th-label">Spot title *</div><div class="th-field mono">ADID_…_30s_Broadcast</div></div>
+          </div>
+          <div style="padding:10px 14px 10px 0">
+            <div class="th-label" style="margin-bottom:6px">Slate preview · draft</div>
+            <div style="aspect-ratio:16/9;background:#000;border-radius:2px;padding:8px;font-family:monospace;font-size:6px;color:#fff;margin-bottom:8px">
+              <div style="font-weight:600;margin-bottom:3px">ADID2614</div>
+              <div class="l" style="color:oklch(0.7 0.02 85)">CLIENT: Adidas</div>
+              <div class="l" style="color:oklch(0.7 0.02 85)">LEN: 30 SEC</div>
+            </div>
+            <div class="th-label">Next in sequence</div>
+            <div style="font-family:monospace;font-size:11px;color:var(--accent);font-weight:600;padding:4px 6px;background:var(--paper-2);border-radius:3px;margin-top:2px">ADID2615</div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><h3>Create <span class="new">New</span></h3><span class="tag">Required gating</span></div>
+      <p>Auto-assigned code from client sequence · 5 required fields · Save &amp; new keeps flow going.</p>
+    </a>
+
+    <a class="screen" href="admin.html">
+      <div class="thumb">
+        <div class="th-head"><div class="sq"></div><span>Admin · Clients</span></div>
+        <div style="display:grid;grid-template-columns:60px 1fr;height:calc(100% - 26px)">
+          <div style="border-right:1px solid var(--line);padding:8px 6px;font-family:monospace;font-size:7px;color:var(--ink-2);display:flex;flex-direction:column;gap:4px">
+            <div style="color:var(--accent);font-weight:600">• Clients</div>
+            <div>Agencies</div>
+            <div>Users</div>
+          </div>
+          <div style="padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div style="border:1px solid var(--line);border-radius:3px;padding:6px;background:var(--paper)">
+              <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><div style="width:10px;height:10px;background:oklch(0.62 0.16 10);border-radius:2px"></div><span style="font-size:8px;font-weight:600">Adidas</span></div>
+              <div style="font-family:monospace;font-size:7px;color:var(--accent);font-weight:600">ADID</div>
+            </div>
+            <div style="border:1px solid var(--line);border-radius:3px;padding:6px;background:var(--paper)">
+              <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><div style="width:10px;height:10px;background:oklch(0.62 0.16 40);border-radius:2px"></div><span style="font-size:8px;font-weight:600">Nike</span></div>
+              <div style="font-family:monospace;font-size:7px;color:var(--accent);font-weight:600">NIKE</div>
+            </div>
+            <div style="border:1px solid var(--line);border-radius:3px;padding:6px;background:var(--paper)">
+              <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><div style="width:10px;height:10px;background:oklch(0.62 0.16 340);border-radius:2px"></div><span style="font-size:8px;font-weight:600">Tesla</span></div>
+              <div style="font-family:monospace;font-size:7px;color:var(--accent);font-weight:600">TLSA</div>
+            </div>
+            <div style="border:1px solid var(--line);border-radius:3px;padding:6px;background:var(--paper)">
+              <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><div style="width:10px;height:10px;background:oklch(0.62 0.16 220);border-radius:2px"></div><span style="font-size:8px;font-weight:600">BMW</span></div>
+              <div style="font-family:monospace;font-size:7px;color:var(--accent);font-weight:600">BMWW</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><h3>Admin · Clients <span class="new">New</span></h3><span class="tag">Cards</span></div>
+      <p>Sidebar sub-nav · 4-letter code locks after first ISCI exists · active / inactive toggle.</p>
+    </a>
+
+    <a class="screen" href="admin.html">
+      <div class="thumb">
+        <div class="th-head"><div class="sq"></div><span>Admin · Users</span></div>
+        <div style="display:grid;grid-template-columns:60px 1fr;height:calc(100% - 26px)">
+          <div style="border-right:1px solid var(--line);padding:8px 6px;font-family:monospace;font-size:7px;color:var(--ink-2);display:flex;flex-direction:column;gap:4px">
+            <div>Clients</div>
+            <div>Agencies</div>
+            <div style="color:var(--accent);font-weight:600">• Users</div>
+          </div>
+          <div style="padding:6px 10px">
+            <div style="display:grid;grid-template-columns:1fr 24px 24px;gap:4px;padding:4px 0;border-bottom:1px solid var(--line);font-size:7px;color:var(--ink-3);text-transform:uppercase"><span>Name</span><span>Role</span><span>Stat</span></div>
+            <div style="display:grid;grid-template-columns:1fr 24px 24px;gap:4px;padding:4px 0;border-bottom:1px solid var(--line);font-size:8px;align-items:center"><span style="display:flex;gap:4px;align-items:center"><div style="width:12px;height:12px;border-radius:50%;background:oklch(0.6 0.14 180);color:white;font-size:5px;display:grid;place-items:center;font-weight:700">SM</div>Stevey</span><span style="font-family:monospace;color:var(--accent);font-weight:600">Adm</span><span style="color:var(--ok);font-weight:600">●</span></div>
+            <div style="display:grid;grid-template-columns:1fr 24px 24px;gap:4px;padding:4px 0;border-bottom:1px solid var(--line);font-size:8px;align-items:center"><span style="display:flex;gap:4px;align-items:center"><div style="width:12px;height:12px;border-radius:50%;background:oklch(0.6 0.14 40);color:white;font-size:5px;display:grid;place-items:center;font-weight:700">MS</div>Marco</span><span style="font-family:monospace">Edt</span><span style="color:var(--ok);font-weight:600">●</span></div>
+            <div style="display:grid;grid-template-columns:1fr 24px 24px;gap:4px;padding:4px 0;border-bottom:1px solid var(--line);font-size:8px;align-items:center"><span style="display:flex;gap:4px;align-items:center"><div style="width:12px;height:12px;border-radius:50%;background:oklch(0.6 0.14 260);color:white;font-size:5px;display:grid;place-items:center;font-weight:700">JK</div>Jess</span><span style="font-family:monospace">Edt</span><span style="color:var(--ok);font-weight:600">●</span></div>
+            <div style="display:grid;grid-template-columns:1fr 24px 24px;gap:4px;padding:4px 0;border-bottom:1px solid var(--line);font-size:8px;align-items:center"><span style="display:flex;gap:4px;align-items:center"><div style="width:12px;height:12px;border-radius:50%;background:oklch(0.6 0.14 300);color:white;font-size:5px;display:grid;place-items:center;font-weight:700">PS</div>Priya</span><span style="font-family:monospace">Edt</span><span style="color:var(--ok);font-weight:600">●</span></div>
+            <div style="display:grid;grid-template-columns:1fr 24px 24px;gap:4px;padding:4px 0;font-size:8px;align-items:center;opacity:0.5"><span style="display:flex;gap:4px;align-items:center"><div style="width:12px;height:12px;border-radius:50%;background:oklch(0.6 0.14 120);color:white;font-size:5px;display:grid;place-items:center;font-weight:700">SP</div>Sam</span><span style="font-family:monospace">Edt</span><span style="color:var(--ink-3)">○</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="meta"><h3>Admin · Users <span class="new">New</span></h3><span class="tag">Table</span></div>
+      <p>Sortable table · role filter · add drawer · active toggle without deletion.</p>
+    </a>
+
+  </div>
+</div>
+
+<div class="note">
+  <strong>Flow:</strong> Dashboard is the home. Any row → Detail (read-only). From Detail → Edit. From anywhere → <span class="kb">N</span> or <span class="kb">⌘K</span> → New ISCI. Save &amp; new on Create and Edit repeats the flow. Try the fuzzy search with something messy like <code>"nk6s"</code> or <code>"apl 15"</code>.<br/><br/>
+  <strong>Next up, when you're ready:</strong> CSV import with column mapping · Admin (users, clients, code prefixes) · Reports (volume, by-client, turnaround) · Duplicate-as-cutdown dialog · Claude Code scan reconciliation once you run it.
+</div>
+
+<script>
+  const saved = localStorage.getItem("isciz-theme") || "light";
+  document.documentElement.setAttribute("data-theme", saved);
+  document.querySelectorAll(".switch button").forEach(b => b.classList.remove("on"));
+  document.getElementById(saved).classList.add("on");
+  document.querySelectorAll(".switch button").forEach(b => b.onclick = () => {
+    document.querySelectorAll(".switch button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    document.documentElement.setAttribute("data-theme", b.id);
+    localStorage.setItem("isciz-theme", b.id);
+  });
+</script>
+</body>
+</html>

@@ -1,86 +1,122 @@
 @use "@/styles/variables" as v;
 
 .profilePage {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  background-color: v.$gray;
-  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 48px);
+  background: v.$bg-primary;
 }
 
 .pageContent {
-  margin: 0 auto;
-  width: calc(100% - 2rem);
-  max-width: 1600px;
-  background-color: v.$black;
-  border-radius: 0 0 32px 32px;
-  // min-height: calc(100vh - 140px);
-  height: calc(100vh - 114px - 2rem);
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .stickyHeader {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background-color: v.$black;
-  padding: 2rem 2rem 1.5rem;
+  padding: 1.125rem 1.5rem 0.875rem;
   border-bottom: 1px solid v.$border-color;
+  background: v.$bg-primary;
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.crumbs {
+  display: flex;
   align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: v.$text-secondary;
+  font-family: v.$font-mono;
+  margin-bottom: 0.625rem;
 
-  h2 {
-    color: v.$text-primary;
-    margin: 0;
-    text-transform:uppercase;
+  a, button {
+    color: v.$text-secondary;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+    letter-spacing: 0.02em;
+
+    &:hover { color: v.$accent; }
   }
 
-  .headerActions {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
+  .sep { color: v.$ink-3; }
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: v.$text-primary;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: v.$text-secondary;
+  font-family: v.$font-mono;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .scrollableContent {
   flex: 1;
   overflow-y: auto;
-  padding: 2rem;
+  padding: 1.25rem 1.5rem 2rem;
 }
 
 .profileContainer {
-  max-width: 1200px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
 .profileForm {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
 
   .errorMessage {
-    background-color: rgba(v.$red, 0.15);
-    border: 1px solid rgba(v.$red, 0.4);
+    background: v.$red-soft;
+    border: 1px solid v.$red;
     color: v.$red;
-    padding: 0.875rem 1rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: v.$font-mono;
   }
 
   .successMessage {
-    background-color: rgba(v.$teal, 0.15);
-    border: 1px solid rgba(v.$teal, 0.4);
+    background: v.$teal-soft;
+    border: 1px solid v.$teal;
     color: v.$teal;
-    padding: 0.875rem 1rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: v.$font-mono;
   }
 
-  // Side-by-side sections wrapper
   .formSectionsRow {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
 
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;
@@ -88,68 +124,70 @@
   }
 
   .formSection {
-    background-color: rgba(v.$white, 0.03);
+    background: v.$paper-2;
     border: 1px solid v.$border-color;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1.125rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
 
     h3 {
-      font-size: 1.25rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      color: v.$text-primary;
-      margin: 0 0 1rem 0;
+      color: v.$text-secondary;
+      margin: 0 0 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid v.$border-color;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
 
     .sectionNote {
-      font-size: 0.875rem;
+      font-size: 0.7rem;
       color: v.$text-secondary;
-      margin: -0.5rem 0 1rem 0;
-      font-style: italic;
+      margin: -0.25rem 0 0.25rem;
+      font-family: v.$font-mono;
     }
   }
 
   .formRow {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .formGroup {
-    margin-bottom: 1.5rem;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
 
     label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: v.$text-primary;
-      margin-bottom: 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: v.$text-secondary;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     input {
       width: 100%;
-      padding: 0.875rem 1rem;
-      font-size: 1rem;
+      height: 34px;
+      padding: 0 0.625rem;
+      font-size: 0.8125rem;
       border: 1px solid v.$border-color;
-      border-radius: 8px;
-      background-color: rgba(v.$white, 0.05);
+      border-radius: 4px;
+      background: v.$bg-primary;
       color: v.$text-primary;
-      transition: all 0.2s;
-      font-family: inherit;
+      outline: none;
+      transition: border-color 0.12s, box-shadow 0.12s;
 
       &:focus {
-        outline: none;
         border-color: v.$accent;
-        box-shadow: 0 0 0 3px rgba(v.$accent, 0.2);
+        box-shadow: 0 0 0 3px v.$accent-ring;
       }
 
-      &::placeholder {
-        color: v.$text-secondary;
-      }
+      &::placeholder { color: v.$text-secondary; }
     }
   }
 
@@ -157,41 +195,43 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
 
     .currentImage {
       img {
-        width: 140px;
-        height: 140px;
+        width: 96px;
+        height: 96px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid v.$border-color;
+        border: 2px solid v.$border-color;
       }
     }
 
     .formGroup {
       width: 100%;
-      margin-bottom: 0;
 
       input[type="file"] {
-        padding: 0.75rem;
+        padding: 0.375rem;
         cursor: pointer;
+        height: auto;
 
         &::file-selector-button {
-          padding: 0.5rem 1rem;
-          font-size: 0.875rem;
+          padding: 0.35rem 0.625rem;
+          font-size: 0.7rem;
           font-weight: 600;
-          background-color: v.$accent;
-          color: v.$black;
-          border: none;
-          border-radius: 6px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          background: v.$accent;
+          color: v.$accent-text;
+          border: 1px solid v.$accent;
+          border-radius: 4px;
           cursor: pointer;
-          margin-right: 1rem;
-          transition: all 0.2s;
+          margin-right: 0.625rem;
+          transition: background 0.12s;
 
           &:hover {
-            background-color: v.$hover;
-            color: v.$white;
+            background: v.$accent-hover;
+            border-color: v.$accent-hover;
           }
         }
       }
@@ -199,23 +239,22 @@
   }
 
   .profileMeta {
-    background-color: rgba(v.$white, 0.03);
+    background: v.$paper-2;
     border: 1px solid v.$border-color;
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-radius: 8px;
+    padding: 1rem 1.125rem;
 
     p {
-      margin: 0 0 0.75rem 0;
-      font-size: 0.9rem;
+      margin: 0 0 0.5rem;
+      font-size: 0.75rem;
       color: v.$text-secondary;
+      font-family: v.$font-mono;
 
-      &:last-child {
-        margin-bottom: 0;
-      }
+      &:last-child { margin-bottom: 0; }
 
       strong {
         color: v.$text-primary;
-        font-weight: 600;
+        font-weight: 500;
       }
     }
   }

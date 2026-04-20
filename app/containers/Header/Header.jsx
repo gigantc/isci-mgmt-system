@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useLocation, Link } from "react-router";
 import { getUserSession, isAdmin } from "@/utils/auth";
 import ProfileMenu from "@/components/ProfileMenu";
+import ThemeToggle from "@/components/ThemeToggle";
 import styles from "./Header.module.scss";
 import { ReactComponent as Logo } from "@/assets/Logo.svg";
 import DefaultProfileImage from "@/assets/default_profile_image.jpg";
@@ -65,7 +66,7 @@ const Header = () => {
 
       <div className={styles.title}>
         <Logo className={styles.logo} aria-hidden="true" focusable="false" />
-        <h1>ISCIz <span>alpha</span></h1>
+        <h1>ISCIz <span>beta</span></h1>
       </div>
 
       <div className={styles.headerActions}>
@@ -97,12 +98,12 @@ const Header = () => {
       </div>
 
       <div className={styles.profile}>
+        <ThemeToggle />
         <div className={styles.name}>
           <p>{displayName}</p>
           <p>{displayRole}</p>
         </div>
-        <img src={profileImage} alt="Profile" />
-        <ProfileMenu />
+        <ProfileMenu profileImage={profileImage} />
       </div>
     </header>
   )

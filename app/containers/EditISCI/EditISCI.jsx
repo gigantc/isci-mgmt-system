@@ -198,23 +198,46 @@ const EditISCI = () => {
     <div className={styles.editISCI}>
 
       <div className={styles.pageContent}>
-        {/* Sticky header section */}
         <div className={styles.stickyHeader}>
           <div className={styles.headerContent}>
-            <h2>{userIsAdmin ? "Edit ISCI Code" : "View ISCI Code"}</h2>
-            {!isLoading && !error && (
-              <div className={styles.headerActions}>
-                <button type="button" className="btn-text" onClick={handleCancel}>
-                  {userIsAdmin ? "Cancel" : "Back"}
-                </button>
-                {userIsAdmin && (
-                  <button type="button" className="btn-primary" onClick={handleSubmitClick}>
-                    Update ISCI
-                  </button>
-                )}
-              </div>
+            <div className={styles.crumbs}>
+              <button type="button" onClick={() => navigate("/")}>Dashboard</button>
+              <span className={styles.sep}>/</span>
+              <button type="button" onClick={() => navigate(`/isci/${isciCode}`)}>
+                {code?.brand || "ISCI"}
+              </button>
+              <span className={styles.sep}>/</span>
+              <span>{isciCode}</span>
+              <span className={styles.sep}>/</span>
+              <span>{userIsAdmin ? "Edit" : "View"}</span>
+            </div>
+            <h1 className={styles.title}>
+              <span className={styles.titleCode}>{isciCode}</span>
+              {code?.spotTitle && <span>{code.spotTitle}</span>}
+              <span className={`${styles.titleBadge} ${userIsAdmin ? styles.titleBadgeEdit : ""}`}>
+                {userIsAdmin ? "Editing" : "Read-only"}
+              </span>
+            </h1>
+            {code && (
+              <p className={styles.subtitle}>
+                {code.brand}
+                {code.campaignName ? ` · ${code.campaignName}` : ""}
+                {code.spotLength ? ` · ${code.spotLength}s` : ""}
+              </p>
             )}
           </div>
+          {!isLoading && !error && (
+            <div className={styles.headerActions}>
+              <button type="button" className="btn-text" onClick={handleCancel}>
+                {userIsAdmin ? "Cancel" : "Back"}
+              </button>
+              {userIsAdmin && (
+                <button type="button" className="btn-primary" onClick={handleSubmitClick}>
+                  Save Changes
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Scrollable content area */}
@@ -230,28 +253,30 @@ const EditISCI = () => {
               </button>
             </div>
           ) : (
-            <>
-              <ISCIForm
-                code={code}
-                onSubmit={handleUpdateCode}
-                onCancel={handleCancel}
-                allCodes={allCodes}
-                hideActions={true}
-                hideTitle={true}
-                formRef={formRef}
-                viewOnly={!userIsAdmin}
-              />
-              <div className={styles.slateHistoryRow}>
+            <div className={styles.editGrid}>
+              <div className={styles.formColumn}>
+                <ISCIForm
+                  code={code}
+                  onSubmit={handleUpdateCode}
+                  onCancel={handleCancel}
+                  allCodes={allCodes}
+                  hideActions={true}
+                  hideTitle={true}
+                  formRef={formRef}
+                  viewOnly={!userIsAdmin}
+                />
+              </div>
+              <aside className={styles.aside}>
                 <Slate code={code} />
                 <div className={styles.auditSection}>
                   <h3>History</h3>
                   <div className={styles.auditGrid}>
                     <div className={styles.auditItem}>
-                      <span className={styles.auditLabel}>Created By:</span>
+                      <span className={styles.auditLabel}>Created By</span>
                       <span className={styles.auditValue}>{code.createdBy || "Unknown"}</span>
                     </div>
                     <div className={styles.auditItem}>
-                      <span className={styles.auditLabel}>Date Created:</span>
+                      <span className={styles.auditLabel}>Created</span>
                       <span className={styles.auditValue}>{formatDate(code.createdAt)}</span>
                     </div>
                   </div>
@@ -270,8 +295,8 @@ const EditISCI = () => {
                     )}
                   </div>
                 </div>
-              </div>
-            </>
+              </aside>
+            </div>
           )}
         </div>
       </div>

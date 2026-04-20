@@ -1,53 +1,51 @@
 @use "@/styles/variables" as v;
 
 .slateContainer {
-  background: rgba(v.$white, 0.02);
-  border-radius: 16px;
+  background: v.$paper-1;
   border: 1px solid v.$border-color;
-  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
 
   .slateHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid v.$border-color-light;
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    border-bottom: 1px solid v.$border-color;
 
     h3 {
-      font-size: 1rem;
+      font-size: 0.6875rem;
       font-weight: 600;
-      color: v.$text-primary;
+      color: v.$text-secondary;
       margin: 0;
-      text-transform: none;
-      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
     .btnExport {
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
+      height: 26px;
+      padding: 0 0.625rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      color: v.$white;
-      background-color: transparent;
-      border: none;
+      color: v.$text-primary;
+      background: v.$bg-primary;
+      border: 1px solid v.$border-color;
+      border-radius: 4px;
       cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      display: inline-block;
       text-transform: uppercase;
+      letter-spacing: 0.04em;
+      transition: border-color 0.12s, color 0.12s;
 
       &:hover {
-        transition: all 0.2s;
-        color: rgba(v.$white, 0.7);
-      }
-
-      &:active {
-        transform: scale(0.98);
+        color: v.$accent;
+        border-color: v.$accent;
       }
     }
   }
 
   .slatePreview {
-    background: v.$black;
+    background: #000;
     overflow: hidden;
     width: 100%;
     display: flex;
@@ -64,9 +62,12 @@
   }
 
   .slateNote {
-    margin: 1rem 0 0 0;
-    font-size: 0.875rem;
+    margin: 0;
+    padding: 0.625rem 0.875rem;
+    border-top: 1px solid v.$border-color;
+    font-size: 0.7rem;
     color: v.$text-secondary;
+    font-family: v.$font-mono;
     text-align: center;
   }
 }

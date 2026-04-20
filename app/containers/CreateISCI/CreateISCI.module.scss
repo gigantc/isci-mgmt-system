@@ -1,57 +1,118 @@
 @use "@/styles/variables" as v;
 
 .createISCI {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 48px);
+  background: v.$bg-primary;
+}
 
-  .pageContent {
-    background: v.$black;
-    border-radius: 0px 0px 32px 32px;
-    margin: 0 auto;
-    width: calc(100% - 2rem);
-    height: calc(100vh - 114px - 2rem);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  }
+.pageContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
 
-  .stickyHeader {
-    position: sticky;
-    top: 0;
-    background: v.$black;
-    padding: 2rem 3rem 0 3rem;
-    z-index: 10;
+.stickyHeader {
+  padding: 1.125rem 1.5rem 0.875rem;
+  border-bottom: 1px solid v.$border-color;
+  background: v.$bg-primary;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
 
-    .headerContent {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
 
-      h2 {
-        text-transform: uppercase;
-        margin: 0;
-      }
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: v.$text-secondary;
+  font-family: v.$font-mono;
+  margin-bottom: 0.625rem;
 
-      .headerActions {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-      }
-    }
-  }
-
-  .scrollableContent {
-    flex: 1;
-    padding: 0 3rem 2rem 3rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .loadingState {
-    text-align: center;
-    padding: 3rem 1rem;
+  a, button {
     color: v.$text-secondary;
-    font-size: 1.125rem;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+    letter-spacing: 0.02em;
+
+    &:hover { color: v.$accent; }
   }
+
+  .sep {
+    color: v.$ink-3;
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  color: v.$text-primary;
+}
+
+.titleBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.625rem;
+  font-family: v.$font-mono;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 3px;
+  background: v.$paper-3;
+  color: v.$text-secondary;
+}
+
+.titleBadgeNew {
+  background: v.$accent-soft;
+  color: v.$accent;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: v.$text-secondary;
+  font-family: v.$font-mono;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.scrollableContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.loadingState {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: v.$text-secondary;
+  font-size: 0.875rem;
 }

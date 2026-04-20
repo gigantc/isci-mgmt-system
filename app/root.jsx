@@ -10,6 +10,7 @@ import {
 
 import Header from "@/containers/Header";
 import AppErrorBoundary from "@/components/ErrorBoundary";
+import CmdK from "@/components/CmdK";
 import "./styles/app.scss";
 
 export const links = () => [
@@ -21,9 +22,13 @@ export const links = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap",
   },
 ];
+
+// Inline script executed before hydration so the saved theme is applied
+// synchronously — avoids a flash of dark-mode on light-theme reload.
+const themeBootstrap = `(function(){try{var t=localStorage.getItem('isciz-theme');if(t==='light'){document.documentElement.classList.add('theme-light');}}catch(e){}})();`;
 
 export function Layout({ children }) {
   return (
@@ -34,6 +39,7 @@ export function Layout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
       <body>
         {children}
@@ -54,6 +60,7 @@ export default function App() {
     <AppErrorBoundary>
       {showHeader && <Header />}
       <Outlet />
+      {showHeader && <CmdK />}
     </AppErrorBoundary>
   );
 }
