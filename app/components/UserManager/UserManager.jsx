@@ -278,9 +278,15 @@ const UserManager = () => {
                   <tr key={u.id} className={active ? "" : styles.rowInactive}>
                     <td>
                       <div className={styles.nameCell}>
-                        <span className={styles.avatar} style={{ background: avatarColor(u) }}>
-                          {initialsFor(u)}
-                        </span>
+                        {u.profileImage ? (
+                          <span className={styles.avatar}>
+                            <img src={u.profileImage} alt={initialsFor(u)} className={styles.avatarImg} />
+                          </span>
+                        ) : (
+                          <span className={styles.avatar} style={{ background: avatarColor(u) }}>
+                            {initialsFor(u)}
+                          </span>
+                        )}
                         <span className={styles.name}>{u.firstName} {u.lastName}</span>
                       </div>
                     </td>
@@ -356,9 +362,15 @@ const UserManager = () => {
       >
         <form onSubmit={handleSubmit} className={styles.drawerForm}>
           <div className={styles.avatarPreview}>
-            <div className={styles.avatarLg} style={{ background: previewColor }}>
-              {previewInitials}
-            </div>
+            {editingUser?.profileImage ? (
+              <div className={styles.avatarLg}>
+                <img src={editingUser.profileImage} alt={previewInitials} className={styles.avatarImg} />
+              </div>
+            ) : (
+              <div className={styles.avatarLg} style={{ background: previewColor }}>
+                {previewInitials}
+              </div>
+            )}
           </div>
 
           <div className={styles.fieldRow}>
