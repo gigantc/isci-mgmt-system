@@ -84,7 +84,7 @@
     }
   }
 
-  .codeCell {
+  .gridItems > span.codeCell {
     font-family: v.$font-mono;
     font-weight: 600;
     color: v.$accent;

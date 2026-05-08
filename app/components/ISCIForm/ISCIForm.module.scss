@@ -1,11 +1,30 @@
 @use "@/styles/variables" as v;
 
-.lockIcon {
-  display: inline-block;
-  margin-left: 0.4rem;
-  font-size: 0.8rem;
-  opacity: 0.7;
+.inputBadgeWrap {
+  position: relative;
+  display: block;
+}
+
+.inputBadge {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 2px 6px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 3px;
+  pointer-events: none;
   cursor: help;
+}
+
+.inputBadgeWrap input {
+  padding-right: 76px;
 }
 
 .isciFormContainer {
@@ -52,6 +71,16 @@
     border-bottom: 1px solid v.$border-color;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+  }
+
+  .sectionNumber {
+    font-family: v.$font-mono;
+    color: v.$ink-3;
+    font-weight: 400;
+    letter-spacing: 0.04em;
   }
 
   // Flexible form row - displays child formGroups side-by-side at 50% width
