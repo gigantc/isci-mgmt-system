@@ -76,6 +76,7 @@ const UserManager = () => {
       email: "",
       password: "",
       userType: "editor",
+      active: true,
     },
     hasActiveToggle: true,
     validate: (data, list, editing) => {
@@ -115,6 +116,7 @@ const UserManager = () => {
       lastName: data.lastName,
       email: data.email,
       userType: data.userType,
+      active: data.active,
       ...(data.password ? { password: data.password } : {}),
       profileUpdatedAt: now,
     }),
@@ -136,7 +138,7 @@ const UserManager = () => {
       lastName: user.lastName,
       email: user.email,
       userType: user.userType,
-      active: user.active !== false,
+      active: user.active !== false, // normalise to boolean
     };
     handleEdit(user);
   };
@@ -150,7 +152,7 @@ const UserManager = () => {
       formData.lastName !== originalStateRef.current?.lastName ||
       formData.email !== originalStateRef.current?.email ||
       formData.userType !== originalStateRef.current?.userType ||
-      (editingUser.active !== false) !== originalStateRef.current?.active;
+      formData.active !== originalStateRef.current?.active;
 
     if (!isDirty) { resetForm(); return; }
 
@@ -492,16 +494,16 @@ const UserManager = () => {
               <div>
                 <div className={styles.switchTitle}>Status</div>
                 <div className={styles.switchHint}>
-                  {editingUser.active !== false
+                  {formData.active
                     ? "Can sign in and create codes"
                     : "Cannot sign in. Existing codes unaffected."}
                 </div>
               </div>
               <button
                 type="button"
-                className={`${styles.toggleTrack} ${editingUser.active !== false ? styles.toggleOn : ""}`}
-                onClick={() => handleToggleActive(editingUser)}
-                aria-pressed={editingUser.active !== false}
+                className={`${styles.toggleTrack} ${formData.active ? styles.toggleOn : ""}`}
+                onClick={() => handleChange({ target: { name: "active", value: !formData.active } })}
+                aria-pressed={formData.active}
                 aria-label="Toggle active status"
               />
             </div>
