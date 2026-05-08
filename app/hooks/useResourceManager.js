@@ -395,6 +395,7 @@ const useResourceManager = (endpoint, options = {}) => {
       setItems(prevItems =>
         prevItems.map(i => (i.id === item.id ? updatedItem : i))
       );
+      setEditingItem(prev => prev?.id === item.id ? updatedItem : prev);
 
       return true;
     } catch (error) {
