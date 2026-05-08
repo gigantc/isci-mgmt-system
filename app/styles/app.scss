@@ -1,4 +1,4 @@
-@use "@/styles/variables" as v;
+@use "@/styles/tokens";
 
 * {
   box-sizing: border-box;
@@ -8,9 +8,9 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  background-color: v.$gray;
-  color: v.$text-primary;
+  font-family: var(--font-sans);
+  background-color: var(--paper);
+  color: var(--ink);
   font-size: 16px;
   height:100vh;
   overflow:hidden;
@@ -31,106 +31,103 @@ body {
   width: 100%;
   padding: 1rem;
   overflow-x: auto;
-  background-color: rgba(v.$white, 0.05);
-  border: 1px solid v.$border-color;
+  background-color: var(--overlay-2);
+  border: 1px solid var(--line);
   border-radius: 4px;
 }
 
 // Global Button Styles
 .btn-primary {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: v.$accent-text;
-  background-color: v.$accent;
-  border: none;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  font-family: inherit;
   text-decoration: none;
-  display: inline-block;
+  transition: background 0.12s, border-color 0.12s;
 
   &:hover:not(:disabled) {
-    background-color: v.$hover;
-    color: v.$white;
-  }
-
-  &:active:not(:disabled) {
-    transform: scale(0.98);
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
   }
 
   &:disabled {
-    background-color: v.$disabled;
+    opacity: 0.5;
     cursor: not-allowed;
-    opacity: 0.6;
   }
 }
 
 .btn-secondary {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: v.$text-primary;
-  background-color: rgba(v.$white, 0.05);
-  border: 1px solid v.$border-color;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  font-family: inherit;
   text-decoration: none;
-  display: inline-block;
 
   &:hover {
-    background-color: rgba(v.$white, 0.1);
-    border-color: v.$accent;
-  }
-
-  &:active {
-    transform: scale(0.98);
+    background: var(--paper-1);
+    border-color: var(--line-strong);
   }
 }
 
-
 .btn-text {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: v.$text-primary;
-  background-color: transparent;
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 0.5rem;
+  background: transparent;
+  color: var(--ink-1);
+  border: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  font-family: inherit;
   text-decoration: none;
-  display: inline-block;
-  text-transform:uppercase;
+
   &:hover {
-    color: v.$text-secondary;
+    color: var(--ink);
   }
 }
 
 .btn-danger {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: v.$white;
-  background-color: v.$red;
-  border: none;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger-soft);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  display: inline-block;
+  font-family: inherit;
 
   &:hover:not(:disabled) {
-    background-color: lighten(v.$red, 5%);
-  }
-
-  &:active:not(:disabled) {
-    transform: scale(0.98);
+    background: var(--danger-soft);
+    border-color: var(--danger);
   }
 
   &:disabled {
-    background-color: v.$disabled;
+    opacity: 0.5;
     cursor: not-allowed;
-    opacity: 0.6;
   }
 }

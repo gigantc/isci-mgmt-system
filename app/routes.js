@@ -35,6 +35,9 @@ export default [
   // :code parameter captures the ISCI code from the URL (e.g., LVCI2501)
   route("edit/:code", "routes/edit.jsx"),
 
+  // Read-only Detail view for an ISCI code
+  route("isci/:code", "routes/isci.jsx"),
+
   // API endpoint for authentication
   route("api/auth", "routes/api.auth.js"),
 

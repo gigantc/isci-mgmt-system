@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><title>ISCIz — Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared/theme.css"/>
+<style>
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+.bar { display: flex; align-items: center; gap: 24px; height: 48px; padding: 0 20px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--paper); z-index: 10; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
+.brand .m { width: 22px; height: 22px; background: var(--accent); border-radius: 4px; display: grid; place-items: center; color: var(--accent-ink); }
+.brand .m svg { width: 12px; height: 12px; }
+.brand sub { font-family: var(--font-mono); font-size: 10px; color: var(--ink-2); margin-left: 4px; font-weight: 400; text-transform: uppercase; }
+.nav { display: flex; gap: 2px; margin-left: 8px; }
+.nav a { background: none; border: 0; padding: 6px 10px; font-size: 13px; color: var(--ink-1); border-radius: 4px; font-weight: 500; cursor: pointer; display: inline-block; }
+.nav a:hover { background: var(--paper-2); color: var(--ink); }
+.nav a.active { background: var(--paper-2); color: var(--ink); }
+.spacer { flex: 1; }
+.right { display: flex; align-items: center; gap: 10px; }
+.tt { display: flex; border: 1px solid var(--line); border-radius: 20px; padding: 2px; gap: 2px; }
+.tt button { width: 24px; height: 22px; background: none; border: 0; border-radius: 12px; display: grid; place-items: center; color: var(--ink-2); cursor: pointer; }
+.tt button.on { background: var(--paper-2); color: var(--ink); }
+.tt button svg { width: 12px; height: 12px; }
+.av { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, oklch(0.7 0.12 40), oklch(0.55 0.15 20)); color: white; font-size: 11px; font-weight: 600; display: grid; place-items: center; }
+
+.pghead { padding: 22px 20px 14px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); }
+.pghead h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 2px; }
+.pghead .sub { font-size: 12px; color: var(--ink-2); font-family: var(--font-mono); }
+.pghead .sub strong { color: var(--ink); font-weight: 500; }
+.pghead .actions { display: flex; gap: 8px; }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.btn:hover { background: var(--paper-1); border-color: var(--line-strong); }
+.btn svg { width: 13px; height: 13px; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn.ghost { border-color: transparent; }
+.btn.ghost:hover { background: var(--paper-2); }
+.btn.sm { height: 26px; padding: 0 8px; font-size: 12px; }
+.btn.danger { color: var(--danger); border-color: var(--danger-soft); }
+.btn.danger:hover { background: var(--danger-soft); border-color: var(--danger); }
+.kbd { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; background: var(--paper-2); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-2); }
+
+.body { display: grid; grid-template-columns: 220px 1fr; flex: 1; min-height: 0; }
+.sb { border-right: 1px solid var(--line); padding: 16px 12px; overflow: auto; }
+.sb .grp { margin-bottom: 16px; }
+.sb .lbl { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 8px; font-weight: 500; }
+.sb .it { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 4px; font-size: 13px; color: var(--ink-1); cursor: pointer; gap: 8px; }
+.sb .it:hover { background: var(--paper-2); color: var(--ink); }
+.sb .it.on { background: var(--paper-2); color: var(--ink); font-weight: 500; position: relative; }
+.sb .it.on::before { content: ""; position: absolute; left: -12px; top: 4px; bottom: 4px; width: 2px; background: var(--accent); border-radius: 2px; }
+.sb .it .c { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.sb .it svg { width: 14px; height: 14px; opacity: 0.7; flex-shrink: 0; }
+.sb .it .l { display: flex; align-items: center; gap: 8px; min-width: 0; }
+
+.main { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.tb { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-bottom: 1px solid var(--line); background: var(--paper-1); }
+.sch { flex: 1; max-width: 440px; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); }
+.sch:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.sch svg { width: 14px; height: 14px; color: var(--ink-2); }
+.sch input { flex: 1; border: 0; outline: 0; background: none; font-size: 13px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; font-size: 12px; color: var(--ink-1); cursor: pointer; }
+.chip:hover { border-color: var(--line-strong); color: var(--ink); }
+.chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+.scroll { flex: 1; overflow: auto; padding: 20px; }
+
+/* Card grid (Clients + Agencies) */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.12s, box-shadow 0.12s; position: relative; }
+.card:hover { border-color: var(--line-strong); box-shadow: var(--shadow-sm); }
+.card.inactive { opacity: 0.6; }
+.card .top { display: flex; align-items: flex-start; gap: 10px; }
+.card .dot { width: 28px; height: 28px; border-radius: 4px; flex-shrink: 0; display: grid; place-items: center; color: white; font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.02em; }
+.card .agency-ico { width: 28px; height: 28px; border-radius: 4px; flex-shrink: 0; background: var(--paper-2); display: grid; place-items: center; color: var(--ink-2); }
+.card .agency-ico svg { width: 14px; height: 14px; }
+.card .body-info { flex: 1; min-width: 0; }
+.card h3 { font-size: 14px; font-weight: 600; margin: 0; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card .sub { font-family: var(--font-mono); font-size: 11px; color: var(--ink-2); margin-top: 1px; display: flex; align-items: center; gap: 6px; }
+.card .sub .code { color: var(--accent); font-weight: 600; font-size: 12px; }
+.card .sub .lock { display: inline-flex; align-items: center; color: var(--ink-3); font-size: 10px; }
+.card .sub .lock svg { width: 10px; height: 10px; }
+.card .meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--line); }
+.card .meta .created { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.card .rowact { display: flex; gap: 4px; opacity: 0; transition: opacity 0.1s; }
+.card:hover .rowact { opacity: 1; }
+.card .rowact button { width: 24px; height: 24px; border: 1px solid var(--line); background: var(--paper); border-radius: 3px; display: grid; place-items: center; color: var(--ink-2); cursor: pointer; }
+.card .rowact button:hover { color: var(--ink); border-color: var(--line-strong); background: var(--paper-1); }
+.card .rowact button.danger:hover { color: var(--danger); border-color: var(--danger-soft); }
+.card .rowact svg { width: 12px; height: 12px; }
+.card .fav { position: absolute; top: 10px; right: 10px; color: var(--accent); display: inline-flex; }
+.card .fav svg { width: 14px; height: 14px; fill: var(--accent); }
+
+/* Toggle switch */
+.sw { position: relative; width: 30px; height: 16px; border-radius: 10px; background: var(--paper-3); cursor: pointer; transition: background 0.15s; border: 0; padding: 0; }
+.sw.on { background: var(--ok); }
+.sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: white; transition: left 0.15s; box-shadow: 0 1px 2px oklch(0 0 0 / 0.2); }
+.sw.on::after { left: 16px; }
+.sw-label { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-family: var(--font-mono); color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.sw-label .v { color: var(--ink); font-weight: 500; }
+.sw-label .v.off { color: var(--ink-3); }
+
+/* Status badges */
+.status { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 8px; border-radius: 10px; font-family: var(--font-mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.status .d { width: 5px; height: 5px; border-radius: 50%; }
+.status.active { background: var(--ok-soft); color: var(--ok); }
+.status.active .d { background: var(--ok); }
+.status.inactive { background: var(--paper-2); color: var(--ink-2); }
+.status.inactive .d { background: var(--ink-3); }
+
+/* Table (Users) */
+.tbl-wrap { flex: 1; overflow: auto; padding: 0; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl thead th { position: sticky; top: 0; background: var(--paper-1); text-align: left; font-size: 11px; font-weight: 500; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; cursor: pointer; user-select: none; }
+.tbl thead th:first-child { padding-left: 20px; }
+.tbl thead th .srt { margin-left: 4px; opacity: 0.5; font-size: 10px; }
+.tbl thead th.sort .srt { opacity: 1; color: var(--ink); }
+.tbl tbody tr { border-bottom: 1px solid var(--line); }
+.tbl tbody tr:hover { background: var(--paper-1); }
+.tbl tbody td { padding: 10px 12px; color: var(--ink-1); white-space: nowrap; }
+.tbl tbody td:first-child { padding-left: 20px; }
+.tbl .nm { display: flex; align-items: center; gap: 10px; }
+.tbl .av-sm { width: 26px; height: 26px; border-radius: 50%; color: white; font-size: 10px; font-weight: 600; display: grid; place-items: center; flex-shrink: 0; }
+.tbl .nm .n { color: var(--ink); font-weight: 500; }
+.tbl .em { color: var(--ink-2); font-family: var(--font-mono); font-size: 12px; }
+.tbl .role { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; background: var(--paper-2); font-family: var(--font-mono); font-size: 11px; color: var(--ink-1); border-radius: 3px; }
+.tbl .role.admin { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.tbl .created { font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); }
+.tbl .rowact { display: inline-flex; gap: 4px; opacity: 0; }
+.tbl tbody tr:hover .rowact { opacity: 1; }
+.tbl .rowact button { width: 24px; height: 24px; border: 1px solid var(--line); background: var(--paper); border-radius: 3px; display: grid; place-items: center; color: var(--ink-2); cursor: pointer; }
+.tbl .rowact button:hover { color: var(--ink); border-color: var(--line-strong); }
+.tbl .rowact button.danger:hover { color: var(--danger); border-color: var(--danger-soft); }
+.tbl .rowact svg { width: 12px; height: 12px; }
+
+.empty { padding: 80px 20px; text-align: center; color: var(--ink-2); }
+.empty h3 { color: var(--ink); font-size: 16px; margin: 0 0 4px; }
+.empty p { margin: 0 0 16px; font-size: 13px; }
+
+.ftr { border-top: 1px solid var(--line); padding: 8px 20px; display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); font-family: var(--font-mono); }
+
+/* Drawer */
+.scrim { position: fixed; inset: 0; background: oklch(0.15 0.02 255 / 0.35); z-index: 50; backdrop-filter: blur(2px); animation: fi 0.15s ease; }
+@keyframes fi { from { opacity: 0; } to { opacity: 1; } }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 480px; max-width: 92vw; background: var(--paper); border-left: 1px solid var(--line); z-index: 51; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; animation: si 0.22s cubic-bezier(0.2, 0.9, 0.3, 1); }
+@keyframes si { from { transform: translateX(100%); } to { transform: translateX(0); } }
+.drawer .dh { padding: 18px 22px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.drawer .dh h2 { font-size: 18px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+.drawer .dh .sub { font-size: 12px; color: var(--ink-2); font-family: var(--font-mono); margin-top: 2px; }
+.drawer .dh .x { background: none; border: 0; width: 28px; height: 28px; border-radius: 4px; color: var(--ink-2); cursor: pointer; display: grid; place-items: center; }
+.drawer .dh .x:hover { background: var(--paper-2); color: var(--ink); }
+.drawer .dh .x svg { width: 14px; height: 14px; }
+.drawer .db { flex: 1; overflow: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; }
+.drawer .df { padding: 12px 22px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 8px; background: var(--paper-1); }
+
+.fld { display: flex; flex-direction: column; gap: 4px; position: relative; }
+.fld label { font-size: 11px; color: var(--ink-2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px; }
+.fld label .req { color: var(--accent); }
+.fld .hint { font-size: 11px; color: var(--ink-3); font-family: var(--font-mono); }
+.fld .err { font-size: 11px; color: var(--danger); font-family: var(--font-mono); }
+.fld.has-err .inp, .fld.has-err .sel { border-color: var(--danger); }
+.inp, .sel { width: 100%; height: 32px; padding: 0 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; font-size: 13px; color: var(--ink); outline: 0; font-family: inherit; }
+.inp:focus, .sel:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.inp.mono { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.04em; }
+.inp.ro, .sel.ro { background: var(--paper-2); color: var(--ink-1); cursor: default; }
+.sel { appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+.auto { position: relative; }
+.auto .badge { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 9px; color: var(--accent); background: var(--accent-soft); padding: 2px 5px; border-radius: 3px; }
+.lock-warn { background: var(--warn-soft); border: 1px solid oklch(from var(--warn) l c h / 0.4); border-radius: 4px; padding: 8px 10px; display: flex; gap: 8px; font-size: 12px; color: var(--ink-1); align-items: flex-start; }
+.lock-warn svg { width: 14px; height: 14px; color: var(--warn); flex-shrink: 0; margin-top: 1px; }
+.lock-warn strong { color: var(--ink); font-weight: 600; }
+
+.row-sw { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper-1); }
+.row-sw .l { display: flex; flex-direction: column; gap: 2px; }
+.row-sw .l .n { font-size: 13px; color: var(--ink); font-weight: 500; }
+.row-sw .l .d { font-size: 11px; color: var(--ink-2); font-family: var(--font-mono); }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 6px; font-size: 13px; box-shadow: var(--shadow-lg); z-index: 60; display: flex; align-items: center; gap: 10px; }
+.toast svg { width: 14px; height: 14px; }
+
+/* Confirm dialog */
+.confirm { position: fixed; inset: 0; background: oklch(0.15 0.02 255 / 0.35); z-index: 70; display: grid; place-items: center; backdrop-filter: blur(2px); }
+.confirm .box { width: 420px; max-width: 90vw; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 20px 22px; box-shadow: var(--shadow-lg); }
+.confirm h3 { font-size: 16px; font-weight: 600; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+.confirm h3 svg { width: 16px; height: 16px; color: var(--danger); }
+.confirm p { font-size: 13px; color: var(--ink-1); margin: 0 0 16px; line-height: 1.5; }
+.confirm p .mono { font-family: var(--font-mono); color: var(--ink); font-weight: 500; }
+.confirm .b { display: flex; justify-content: flex-end; gap: 8px; }
+.btn.destroy { background: var(--danger); color: white; border-color: var(--danger); }
+.btn.destroy:hover { background: oklch(0.52 0.18 25); border-color: oklch(0.52 0.18 25); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="shared/data.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+const S = {
+  Film: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M7 4v16M17 4v16M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4"/></svg>,
+  Search: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>,
+  Plus: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>,
+  Sun: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>,
+  Moon: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>,
+  X: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>,
+  Check: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M4 12l5 5L20 6"/></svg>,
+  Edit: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>,
+  Trash: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></svg>,
+  Client: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
+  Agency: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"/></svg>,
+  User: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>,
+  Star: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
+  Lock: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>,
+  Warn: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 9v4M12 17h.01M10.3 3.7 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.7a2 2 0 0 0-3.4 0z"/></svg>,
+};
+
+const ch = (c) => { const h={ADID:10,APPL:220,TLSA:340,TOYT:0,NIKE:40,BMWW:220,FORD:240,PEPS:220,MCDO:30,STBK:155,NFLX:0,SRHC:280}; return `oklch(0.62 0.16 ${h[c]??250})`; };
+const initials = (name) => name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+const userColor = (name) => { let h=0; for (const c of name) h = (h*31 + c.charCodeAt(0)) % 360; return `oklch(0.6 0.14 ${h})`; };
+const fmtDate = (d) => { if(!d) return "—"; const dt=new Date(d); return `${String(dt.getMonth()+1).padStart(2,"0")}/${String(dt.getDate()).padStart(2,"0")}/${String(dt.getFullYear()).slice(2)}`; };
+const fmtDateLong = (d) => { if(!d) return "—"; const dt=new Date(d); return dt.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}); };
+
+function useTheme() {
+  const [t, setT] = useState(() => localStorage.getItem("isciz-theme") || "light");
+  useEffect(() => { document.documentElement.setAttribute("data-theme", t); localStorage.setItem("isciz-theme", t); }, [t]);
+  return [t, setT];
+}
+
+function TopBar({ theme, setTheme }) {
+  return <div className="bar">
+    <div className="brand"><div className="m">{S.Film}</div>ISCIz<sub>alpha</sub></div>
+    <nav className="nav">
+      <a href="option-a.html">Dashboard</a>
+      <a href="#">Reports</a>
+      <a href="admin.html" className="active">Admin</a>
+    </nav>
+    <div className="spacer"/>
+    <div className="right">
+      <div className="tt">
+        <button className={theme==="light"?"on":""} onClick={()=>setTheme("light")}>{S.Sun}</button>
+        <button className={theme==="dark"?"on":""} onClick={()=>setTheme("dark")}>{S.Moon}</button>
+      </div>
+      <div className="av" title="Stevey McVideo · Admin">SM</div>
+    </div>
+  </div>;
+}
+
+/* ============================= TOGGLE ============================= */
+function Toggle({ on, onChange, labels=["Active","Inactive"] }) {
+  return <div className="sw-label">
+    <button className={`sw ${on?"on":""}`} onClick={()=>onChange(!on)} aria-label="Toggle active"/>
+    <span className={`v ${on?"":"off"}`}>{on ? labels[0] : labels[1]}</span>
+  </div>;
+}
+
+/* ============================= CLIENT DRAWER ============================= */
+function ClientDrawer({ client, onClose, onSave, toast }) {
+  const data = window.ISCIZ_DATA;
+  const isNew = !client;
+  const [f, setF] = useState(client || { name:"", code:"", active:true, createdAt:new Date().toISOString().slice(0,10) });
+  const [touched, setTouched] = useState({});
+  const up = (k,v) => setF(p => ({...p,[k]:v}));
+  const touch = (k) => setTouched(t => ({...t,[k]:true}));
+
+  // Locked if any ISCI codes exist for this client
+  const codeCount = useMemo(() => !isNew ? data.isciCodes.filter(c=>c.clientCode===client.code).length : 0, [client, isNew]);
+  const codeLocked = !isNew && codeCount > 0;
+
+  // Validation
+  const errors = {
+    name: !f.name?.trim() ? "Client name is required" : "",
+    code: !f.code?.trim() ? "4-letter code is required" : (!/^[A-Z]{4}$/.test(f.code) ? "Must be 4 uppercase letters" : (isNew && data.clients.some(c=>c.code===f.code)) ? "Code already in use" : ""),
+  };
+  const canSave = !errors.name && !errors.code;
+  const fErr = (k) => touched[k] && errors[k];
+
+  return <>
+    <div className="scrim" onClick={onClose}/>
+    <aside className="drawer" onKeyDown={e=>e.key==="Escape"&&onClose()}>
+      <div className="dh">
+        <div>
+          <h2>{isNew ? "New Client" : "Edit Client"}</h2>
+          <div className="sub">{isNew ? "Add a new client organization" : `${client.name} · ${codeCount} ISCI code${codeCount!==1?"s":""}`}</div>
+        </div>
+        <button className="x" onClick={onClose}>{S.X}</button>
+      </div>
+      <div className="db">
+        <div className={`fld ${fErr("name")?"has-err":""}`}>
+          <label>Client Name <span className="req">*</span></label>
+          <input className="inp" autoFocus value={f.name} placeholder="e.g. Adidas" onBlur={()=>touch("name")} onChange={e=>up("name",e.target.value)}/>
+          {fErr("name") && <span className="err">{errors.name}</span>}
+        </div>
+        <div className={`fld ${fErr("code")?"has-err":""}`}>
+          <label>4-Letter Code <span className="req">*</span> {codeLocked && <span style={{marginLeft:"auto",fontSize:10,color:"var(--ink-3)",display:"inline-flex",alignItems:"center",gap:3}}>{S.Lock} LOCKED</span>}</label>
+          <div className="auto">
+            <input className={`inp mono ${codeLocked?"ro":""}`} maxLength={4} value={f.code} readOnly={codeLocked} placeholder="ADID" onBlur={()=>touch("code")} onChange={e=>up("code",e.target.value.toUpperCase().replace(/[^A-Z]/g,""))}/>
+            {codeLocked && <span className="badge">LOCKED</span>}
+          </div>
+          <span className="hint">{codeLocked ? `Locked: ${codeCount} ISCI code${codeCount!==1?"s":""} reference this prefix.` : "Prefix for all ISCI codes. Locks once first code is created."}</span>
+          {fErr("code") && <span className="err">{errors.code}</span>}
+        </div>
+        {codeLocked && <div className="lock-warn">{S.Warn}<div><strong>Why it's locked:</strong> changing the code would invalidate <span className="mono" style={{fontFamily:"var(--font-mono)",color:"var(--ink)",fontWeight:600}}>{codeCount}</span> existing ISCI code{codeCount!==1?"s":""} (e.g. <span className="mono" style={{fontFamily:"var(--font-mono)",color:"var(--accent)",fontWeight:600}}>{f.code}0001</span>). The name and status are still editable.</div></div>}
+        <div className="row-sw">
+          <div className="l">
+            <div className="n">Status</div>
+            <div className="d">{f.active ? "Visible in new ISCI dropdowns" : "Hidden from new ISCI dropdowns. Existing codes unaffected."}</div>
+          </div>
+          <Toggle on={f.active} onChange={v=>up("active",v)}/>
+        </div>
+        {!isNew && <div style={{fontFamily:"var(--font-mono)",fontSize:11,color:"var(--ink-3)",paddingTop:4,borderTop:"1px dashed var(--line)"}}>Created {fmtDateLong(f.createdAt)}</div>}
+      </div>
+      <div className="df">
+        <div>{!isNew && <button className="btn danger" onClick={()=>{ if(codeCount>0){toast(`Can't delete — ${codeCount} ISCI codes reference ${f.code}`);return;} onSave({...f,_delete:true}); }}>{S.Trash} Delete</button>}</div>
+        <div style={{display:"flex",gap:8}}>
+          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn primary" disabled={!canSave} onClick={()=>onSave(f)}>{isNew ? "Create client" : "Save changes"}</button>
+        </div>
+      </div>
+    </aside>
+  </>;
+}
+
+/* ============================= CLIENTS ============================= */
+function Clients({ toast }) {
+  const data = window.ISCIZ_DATA;
+  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState("all"); // all | active | inactive
+  const [list, setList] = useState(data.clients);
+  const [editing, setEditing] = useState(null); // null | {client}|{new:true}
+  const [confirm, setConfirm] = useState(null);
+
+  useEffect(()=>{ data.clients = list; }, [list]);
+
+  const rows = useMemo(() => {
+    let r = list;
+    if (filter==="active") r = r.filter(c=>c.active);
+    if (filter==="inactive") r = r.filter(c=>!c.active);
+    if (q) { const ql=q.toLowerCase(); r = r.filter(c=>c.name.toLowerCase().includes(ql) || c.code.toLowerCase().includes(ql)); }
+    return r;
+  }, [list,q,filter]);
+
+  const save = (f) => {
+    if (f._delete) {
+      setList(l => l.filter(c => c.code !== f.code));
+      toast(`Deleted ${f.name}`);
+    } else if (editing?.new) {
+      setList(l => [{...f}, ...l]);
+      toast(`Created ${f.name} (${f.code})`);
+    } else {
+      setList(l => l.map(c => c.code===editing.client.code ? {...c,...f,code:editing.client.code && data.isciCodes.some(ic=>ic.clientCode===editing.client.code) ? editing.client.code : f.code} : c));
+      toast(`Updated ${f.name}`);
+    }
+    setEditing(null);
+  };
+
+  const doDelete = (cl) => {
+    const codeCount = data.isciCodes.filter(c=>c.clientCode===cl.code).length;
+    if (codeCount>0) { toast(`Can't delete — ${codeCount} ISCI codes reference ${cl.code}`); return; }
+    setConfirm({kind:"client", item:cl, onOk:()=>{ setList(l=>l.filter(c=>c.code!==cl.code)); toast(`Deleted ${cl.name}`); setConfirm(null); }});
+  };
+
+  return <>
+    <div className="pghead">
+      <div>
+        <h1>Clients</h1>
+        <div className="sub"><strong>{rows.length}</strong> of {list.length} · <strong>{list.filter(c=>c.active).length}</strong> active</div>
+      </div>
+      <div className="actions">
+        <button className="btn primary" onClick={()=>setEditing({new:true})}>{S.Plus} New Client</button>
+      </div>
+    </div>
+    <div className="tb">
+      <div className="sch">{S.Search}<input placeholder="Search client name or code…" value={q} onChange={e=>setQ(e.target.value)}/></div>
+      <div style={{display:"flex",gap:4}}>
+        <button className={`chip ${filter==="all"?"on":""}`} onClick={()=>setFilter("all")}>All <span style={{opacity:0.6,marginLeft:4}}>{list.length}</span></button>
+        <button className={`chip ${filter==="active"?"on":""}`} onClick={()=>setFilter("active")}>Active <span style={{opacity:0.6,marginLeft:4}}>{list.filter(c=>c.active).length}</span></button>
+        <button className={`chip ${filter==="inactive"?"on":""}`} onClick={()=>setFilter("inactive")}>Inactive <span style={{opacity:0.6,marginLeft:4}}>{list.filter(c=>!c.active).length}</span></button>
+      </div>
+    </div>
+    <div className="scroll">
+      {rows.length===0 ? <div className="empty"><h3>No clients match</h3><p>Try a different search or add a new client.</p><button className="btn primary" onClick={()=>setEditing({new:true})}>{S.Plus} New Client</button></div> :
+      <div className="cards">
+        {rows.map(c => {
+          const codeCount = data.isciCodes.filter(ic=>ic.clientCode===c.code).length;
+          return <div key={c.code} className={`card ${!c.active?"inactive":""}`}>
+            <div className="top">
+              <div className="dot" style={{background:ch(c.code)}}>{c.code.slice(0,2)}</div>
+              <div className="body-info">
+                <h3>{c.name}</h3>
+                <div className="sub">
+                  <span className="code">{c.code}</span>
+                  {codeCount>0 && <><span style={{color:"var(--ink-3)"}}>·</span><span>{codeCount} code{codeCount!==1?"s":""}</span><span className="lock" title="Code is locked because ISCIs reference it">{S.Lock}</span></>}
+                </div>
+              </div>
+              <span className={`status ${c.active?"active":"inactive"}`}><span className="d"/>{c.active?"Active":"Inactive"}</span>
+            </div>
+            <div className="meta">
+              <span className="created">Created {fmtDate(c.createdAt)}</span>
+              <div className="rowact">
+                <button onClick={()=>setEditing({client:c})} title="Edit">{S.Edit}</button>
+                <button className="danger" onClick={()=>doDelete(c)} title="Delete">{S.Trash}</button>
+              </div>
+            </div>
+          </div>;
+        })}
+      </div>}
+    </div>
+    {editing && <ClientDrawer client={editing.client} onClose={()=>setEditing(null)} onSave={save} toast={toast}/>}
+    {confirm && <ConfirmDialog {...confirm} onCancel={()=>setConfirm(null)}/>}
+  </>;
+}
+
+/* ============================= AGENCY DRAWER ============================= */
+function AgencyDrawer({ agency, onClose, onSave, toast }) {
+  const isNew = !agency;
+  const [f, setF] = useState(agency || { name:"", default:false, active:true, createdAt:new Date().toISOString().slice(0,10) });
+  const [touched, setTouched] = useState({});
+  const up = (k,v) => setF(p => ({...p,[k]:v}));
+  const touch = (k) => setTouched(t => ({...t,[k]:true}));
+  const errors = { name: !f.name?.trim() ? "Agency name is required" : "" };
+  const canSave = !errors.name;
+  const fErr = (k) => touched[k] && errors[k];
+
+  return <>
+    <div className="scrim" onClick={onClose}/>
+    <aside className="drawer">
+      <div className="dh">
+        <div>
+          <h2>{isNew ? "New Agency" : "Edit Agency"}</h2>
+          <div className="sub">{isNew ? "Add a new partner agency" : agency.name}</div>
+        </div>
+        <button className="x" onClick={onClose}>{S.X}</button>
+      </div>
+      <div className="db">
+        <div className={`fld ${fErr("name")?"has-err":""}`}>
+          <label>Agency Name <span className="req">*</span></label>
+          <input className="inp" autoFocus value={f.name} placeholder="e.g. R&amp;R Partners" onBlur={()=>touch("name")} onChange={e=>up("name",e.target.value)}/>
+          {fErr("name") && <span className="err">{errors.name}</span>}
+        </div>
+        <div className="row-sw">
+          <div className="l">
+            <div className="n">Default agency</div>
+            <div className="d">{f.default ? "Pre-selected on all new ISCI codes." : "Not pre-selected."}</div>
+          </div>
+          <Toggle on={f.default} onChange={v=>up("default",v)} labels={["On","Off"]}/>
+        </div>
+        <div className="row-sw">
+          <div className="l">
+            <div className="n">Status</div>
+            <div className="d">{f.active ? "Visible in agency dropdowns" : "Hidden from new ISCI dropdowns"}</div>
+          </div>
+          <Toggle on={f.active} onChange={v=>up("active",v)}/>
+        </div>
+        {!isNew && <div style={{fontFamily:"var(--font-mono)",fontSize:11,color:"var(--ink-3)",paddingTop:4,borderTop:"1px dashed var(--line)"}}>Created {fmtDateLong(f.createdAt)}</div>}
+      </div>
+      <div className="df">
+        <div>{!isNew && <button className="btn danger" onClick={()=>onSave({...f,_delete:true})}>{S.Trash} Delete</button>}</div>
+        <div style={{display:"flex",gap:8}}>
+          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn primary" disabled={!canSave} onClick={()=>onSave(f)}>{isNew ? "Create agency" : "Save changes"}</button>
+        </div>
+      </div>
+    </aside>
+  </>;
+}
+
+/* ============================= AGENCIES ============================= */
+function Agencies({ toast }) {
+  const data = window.ISCIZ_DATA;
+  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [list, setList] = useState(data.agencies);
+  const [editing, setEditing] = useState(null);
+  const [confirm, setConfirm] = useState(null);
+
+  useEffect(()=>{ data.agencies = list; }, [list]);
+
+  const rows = useMemo(() => {
+    let r = list;
+    if (filter==="active") r = r.filter(a=>a.active);
+    if (filter==="inactive") r = r.filter(a=>!a.active);
+    if (q) { const ql=q.toLowerCase(); r = r.filter(a=>a.name.toLowerCase().includes(ql)); }
+    // Sort default first, then alpha
+    return [...r].sort((a,b)=>{ if(a.default!==b.default) return a.default?-1:1; return a.name.localeCompare(b.name); });
+  }, [list,q,filter]);
+
+  const save = (f) => {
+    if (f._delete) {
+      setList(l => l.filter(a => a.name !== f.name));
+      toast(`Deleted ${f.name}`);
+    } else if (editing?.new) {
+      // If this is set as default, unset others
+      setList(l => [{...f}, ...l].map(a => f.default && a.name!==f.name ? {...a,default:false} : a));
+      toast(`Created ${f.name}`);
+    } else {
+      setList(l => l.map(a => a.name===editing.agency.name ? {...a,...f} : (f.default && a.name!==f.name ? {...a,default:false} : a)));
+      toast(`Updated ${f.name}`);
+    }
+    setEditing(null);
+  };
+
+  return <>
+    <div className="pghead">
+      <div>
+        <h1>Agencies</h1>
+        <div className="sub"><strong>{rows.length}</strong> of {list.length} · <strong>{list.filter(a=>a.active).length}</strong> active · default: <strong>{list.find(a=>a.default)?.name||"—"}</strong></div>
+      </div>
+      <div className="actions">
+        <button className="btn primary" onClick={()=>setEditing({new:true})}>{S.Plus} New Agency</button>
+      </div>
+    </div>
+    <div className="tb">
+      <div className="sch">{S.Search}<input placeholder="Search agency…" value={q} onChange={e=>setQ(e.target.value)}/></div>
+      <div style={{display:"flex",gap:4}}>
+        <button className={`chip ${filter==="all"?"on":""}`} onClick={()=>setFilter("all")}>All <span style={{opacity:0.6,marginLeft:4}}>{list.length}</span></button>
+        <button className={`chip ${filter==="active"?"on":""}`} onClick={()=>setFilter("active")}>Active <span style={{opacity:0.6,marginLeft:4}}>{list.filter(a=>a.active).length}</span></button>
+        <button className={`chip ${filter==="inactive"?"on":""}`} onClick={()=>setFilter("inactive")}>Inactive <span style={{opacity:0.6,marginLeft:4}}>{list.filter(a=>!a.active).length}</span></button>
+      </div>
+    </div>
+    <div className="scroll">
+      {rows.length===0 ? <div className="empty"><h3>No agencies match</h3><p>Try a different search or add a new agency.</p><button className="btn primary" onClick={()=>setEditing({new:true})}>{S.Plus} New Agency</button></div> :
+      <div className="cards">
+        {rows.map(a => <div key={a.name} className={`card ${!a.active?"inactive":""}`}>
+          {a.default && <div className="fav" title="Default agency">{S.Star}</div>}
+          <div className="top">
+            <div className="agency-ico">{S.Agency}</div>
+            <div className="body-info">
+              <h3 style={{paddingRight:a.default?18:0}}>{a.name}</h3>
+              <div className="sub">{a.default ? "Default · pre-selected on new ISCIs" : "Partner agency"}</div>
+            </div>
+            <span className={`status ${a.active?"active":"inactive"}`}><span className="d"/>{a.active?"Active":"Inactive"}</span>
+          </div>
+          <div className="meta">
+            <span className="created">Created {fmtDate(a.createdAt)}</span>
+            <div className="rowact">
+              <button onClick={()=>setEditing({agency:a})} title="Edit">{S.Edit}</button>
+              <button className="danger" onClick={()=>{ if(a.default){toast("Can't delete the default agency — promote another first");return;} setConfirm({kind:"agency",item:a,onOk:()=>{ setList(l=>l.filter(x=>x.name!==a.name)); toast(`Deleted ${a.name}`); setConfirm(null); }}); }} title="Delete">{S.Trash}</button>
+            </div>
+          </div>
+        </div>)}
+      </div>}
+    </div>
+    {editing && <AgencyDrawer agency={editing.agency} onClose={()=>setEditing(null)} onSave={save} toast={toast}/>}
+    {confirm && <ConfirmDialog {...confirm} onCancel={()=>setConfirm(null)}/>}
+  </>;
+}
+
+/* ============================= USER DRAWER ============================= */
+function UserDrawer({ user, onClose, onSave, toast }) {
+  const isNew = !user;
+  const [f, setF] = useState(user || { name:"", email:"", role:"Editor", active:true, createdAt:new Date().toISOString().slice(0,10) });
+  const [touched, setTouched] = useState({});
+  const up = (k,v) => setF(p => ({...p,[k]:v}));
+  const touch = (k) => setTouched(t => ({...t,[k]:true}));
+  const errors = {
+    name: !f.name?.trim() ? "Name is required" : "",
+    email: !f.email?.trim() ? "Email is required" : (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email) ? "Enter a valid email" : ""),
+  };
+  const canSave = !errors.name && !errors.email;
+  const fErr = (k) => touched[k] && errors[k];
+
+  return <>
+    <div className="scrim" onClick={onClose}/>
+    <aside className="drawer">
+      <div className="dh">
+        <div>
+          <h2>{isNew ? "New User" : "Edit User"}</h2>
+          <div className="sub">{isNew ? "Add a teammate to ISCIz" : `${user.name} · ${user.email}`}</div>
+        </div>
+        <button className="x" onClick={onClose}>{S.X}</button>
+      </div>
+      <div className="db">
+        <div style={{display:"flex",alignItems:"center",gap:14,padding:"4px 0 8px"}}>
+          <div style={{width:48,height:48,borderRadius:"50%",background:userColor(f.name||"??"),display:"grid",placeItems:"center",color:"white",fontSize:16,fontWeight:600,flexShrink:0}}>{initials(f.name||"??")}</div>
+          <div style={{minWidth:0}}>
+            <div style={{fontSize:14,fontWeight:600,color:"var(--ink)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{f.name||"New user"}</div>
+            <div style={{fontSize:12,fontFamily:"var(--font-mono)",color:"var(--ink-2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{f.email||"—"}</div>
+          </div>
+        </div>
+        <div className={`fld ${fErr("name")?"has-err":""}`}>
+          <label>Full Name <span className="req">*</span></label>
+          <input className="inp" autoFocus value={f.name} placeholder="e.g. Marco Silva" onBlur={()=>touch("name")} onChange={e=>up("name",e.target.value)}/>
+          {fErr("name") && <span className="err">{errors.name}</span>}
+        </div>
+        <div className={`fld ${fErr("email")?"has-err":""}`}>
+          <label>Email <span className="req">*</span></label>
+          <input className="inp mono" style={{textTransform:"none",letterSpacing:0}} value={f.email} placeholder="person@rrpartners.com" onBlur={()=>touch("email")} onChange={e=>up("email",e.target.value)}/>
+          {fErr("email") && <span className="err">{errors.email}</span>}
+        </div>
+        <div className="fld">
+          <label>Role</label>
+          <select className="sel" value={f.role} onChange={e=>up("role",e.target.value)}>
+            <option>Admin</option>
+            <option>Editor</option>
+          </select>
+          <span className="hint">{f.role==="Admin" ? "Full access · can manage clients, agencies, users." : "Can create and edit ISCI codes."}</span>
+        </div>
+        <div className="row-sw">
+          <div className="l">
+            <div className="n">Status</div>
+            <div className="d">{f.active ? "Can sign in and create codes" : "Cannot sign in. Existing codes unaffected."}</div>
+          </div>
+          <Toggle on={f.active} onChange={v=>up("active",v)}/>
+        </div>
+        {!isNew && <div style={{fontFamily:"var(--font-mono)",fontSize:11,color:"var(--ink-3)",paddingTop:4,borderTop:"1px dashed var(--line)"}}>Created {fmtDateLong(f.createdAt)}</div>}
+      </div>
+      <div className="df">
+        <div>{!isNew && <button className="btn danger" onClick={()=>onSave({...f,_delete:true})}>{S.Trash} Delete</button>}</div>
+        <div style={{display:"flex",gap:8}}>
+          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn primary" disabled={!canSave} onClick={()=>onSave(f)}>{isNew ? "Add user" : "Save changes"}</button>
+        </div>
+      </div>
+    </aside>
+  </>;
+}
+
+/* ============================= USERS ============================= */
+function Users({ toast }) {
+  const data = window.ISCIZ_DATA;
+  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [sort, setSort] = useState({ k:"name", dir:"asc" });
+  const [list, setList] = useState(data.users);
+  const [editing, setEditing] = useState(null);
+  const [confirm, setConfirm] = useState(null);
+
+  useEffect(()=>{ data.users = list; }, [list]);
+
+  const rows = useMemo(() => {
+    let r = list;
+    if (filter==="active") r = r.filter(u=>u.active);
+    if (filter==="inactive") r = r.filter(u=>!u.active);
+    if (filter==="admin") r = r.filter(u=>u.role==="Admin");
+    if (q) { const ql=q.toLowerCase(); r = r.filter(u=>u.name.toLowerCase().includes(ql)||u.email.toLowerCase().includes(ql)||u.role.toLowerCase().includes(ql)); }
+    return [...r].sort((a,b)=>{ const av=a[sort.k], bv=b[sort.k]; if(av===bv)return 0; const c=av<bv?-1:1; return sort.dir==="asc"?c:-c; });
+  }, [list,q,filter,sort]);
+
+  const toggleSort = (k) => setSort(s => s.k===k ? {k,dir:s.dir==="asc"?"desc":"asc"} : {k,dir:"asc"});
+
+  const save = (f) => {
+    if (f._delete) {
+      setList(l => l.filter(u => u.email !== f.email));
+      toast(`Deleted ${f.name}`);
+    } else if (editing?.new) {
+      setList(l => [{...f}, ...l]);
+      toast(`Added ${f.name}`);
+    } else {
+      setList(l => l.map(u => u.email===editing.user.email ? {...u,...f} : u));
+      toast(`Updated ${f.name}`);
+    }
+    setEditing(null);
+  };
+
+  return <>
+    <div className="pghead">
+      <div>
+        <h1>Users</h1>
+        <div className="sub"><strong>{rows.length}</strong> of {list.length} · <strong>{list.filter(u=>u.active).length}</strong> active · <strong>{list.filter(u=>u.role==="Admin").length}</strong> admins</div>
+      </div>
+      <div className="actions">
+        <button className="btn primary" onClick={()=>setEditing({new:true})}>{S.Plus} Add User</button>
+      </div>
+    </div>
+    <div className="tb">
+      <div className="sch">{S.Search}<input placeholder="Search name, email, or role…" value={q} onChange={e=>setQ(e.target.value)}/></div>
+      <div style={{display:"flex",gap:4}}>
+        <button className={`chip ${filter==="all"?"on":""}`} onClick={()=>setFilter("all")}>All <span style={{opacity:0.6,marginLeft:4}}>{list.length}</span></button>
+        <button className={`chip ${filter==="active"?"on":""}`} onClick={()=>setFilter("active")}>Active <span style={{opacity:0.6,marginLeft:4}}>{list.filter(u=>u.active).length}</span></button>
+        <button className={`chip ${filter==="inactive"?"on":""}`} onClick={()=>setFilter("inactive")}>Inactive <span style={{opacity:0.6,marginLeft:4}}>{list.filter(u=>!u.active).length}</span></button>
+        <button className={`chip ${filter==="admin"?"on":""}`} onClick={()=>setFilter("admin")}>Admins <span style={{opacity:0.6,marginLeft:4}}>{list.filter(u=>u.role==="Admin").length}</span></button>
+      </div>
+    </div>
+    <div className="tbl-wrap">
+      {rows.length===0 ? <div className="empty"><h3>No users match</h3><p>Try a different search or add someone new.</p><button className="btn primary" onClick={()=>setEditing({new:true})}>{S.Plus} Add User</button></div> :
+      <table className="tbl">
+        <thead><tr>
+          {[["name","Name"],["email","Email"],["role","Role"],["active","Status"],["createdAt","Created"]].map(([k,l]) => <th key={k} className={sort.k===k?"sort":""} onClick={()=>toggleSort(k)}>{l}<span className="srt">{sort.k===k?(sort.dir==="asc"?"↑":"↓"):"↕"}</span></th>)}
+          <th style={{width:90}}></th>
+        </tr></thead>
+        <tbody>{rows.map(u => <tr key={u.email} style={{opacity:u.active?1:0.55}}>
+          <td><div className="nm"><div className="av-sm" style={{background:userColor(u.name)}}>{initials(u.name)}</div><span className="n">{u.name}</span></div></td>
+          <td className="em">{u.email}</td>
+          <td><span className={`role ${u.role==="Admin"?"admin":""}`}>{u.role}</span></td>
+          <td><span className={`status ${u.active?"active":"inactive"}`}><span className="d"/>{u.active?"Active":"Inactive"}</span></td>
+          <td className="created">{fmtDate(u.createdAt)}</td>
+          <td>
+            <div className="rowact">
+              <button title="Edit" onClick={()=>setEditing({user:u})}>{S.Edit}</button>
+              <button className="danger" title="Delete" onClick={()=>setConfirm({kind:"user",item:u,onOk:()=>{ setList(l=>l.filter(x=>x.email!==u.email)); toast(`Deleted ${u.name}`); setConfirm(null); }})}>{S.Trash}</button>
+            </div>
+          </td>
+        </tr>)}</tbody>
+      </table>}
+    </div>
+    {editing && <UserDrawer user={editing.user} onClose={()=>setEditing(null)} onSave={save} toast={toast}/>}
+    {confirm && <ConfirmDialog {...confirm} onCancel={()=>setConfirm(null)}/>}
+  </>;
+}
+
+/* ============================= CONFIRM DIALOG ============================= */
+function ConfirmDialog({ kind, item, onOk, onCancel }) {
+  const lbl = kind==="client" ? `client ${item.name} (${item.code})` : kind==="agency" ? `agency ${item.name}` : `user ${item.name}`;
+  return <div className="confirm" onClick={onCancel}>
+    <div className="box" onClick={e=>e.stopPropagation()}>
+      <h3>{S.Warn} Delete {kind}?</h3>
+      <p>You're about to delete the <span className="mono">{lbl}</span>. This can't be undone. Existing ISCI codes that reference this {kind} are unaffected.</p>
+      <div className="b">
+        <button className="btn" onClick={onCancel}>Cancel</button>
+        <button className="btn destroy" onClick={onOk}>{S.Trash} Delete</button>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ============================= APP ============================= */
+function App() {
+  const [theme, setTheme] = useTheme();
+  const [tab, setTab] = useState(() => localStorage.getItem("isciz-admin-tab") || "clients");
+  const [toastMsg, setToast] = useState(null);
+  const toast = useCallback((m) => { setToast(m); setTimeout(()=>setToast(null), 2200); }, []);
+  useEffect(()=>{ localStorage.setItem("isciz-admin-tab",tab); }, [tab]);
+
+  const data = window.ISCIZ_DATA;
+  const counts = { clients: data.clients.length, agencies: data.agencies.length, users: data.users.length };
+
+  return <div className="app">
+    <TopBar theme={theme} setTheme={setTheme}/>
+    <div className="body">
+      <aside className="sb">
+        <div className="grp">
+          <div className="lbl">Admin</div>
+          <div className={`it ${tab==="clients"?"on":""}`} onClick={()=>setTab("clients")}><div className="l">{S.Client} Clients</div><div className="c">{counts.clients}</div></div>
+          <div className={`it ${tab==="agencies"?"on":""}`} onClick={()=>setTab("agencies")}><div className="l">{S.Agency} Agencies</div><div className="c">{counts.agencies}</div></div>
+          <div className={`it ${tab==="users"?"on":""}`} onClick={()=>setTab("users")}><div className="l">{S.User} Users</div><div className="c">{counts.users}</div></div>
+        </div>
+        <div className="grp">
+          <div className="lbl">System</div>
+          <div className="it" style={{color:"var(--ink-3)",cursor:"default"}}><div className="l">Roles</div><div className="c">2</div></div>
+          <div className="it" style={{color:"var(--ink-3)",cursor:"default"}}><div className="l">Audit log</div><div className="c" style={{fontSize:10}}>soon</div></div>
+        </div>
+      </aside>
+      <div className="main">
+        {tab==="clients" && <Clients toast={toast}/>}
+        {tab==="agencies" && <Agencies toast={toast}/>}
+        {tab==="users" && <Users toast={toast}/>}
+        <div className="ftr">
+          <div>{tab==="clients" ? `${data.clients.length} clients` : tab==="agencies" ? `${data.agencies.length} agencies` : `${data.users.length} users`}</div>
+          <div>Admin · <a href="option-a.html" style={{color:"var(--accent)"}}>Back to Dashboard →</a></div>
+        </div>
+      </div>
+    </div>
+    {toastMsg && <div className="toast">{S.Check}{toastMsg}</div>}
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

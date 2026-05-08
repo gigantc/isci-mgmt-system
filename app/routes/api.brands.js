@@ -55,6 +55,7 @@ export async function action({ request }) {
           id: data.id,
           name: data.name,
           code: data.code,
+          color: data.color || null,
           active: data.active !== undefined ? data.active : true,
           createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
           updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
@@ -91,6 +92,7 @@ export async function action({ request }) {
         data: {
           name: data.name,
           code: data.code,
+          color: data.color ?? null,
           active: data.active,
           updatedAt: new Date(),
         },

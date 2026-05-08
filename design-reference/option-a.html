@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><title>ISCIz — Ledger</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared/theme.css"/>
+<style>
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+.bar { display: flex; align-items: center; gap: 24px; height: 48px; padding: 0 20px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--paper); z-index: 10; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
+.brand .m { width: 22px; height: 22px; background: var(--accent); border-radius: 4px; display: grid; place-items: center; color: var(--accent-ink); }
+.brand .m svg { width: 12px; height: 12px; }
+.brand sub { font-family: var(--font-mono); font-size: 10px; color: var(--ink-2); margin-left: 4px; font-weight: 400; text-transform: uppercase; }
+.nav { display: flex; gap: 2px; margin-left: 8px; }
+.nav button { background: none; border: 0; padding: 6px 10px; font-size: 13px; color: var(--ink-1); border-radius: 4px; font-weight: 500; cursor: pointer; }
+.nav button:hover { background: var(--paper-2); color: var(--ink); }
+.nav button.active { background: var(--paper-2); color: var(--ink); }
+.spacer { flex: 1; }
+.right { display: flex; align-items: center; gap: 10px; }
+.tt { display: flex; border: 1px solid var(--line); border-radius: 20px; padding: 2px; gap: 2px; }
+.tt button { width: 24px; height: 22px; background: none; border: 0; border-radius: 12px; display: grid; place-items: center; color: var(--ink-2); cursor: pointer; }
+.tt button.on { background: var(--paper-2); color: var(--ink); }
+.tt button svg { width: 12px; height: 12px; }
+.av { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, oklch(0.7 0.12 40), oklch(0.55 0.15 20)); color: white; font-size: 11px; font-weight: 600; display: grid; place-items: center; }
+
+.pghead { padding: 22px 20px 14px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); }
+.pghead h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 2px; }
+.pghead .sub { font-size: 12px; color: var(--ink-2); font-family: var(--font-mono); }
+.pghead .sub strong { color: var(--ink); font-weight: 500; }
+.pghead .actions { display: flex; gap: 8px; }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.btn:hover { background: var(--paper-1); border-color: var(--line-strong); }
+.btn svg { width: 13px; height: 13px; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn.ghost { border-color: transparent; }
+.btn.ghost:hover { background: var(--paper-2); }
+.btn.sm { height: 26px; padding: 0 8px; font-size: 12px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.kbd { display: inline-flex; align-items: center; justify-content: center; height: 16px; min-width: 16px; padding: 0 4px; background: var(--paper-2); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-2); }
+
+.body { display: grid; grid-template-columns: 220px 1fr; flex: 1; min-height: 0; }
+.sb { border-right: 1px solid var(--line); padding: 16px 12px; overflow: auto; }
+.sb .grp { margin-bottom: 16px; }
+.sb .lbl { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 8px; font-weight: 500; }
+.sb .it { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: 4px; font-size: 13px; color: var(--ink-1); cursor: pointer; gap: 8px; }
+.sb .it:hover { background: var(--paper-2); color: var(--ink); }
+.sb .it.on { background: var(--paper-2); color: var(--ink); font-weight: 500; }
+.sb .it .c { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.sb .it svg { width: 14px; height: 14px; opacity: 0.7; flex-shrink: 0; }
+.sb .it .l { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.sb .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+.main { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.tb { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-bottom: 1px solid var(--line); background: var(--paper-1); }
+.sch { flex: 1; max-width: 440px; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); }
+.sch:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.sch svg { width: 14px; height: 14px; color: var(--ink-2); }
+.sch input { flex: 1; border: 0; outline: 0; background: none; font-size: 13px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; font-size: 12px; color: var(--ink-1); cursor: pointer; }
+.chip:hover { border-color: var(--line-strong); color: var(--ink); }
+.chip.on { background: var(--accent-soft); border-color: var(--accent); }
+.chip.on .v { color: var(--accent); font-weight: 600; }
+.chip svg { width: 12px; height: 12px; opacity: 0.6; }
+.sep { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
+.dens { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.dens button { width: 28px; height: 28px; background: var(--paper); border: 0; display: grid; place-items: center; color: var(--ink-2); cursor: pointer; }
+.dens button.on { background: var(--paper-2); color: var(--ink); }
+.dens button + button { border-left: 1px solid var(--line); }
+.dens svg { width: 13px; height: 13px; }
+
+.tbl-wrap { flex: 1; overflow: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl thead th { position: sticky; top: 0; background: var(--paper-1); text-align: left; font-size: 11px; font-weight: 500; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; cursor: pointer; user-select: none; }
+.tbl thead th:first-child { padding-left: 20px; cursor: default; }
+.tbl thead th .srt { margin-left: 4px; opacity: 0.5; font-size: 10px; }
+.tbl thead th.sort .srt { opacity: 1; color: var(--ink); }
+.tbl tbody tr { border-bottom: 1px solid var(--line); }
+.tbl tbody tr:hover { background: var(--paper-1); }
+.tbl tbody tr.sel { background: var(--accent-soft); }
+.tbl tbody tr.foc { background: var(--paper-2); outline: 1px solid var(--accent); outline-offset: -1px; }
+.tbl tbody td { padding: 10px 12px; color: var(--ink-1); white-space: nowrap; }
+.tbl tbody td:first-child { padding-left: 20px; }
+.tbl[data-density="compact"] tbody td { padding: 5px 12px; }
+.tbl[data-density="compact"] tbody td:first-child { padding-left: 20px; }
+.code { font-family: var(--font-mono); color: var(--accent); font-weight: 600; font-size: 12.5px; cursor: pointer; }
+.code:hover { text-decoration: underline; }
+.ttl { font-family: var(--font-mono); font-size: 12px; color: var(--ink); }
+.num { font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); }
+.mu { color: var(--ink-2); }
+.st { color: var(--ink); font-weight: 500; }
+.pill { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 3px; background: var(--paper-2); font-family: var(--font-mono); font-size: 11px; color: var(--ink-1); }
+.mark { background: var(--accent-soft); color: var(--accent); font-weight: 600; padding: 0 2px; border-radius: 2px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 8px; vertical-align: middle; }
+.ck { width: 14px; height: 14px; border: 1.5px solid var(--line-strong); border-radius: 3px; display: inline-grid; place-items: center; cursor: pointer; background: var(--paper); vertical-align: middle; }
+.ck.on { background: var(--accent); border-color: var(--accent); }
+.ck.on svg { width: 10px; height: 10px; color: var(--accent-ink); }
+.rowact { display: inline-flex; gap: 4px; opacity: 0; }
+.tbl tbody tr:hover .rowact { opacity: 1; }
+.rowact button { width: 22px; height: 22px; border: 1px solid var(--line); background: var(--paper); border-radius: 3px; display: grid; place-items: center; color: var(--ink-2); cursor: pointer; }
+.rowact button:hover { color: var(--ink); border-color: var(--line-strong); }
+.rowact svg { width: 12px; height: 12px; }
+
+.empty { padding: 80px 20px; text-align: center; color: var(--ink-2); }
+.empty h3 { color: var(--ink); font-size: 16px; margin: 0 0 4px; }
+.empty p { margin: 0 0 16px; font-size: 13px; }
+
+.ftr { border-top: 1px solid var(--line); padding: 8px 20px; display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); font-family: var(--font-mono); }
+.ftr .sk { display: flex; gap: 8px; align-items: center; }
+
+/* EDIT / DETAIL / CREATE */
+.edit { display: grid; grid-template-columns: 1fr 360px; flex: 1; min-height: 0; }
+.edit-form { overflow: auto; padding: 24px 28px 80px; }
+.edit-aside { border-left: 1px solid var(--line); background: var(--paper-1); overflow: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+.crumbs { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); font-family: var(--font-mono); margin-bottom: 14px; }
+.crumbs .s { color: var(--ink-3); }
+.crumbs a { cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+.crumbs a:hover { color: var(--accent); }
+.crumbs svg { width: 12px; height: 12px; }
+.etitle { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin: 0; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.etitle .ebadge { white-space: nowrap; }
+.etitle .mono { font-family: var(--font-mono); color: var(--accent); font-size: 20px; }
+.esub { font-size: 12px; color: var(--ink-2); margin-top: 2px; font-family: var(--font-mono); }
+.ebadge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; font-size: 10px; font-family: var(--font-mono); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; border-radius: 3px; background: var(--paper-2); color: var(--ink-2); }
+.ebadge.readonly { background: oklch(0.94 0.04 260); color: oklch(0.5 0.12 260); }
+[data-theme="dark"] .ebadge.readonly { background: oklch(0.3 0.06 260); color: oklch(0.75 0.12 260); }
+.ebadge.new { background: var(--accent-soft); color: var(--accent); }
+
+.sec { margin-top: 26px; }
+.sec h3 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-2); margin: 0 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); display: flex; align-items: baseline; gap: 8px; }
+.sec h3 .n { font-family: var(--font-mono); color: var(--ink-3); font-size: 11px; font-weight: 400; }
+.flds { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.fld { display: flex; flex-direction: column; gap: 4px; position: relative; }
+.fld label { font-size: 11px; color: var(--ink-2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px; }
+.fld label .req { color: var(--accent); }
+.fld .hint { font-size: 11px; color: var(--ink-3); font-family: var(--font-mono); }
+.fld .err { font-size: 11px; color: var(--danger); font-family: var(--font-mono); }
+.fld.has-err .inp, .fld.has-err .sel { border-color: var(--danger); }
+.inp, .sel, .ta { width: 100%; height: 32px; padding: 0 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; font-size: 13px; color: var(--ink); outline: 0; font-family: inherit; }
+.inp:focus, .sel:focus, .ta:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.inp.mono { font-family: var(--font-mono); }
+.inp.ro, .sel.ro, .ta.ro { background: var(--paper-2); color: var(--ink-1); cursor: default; }
+.ta { height: auto; min-height: 72px; padding: 8px 10px; resize: vertical; }
+.sel { appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+.auto { position: relative; }
+.auto .badge { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 9px; color: var(--accent); background: var(--accent-soft); padding: 2px 5px; border-radius: 3px; }
+.ro-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 13px; }
+.ro-row .k { color: var(--ink-2); font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; flex-shrink: 0; }
+.ro-row .v { color: var(--ink); font-weight: 500; }
+.ro-row .v.mono { font-family: var(--font-mono); font-size: 12px; font-weight: 500; }
+
+.slate { aspect-ratio: 16/9; background: #000; color: #fff; padding: 7% 8%; font-family: var(--font-mono); display: flex; flex-direction: column; justify-content: center; gap: 6px; position: relative; }
+.slate dl { margin: 0; display: flex; flex-direction: column; gap: 5px; }
+.slate .row { display: grid; grid-template-columns: 110px 1fr; gap: 12px; font-size: 9.5px; }
+.slate dt { color: oklch(0.7 0.02 85); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+.slate dd { margin: 0; color: #fff; }
+.slate .bars { position: absolute; top: 0; right: 0; bottom: 0; width: 6px; display: flex; flex-direction: column; }
+.slate .bars span { flex: 1; }
+.slate .bars span:nth-child(1) { background: #c0392b; }
+.slate .bars span:nth-child(2) { background: #f39c12; }
+.slate .bars span:nth-child(3) { background: #27ae60; }
+.slate .bars span:nth-child(4) { background: #2980b9; }
+.slatecard { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.slatecard .h { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--line); flex-wrap: nowrap; gap: 8px; }
+.slatecard h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); margin: 0; white-space: nowrap; }
+.slatecard .h .mono { white-space: nowrap; }
+.slatecard .f { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--line); }
+
+.savebar { border-top: 1px solid var(--line); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--paper); }
+.savebar .stat { font-size: 12px; color: var(--ink-2); font-family: var(--font-mono); display: flex; align-items: center; gap: 8px; }
+.savebar .stat .d { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+.savebar .stat .d.warn { background: var(--warn); }
+
+.hist { display: grid; grid-template-columns: 20px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); font-size: 12px; }
+.hist:last-child { border: 0; }
+.hist .d { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); margin-top: 6px; }
+.hist .d.new { background: var(--accent); }
+
+/* Cmd-K palette */
+.scrim { position: fixed; inset: 0; background: oklch(0.2 0.02 255 / 0.3); z-index: 50; display: flex; justify-content: center; padding-top: 12vh; backdrop-filter: blur(2px); }
+.pal { width: 600px; max-width: 90vw; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow-lg); overflow: hidden; height: fit-content; }
+.pal .pi { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.pal .pi svg { width: 16px; height: 16px; color: var(--ink-2); }
+.pal .pi input { flex: 1; border: 0; outline: 0; background: none; font-size: 15px; }
+.pal .pres { max-height: 400px; overflow: auto; padding: 6px; }
+.pal .grp { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 10px 4px; }
+.pal .rr { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+.pal .rr.on { background: var(--accent-soft); }
+.pal .rr .co { font-family: var(--font-mono); color: var(--accent); font-weight: 600; font-size: 12px; min-width: 84px; }
+.pal .rr .tt { color: var(--ink); flex: 1; }
+.pal .rr .sub { color: var(--ink-2); font-family: var(--font-mono); font-size: 11px; }
+.pal .rr svg { width: 14px; height: 14px; color: var(--ink-2); }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 6px; font-size: 13px; box-shadow: var(--shadow-lg); z-index: 60; display: flex; align-items: center; gap: 10px; }
+.toast svg { width: 14px; height: 14px; }
+
+/* Confirm bar for bulk */
+.bulk { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); border-radius: 8px; padding: 8px 8px 8px 16px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-lg); z-index: 4; font-size: 13px; }
+.bulk button { background: transparent; border: 1px solid oklch(0.45 0.01 255); color: var(--paper); padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+.bulk button:hover { background: oklch(0.3 0.01 255); }
+.bulk .x { background: none; border: 0; color: oklch(0.7 0.01 255); width: 22px; padding: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="shared/data.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+const S = {
+  Film: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M7 4v16M17 4v16M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4"/></svg>,
+  Search: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>,
+  Plus: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>,
+  Down: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 9 6 6 6-6"/></svg>,
+  Check: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M4 12l5 5L20 6"/></svg>,
+  Copy: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>,
+  Down2: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg>,
+  Up: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 21V9m0 0-5 5m5-5 5 5M5 3h14"/></svg>,
+  Sun: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>,
+  Moon: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>,
+  List: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>,
+  Clock: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" strokeLinecap="round"/></svg>,
+  User: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>,
+  Back: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>,
+  Link: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>,
+  Edit: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>,
+  Eye: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>,
+  X: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>,
+  Compact: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M3 10h18M3 14h18M3 18h18"/></svg>,
+  Comfy: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>,
+};
+const ch = (c) => { const h={ADID:10,APPL:220,TLSA:340,TOYT:0,NIKE:40,BMWW:220,FORD:240,PEPS:220,MCDO:30,STBK:155,NFLX:0}; return `oklch(0.65 0.15 ${h[c]??250})`; };
+const fmtDate = (d) => { if(!d) return "—"; const dt=new Date(d); return `${String(dt.getMonth()+1).padStart(2,"0")}/${String(dt.getDate()).padStart(2,"0")}/${String(dt.getFullYear()).slice(2)}`; };
+
+// Fuzzy match: char-subsequence scoring
+function fuzzy(q, s) {
+  if (!q) return 1;
+  q = q.toLowerCase(); s = s.toLowerCase();
+  if (s.includes(q)) return 10 - (s.indexOf(q) / s.length);
+  let qi=0, score=0;
+  for (let i=0; i<s.length && qi<q.length; i++) { if (s[i]===q[qi]) { qi++; score++; } }
+  return qi===q.length ? score/s.length : 0;
+}
+function fuzzyAll(q, obj, keys) {
+  if (!q) return 1;
+  let best = 0;
+  for (const k of keys) { const v = obj[k]; if (!v) continue; best = Math.max(best, fuzzy(q, String(v))); }
+  return best;
+}
+function highlight(text, q) {
+  if (!q || !text) return text;
+  const t = String(text), l = t.toLowerCase(), ql = q.toLowerCase();
+  const i = l.indexOf(ql);
+  if (i >= 0) return <>{t.slice(0,i)}<span className="mark">{t.slice(i,i+ql.length)}</span>{t.slice(i+ql.length)}</>;
+  return text;
+}
+
+function useTheme() {
+  const [t, setT] = useState(() => localStorage.getItem("isciz-theme") || "light");
+  useEffect(() => { document.documentElement.setAttribute("data-theme", t); localStorage.setItem("isciz-theme", t); }, [t]);
+  return [t, setT];
+}
+function useDensity() {
+  const [d, setD] = useState(() => localStorage.getItem("isciz-density") || "comfy");
+  useEffect(() => { localStorage.setItem("isciz-density", d); }, [d]);
+  return [d, setD];
+}
+
+function TopBar({ page, go, theme, setTheme, onCmdK }) {
+  return <div className="bar">
+    <div className="brand"><div className="m">{S.Film}</div>ISCIz<sub>alpha</sub></div>
+    <nav className="nav">
+      <button className={page==="dash"?"active":""} onClick={()=>go({page:"dash"})}>Dashboard</button>
+      <button>Reports</button><button onClick={()=>{window.location.href="admin.html";}}>Admin</button>
+    </nav>
+    <div className="spacer"/>
+    <div className="right">
+      <button className="btn ghost" onClick={onCmdK} style={{color:"var(--ink-2)",gap:8}}>{S.Search} Search<span className="kbd">⌘K</span></button>
+      <div className="tt">
+        <button className={theme==="light"?"on":""} onClick={()=>setTheme("light")}>{S.Sun}</button>
+        <button className={theme==="dark"?"on":""} onClick={()=>setTheme("dark")}>{S.Moon}</button>
+      </div>
+      <div className="av" title="Stevey McVideo · Admin">SM</div>
+    </div>
+  </div>;
+}
+
+/* ============================= DASHBOARD ============================= */
+function Dashboard({ go, theme, setTheme, toast }) {
+  const data = window.ISCIZ_DATA;
+  const [q, setQ] = useState("");
+  const [sel, setSel] = useState(new Set());
+  const [density, setDensity] = useDensity();
+  const [filters, setFilters] = useState({ client:null, placement:null, length:null });
+  const [sort, setSort] = useState({ k:"airDate", dir:"desc" });
+  const [foc, setFoc] = useState(0);
+  const [showCmd, setShowCmd] = useState(false);
+
+  const searchKeys = ["code","client","campaign","title","jobNumber","description","assignedEditor","placement","aspectRatio","fileFormat","audio","language","accessibility"];
+  const base = useMemo(() => {
+    let rows = data.isciCodes;
+    if (filters.client) rows = rows.filter(r => r.client===filters.client);
+    if (filters.placement) rows = rows.filter(r => r.placement===filters.placement);
+    if (filters.length) rows = rows.filter(r => r.length===filters.length);
+    return rows;
+  }, [filters]);
+
+  const rows = useMemo(() => {
+    let list = base;
+    if (q) list = list.map(r => ({r, s:fuzzyAll(q, r, searchKeys)})).filter(x => x.s>0).sort((a,b)=>b.s-a.s).map(x=>x.r);
+    else {
+      list = [...list].sort((a,b)=>{
+        const av=a[sort.k], bv=b[sort.k];
+        if (av===bv) return 0;
+        const c = av<bv ? -1 : 1;
+        return sort.dir==="asc" ? c : -c;
+      });
+    }
+    return list;
+  }, [base, q, sort]);
+
+  const byCli = Object.entries(data.isciCodes.reduce((a,c)=>{a[c.client]=(a[c.client]||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1]);
+  const byPlace = Object.entries(data.isciCodes.reduce((a,c)=>{a[c.placement]=(a[c.placement]||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1]);
+
+  const toggle = (code) => { const s = new Set(sel); s.has(code)?s.delete(code):s.add(code); setSel(s); };
+  const toggleSort = (k) => setSort(s => s.k===k ? {k, dir:s.dir==="asc"?"desc":"asc"} : {k, dir:"asc"});
+
+  // keyboard
+  useEffect(() => {
+    const onKey = (e) => {
+      const target = e.target;
+      const inInput = target.tagName==="INPUT" || target.tagName==="TEXTAREA" || target.tagName==="SELECT";
+      if (e.key==="k" && (e.metaKey||e.ctrlKey)) { e.preventDefault(); setShowCmd(true); return; }
+      if (e.key==="Escape") { setShowCmd(false); return; }
+      if (inInput) return;
+      if (e.key==="/") { e.preventDefault(); document.getElementById("dash-search")?.focus(); }
+      if (e.key==="n" || e.key==="N") { e.preventDefault(); go({page:"create"}); }
+      if (e.key==="ArrowDown") { e.preventDefault(); setFoc(f => Math.min(rows.length-1, f+1)); }
+      if (e.key==="ArrowUp") { e.preventDefault(); setFoc(f => Math.max(0, f-1)); }
+      if (e.key==="Enter" && rows[foc]) { e.preventDefault(); go({page:"detail", rec:rows[foc]}); }
+      if (e.key==="e" && rows[foc]) { e.preventDefault(); go({page:"edit", rec:rows[foc]}); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [foc, rows, go]);
+
+  return <div className="app">
+    <TopBar page="dash" go={go} theme={theme} setTheme={setTheme} onCmdK={()=>setShowCmd(true)}/>
+    <div className="pghead">
+      <div>
+        <h1>All ISCI codes</h1>
+        <div className="sub"><strong>{rows.length}</strong> of {data.isciCodes.length}{q?` · filtered "${q}"`:""}</div>
+      </div>
+      <div className="actions">
+        <button className="btn">{S.Up} Import CSV</button>
+        <button className="btn">{S.Down2} Export</button>
+        <button className="btn primary" onClick={()=>go({page:"create"})}>{S.Plus} New ISCI <span className="kbd" style={{background:"oklch(0.4 0.12 42)",color:"var(--accent-ink)",borderColor:"transparent"}}>N</span></button>
+      </div>
+    </div>
+    <div className="body">
+      <aside className="sb">
+        <div className="grp">
+          <div className="lbl">Views</div>
+          <div className={`it ${!filters.client && !filters.placement ?"on":""}`} onClick={()=>setFilters({client:null,placement:null,length:null})}><div className="l">{S.List} All codes</div><div className="c">{data.isciCodes.length}</div></div>
+          <div className="it"><div className="l">{S.Clock} Recent</div><div className="c">12</div></div>
+          <div className="it"><div className="l">{S.User} Mine</div><div className="c">4</div></div>
+        </div>
+        <div className="grp">
+          <div className="lbl">Clients</div>
+          {byCli.map(([cl,n]) => { const code=data.isciCodes.find(c=>c.client===cl)?.clientCode;
+            return <div key={cl} className={`it ${filters.client===cl?"on":""}`} onClick={()=>setFilters(f=>({...f,client:f.client===cl?null:cl}))}><div className="l"><span className="dot" style={{background:ch(code)}}/>{cl}</div><div className="c">{n}</div></div>;
+          })}
+        </div>
+        <div className="grp">
+          <div className="lbl">Placement</div>
+          {byPlace.map(([p,n]) => <div key={p} className={`it ${filters.placement===p?"on":""}`} onClick={()=>setFilters(f=>({...f,placement:f.placement===p?null:p}))}><div className="l">{p}</div><div className="c">{n}</div></div>)}
+        </div>
+      </aside>
+      <div className="main" style={{position:"relative"}}>
+        <div className="tb">
+          <div className="sch">{S.Search}<input id="dash-search" placeholder="Fuzzy search — code, title, client, campaign, job, editor…" value={q} onChange={e=>setQ(e.target.value)}/><span className="kbd">/</span></div>
+          <div className="sep"/>
+          {filters.client && <button className="chip on" onClick={()=>setFilters(f=>({...f,client:null}))}><span className="v">{filters.client}</span> {S.X}</button>}
+          {filters.placement && <button className="chip on" onClick={()=>setFilters(f=>({...f,placement:null}))}><span className="v">{filters.placement}</span> {S.X}</button>}
+          <button className="chip">Client {S.Down}</button>
+          <button className="chip">Placement {S.Down}</button>
+          <button className="chip">Length {S.Down}</button>
+          <button className="chip">{S.Plus} Filter</button>
+          <div style={{flex:1}}/>
+          <div className="dens" title="Row density">
+            <button className={density==="comfy"?"on":""} onClick={()=>setDensity("comfy")} title="Comfortable">{S.Comfy}</button>
+            <button className={density==="compact"?"on":""} onClick={()=>setDensity("compact")} title="Compact">{S.Compact}</button>
+          </div>
+          <button className="btn ghost sm">{S.List} Columns</button>
+        </div>
+        <div className="tbl-wrap">
+          <table className="tbl" data-density={density}>
+            <thead><tr>
+              <th style={{width:28}}><span className={`ck ${sel.size===rows.length&&rows.length>0?"on":""}`} onClick={()=>setSel(sel.size===rows.length?new Set():new Set(rows.map(r=>r.code)))}>{sel.size===rows.length&&rows.length>0&&S.Check}</span></th>
+              {[["code","ISCI Code"],["client","Client"],["campaign","Campaign"],["jobNumber","Job #"],["title","Spot Title"],["length","Len"],["aspectRatio","Aspect"],["placement","Placement"],["airDate","Air Date"],["assignedEditor","Editor"]].map(([k,l]) => (
+                <th key={k} className={sort.k===k?"sort":""} onClick={()=>toggleSort(k)}>{l}<span className="srt">{sort.k===k ? (sort.dir==="asc"?"↑":"↓") : "↕"}</span></th>
+              ))}
+              <th style={{width:90}}></th>
+            </tr></thead>
+            <tbody>{rows.length===0 ? <tr><td colSpan={12}><div className="empty"><h3>No matches</h3><p>Try a different query, or clear filters.</p><button className="btn" onClick={()=>{setQ("");setFilters({client:null,placement:null,length:null});}}>Clear all</button></div></td></tr> :
+              rows.map((r,i) => <tr key={r.code} className={`${sel.has(r.code)?"sel":""} ${foc===i?"foc":""}`} onMouseEnter={()=>setFoc(i)}>
+                <td><span className={`ck ${sel.has(r.code)?"on":""}`} onClick={()=>toggle(r.code)}>{sel.has(r.code)&&S.Check}</span></td>
+                <td><a className="code" onClick={e=>{e.preventDefault();go({page:"detail",rec:r});}} href="#">{highlight(r.code, q)}</a></td>
+                <td><span className="dot" style={{background:ch(r.clientCode)}}/><span className="st">{highlight(r.client, q)}</span></td>
+                <td className="mu">{highlight(r.campaign, q)}</td>
+                <td className="num">{r.jobNumber}</td>
+                <td className="ttl">{highlight(r.title, q)}</td>
+                <td className="num">{r.length}s</td>
+                <td className="num">{r.aspectRatio}</td>
+                <td><span className="pill">{r.placement}</span></td>
+                <td className="num">{fmtDate(r.airDate)}</td>
+                <td className="mu">{r.assignedEditor?.split(" ")[0]}</td>
+                <td>
+                  <div className="rowact">
+                    <button title="View" onClick={()=>go({page:"detail",rec:r})}>{S.Eye}</button>
+                    <button title="Edit" onClick={()=>go({page:"edit",rec:r})}>{S.Edit}</button>
+                    <button title="Copy code" onClick={()=>{navigator.clipboard.writeText(r.code); toast(`Copied ${r.code}`);}}>{S.Copy}</button>
+                  </div>
+                </td>
+              </tr>)}</tbody>
+          </table>
+        </div>
+        {sel.size>0 && <div className="bulk">
+          <span>{sel.size} selected</span>
+          <button>Change editor</button>
+          <button>Duplicate</button>
+          <button>Export JPG</button>
+          <button>Delete</button>
+          <button className="x" onClick={()=>setSel(new Set())}>{S.X}</button>
+        </div>}
+        <div className="ftr">
+          <div>{rows.length} rows{sel.size>0?` · ${sel.size} selected`:""}</div>
+          <div className="sk"><span className="kbd">↑↓</span> navigate <span className="kbd">⏎</span> view <span className="kbd">E</span> edit <span className="kbd">N</span> new <span className="kbd">⌘K</span> palette</div>
+        </div>
+      </div>
+    </div>
+    {showCmd && <CmdK close={()=>setShowCmd(false)} go={go} toast={toast}/>}
+  </div>;
+}
+
+/* ============================= CMD-K ============================= */
+function CmdK({ close, go, toast }) {
+  const data = window.ISCIZ_DATA;
+  const [q, setQ] = useState("");
+  const [idx, setIdx] = useState(0);
+  const ref = useRef(null);
+  useEffect(()=>{ ref.current?.focus(); },[]);
+  const matches = useMemo(() => {
+    const codes = q ? data.isciCodes.map(r=>({r,s:fuzzyAll(q,r,["code","client","campaign","title","jobNumber"])})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,8).map(x=>x.r) : data.isciCodes.slice(0,6);
+    return codes;
+  }, [q]);
+  const actions = [
+    { label:"New ISCI code", sub:"Create a new record", icon:S.Plus, run:()=>{close(); go({page:"create"});} },
+    { label:"Import CSV", sub:"Bulk add from spreadsheet", icon:S.Up, run:()=>{close(); toast("CSV import coming soon");} },
+    { label:"Export all as CSV", sub:"Download filtered view", icon:S.Down2, run:()=>{close(); toast("Exported");} },
+    { label:"Dashboard", sub:"Back to all codes", icon:S.List, run:()=>{close(); go({page:"dash"});} },
+  ].filter(a => !q || a.label.toLowerCase().includes(q.toLowerCase()));
+  const all = [...actions.map(a=>({t:"a",a})), ...matches.map(r=>({t:"r",r}))];
+  useEffect(()=>{ setIdx(0); },[q]);
+  const onKey = (e) => {
+    if (e.key==="ArrowDown") { e.preventDefault(); setIdx(i=>Math.min(all.length-1,i+1)); }
+    if (e.key==="ArrowUp") { e.preventDefault(); setIdx(i=>Math.max(0,i-1)); }
+    if (e.key==="Enter") { const it = all[idx]; if(!it) return; if(it.t==="a") it.a.run(); else { close(); go({page:"detail",rec:it.r}); } }
+  };
+  return <div className="scrim" onClick={close}>
+    <div className="pal" onClick={e=>e.stopPropagation()} onKeyDown={onKey}>
+      <div className="pi">{S.Search}<input ref={ref} value={q} onChange={e=>setQ(e.target.value)} placeholder="Search codes or run a command…"/><span className="kbd">ESC</span></div>
+      <div className="pres">
+        {actions.length>0 && <>
+          <div className="grp">Actions</div>
+          {actions.map((a,i)=>{ const ii=i; return <div key={a.label} className={`rr ${idx===ii?"on":""}`} onMouseEnter={()=>setIdx(ii)} onClick={a.run}>{a.icon}<span className="tt">{a.label}</span><span className="sub">{a.sub}</span></div>; })}
+        </>}
+        {matches.length>0 && <>
+          <div className="grp">{q?"Matching codes":"Recent"}</div>
+          {matches.map((r,i)=>{ const ii=actions.length+i; return <div key={r.code} className={`rr ${idx===ii?"on":""}`} onMouseEnter={()=>setIdx(ii)} onClick={()=>{close(); go({page:"detail",rec:r});}}><span className="co">{r.code}</span><span className="tt">{r.title}</span><span className="sub">{r.length}s · {r.placement}</span></div>; })}
+        </>}
+      </div>
+    </div>
+  </div>;
+}
+
+/* ============================= SLATE ============================= */
+function Slate({ f }) {
+  const rows = [["ISCI CODE",f.code||"—"],["CLIENT",f.client||"—"],["CAMPAIGN",f.campaign||"—"],["SPOT TITLE",f.title||"—"],["LENGTH",f.length?`${f.length} SEC`:"—"],["ASPECT",f.aspectRatio||"—"],["AUDIO",f.audio||"—"],["AGENCY",f.agency||"R&R Partners"],["DATE",f.airDate||"—"]];
+  return <div className="slate">
+    <dl>{rows.map(([k,v])=><div className="row" key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+    <div className="bars"><span/><span/><span/><span/></div>
+  </div>;
+}
+function SlateCard({ f, mode="live", onExport }) {
+  return <div className="slatecard">
+    <div className="h"><h4>Slate Preview</h4><span className="mono" style={{fontSize:11,color:"var(--ink-3)"}}>16:9 · {mode}</span></div>
+    <Slate f={f}/>
+    <div className="f"><button className="btn sm" style={{flex:1}} onClick={onExport}>{S.Down2} Export JPG</button></div>
+  </div>;
+}
+
+/* ============================= EDIT ============================= */
+function Edit({ rec, go, theme, setTheme, toast }) {
+  const data = window.ISCIZ_DATA;
+  const [f, setF] = useState({ ...rec, agency:rec.agency||"R&R Partners", market:rec.market||"National" });
+  const [dirty, setDirty] = useState(false);
+  const up = (k,v) => { setF(p => ({...p, [k]:v})); setDirty(true); };
+  useEffect(() => { const t=`${f.clientCode}_${(f.campaign||"").replace(/\s+/g,"")}_${f.length}s_${f.placement}`; setF(p=>({...p,title:t})); }, [f.clientCode,f.campaign,f.length,f.placement]);
+
+  return <div className="app">
+    <TopBar page="edit" go={go} theme={theme} setTheme={setTheme} onCmdK={()=>{}}/>
+    <div className="edit">
+      <div className="edit-form">
+        <div className="crumbs"><a onClick={()=>go({page:"dash"})}>{S.Back} Dashboard</a><span className="s">/</span><a onClick={()=>go({page:"detail",rec})}>{f.code}</a><span className="s">/</span><span style={{color:"var(--ink)"}}>Edit</span></div>
+        <h1 className="etitle">Edit <span className="mono">{f.code}</span> <span className="ebadge">Editor</span></h1>
+        <div className="esub">Last saved 11:42 AM · {dirty ? "Unsaved changes" : "All changes saved"}</div>
+
+        <div className="sec"><h3><span className="n">01</span>Basic Details</h3>
+          <div className="flds">
+            <div className="fld"><label>Client <span className="req">*</span></label>
+              <select className="sel" value={f.client} onChange={e=>{const c=data.clients.find(x=>x.name===e.target.value);up("client",c.name);up("clientCode",c.code);}}>{data.clients.map(c=><option key={c.code}>{c.name}</option>)}</select>
+            </div>
+            <div className="fld"><label>ISCI Code <span className="req">*</span></label>
+              <div className="auto"><input className="inp mono ro" value={f.code} readOnly/><span className="badge">LOCKED</span></div>
+              <span className="hint">Immutable once created</span>
+            </div>
+            <div className="fld"><label>Campaign <span className="req">*</span></label><input className="inp" value={f.campaign} onChange={e=>up("campaign",e.target.value)}/></div>
+            <div className="fld"><label>Job Number <span className="req">*</span></label><input className="inp mono" value={f.jobNumber} onChange={e=>up("jobNumber",e.target.value)}/></div>
+          </div>
+        </div>
+
+        <div className="sec"><h3><span className="n">02</span>Spot Details</h3>
+          <div className="flds">
+            <div className="fld" style={{gridColumn:"1/-1"}}><label>Spot Title <span className="req">*</span></label>
+              <div className="auto"><input className="inp mono" value={f.title} onChange={e=>up("title",e.target.value)}/><span className="badge">AUTO</span></div>
+              <span className="hint">Auto-generated from Client · Campaign · Length · Placement. Override if needed.</span>
+            </div>
+            <div className="fld" style={{gridColumn:"1/-1"}}><label>Description / Notes</label><textarea className="ta" value={f.description||""} onChange={e=>up("description",e.target.value)}/></div>
+          </div>
+        </div>
+
+        <div className="sec"><h3><span className="n">03</span>Schedule &amp; People</h3>
+          <div className="flds">
+            <div className="fld"><label>Air / Start Date</label><input className="inp mono" type="date" value={f.airDate} onChange={e=>up("airDate",e.target.value)}/></div>
+            <div className="fld"><label>Market</label><select className="sel" value={f.market} onChange={e=>up("market",e.target.value)}><option>National</option><option>Regional</option><option>Local</option></select></div>
+            <div className="fld"><label>Agency</label><select className="sel" value={f.agency} onChange={e=>up("agency",e.target.value)}>{data.agencies.map(a=><option key={a.name}>{a.name}</option>)}</select></div>
+            <div className="fld"><label>Assigned Editor</label><select className="sel" value={f.assignedEditor} onChange={e=>up("assignedEditor",e.target.value)}>{data.editors.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>Language</label><select className="sel" value={f.language} onChange={e=>up("language",e.target.value)}><option>English</option><option>Spanish</option><option>French</option></select></div>
+          </div>
+        </div>
+
+        <div className="sec"><h3><span className="n">04</span>Technical</h3>
+          <div className="flds">
+            <div className="fld"><label>Length (sec)</label><select className="sel" value={f.length} onChange={e=>up("length",+e.target.value)}>{data.lengths.map(l=><option key={l} value={l}>{l}s</option>)}</select></div>
+            <div className="fld"><label>Aspect Ratio</label><select className="sel" value={f.aspectRatio} onChange={e=>up("aspectRatio",e.target.value)}>{data.aspectRatios.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>File Format</label><select className="sel" value={f.fileFormat} onChange={e=>up("fileFormat",e.target.value)}>{data.fileFormats.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>Placement</label><select className="sel" value={f.placement} onChange={e=>up("placement",e.target.value)}>{data.placements.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>Audio</label><select className="sel" value={f.audio} onChange={e=>up("audio",e.target.value)}>{data.audioOptions.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>Accessibility</label><select className="sel" value={f.accessibility} onChange={e=>up("accessibility",e.target.value)}>{data.accessibilityOptions.map(a=><option key={a}>{a}</option>)}</select></div>
+          </div>
+        </div>
+
+        <div className="sec"><h3><span className="n">05</span>Activity</h3>
+          <div className="hist"><div className="d new"/><div><div><strong style={{color:"var(--ink)"}}>Stevey McVideo</strong> <span style={{color:"var(--ink-3)",fontFamily:"var(--font-mono)",fontSize:11}}>· Jan 27, 2026 · 11:42 AM</span></div><div style={{color:"var(--ink-1)",marginTop:2}}>Created ISCI {f.code}</div></div></div>
+          <div className="hist"><div className="d"/><div><div><strong style={{color:"var(--ink)"}}>System</strong> <span style={{color:"var(--ink-3)",fontFamily:"var(--font-mono)",fontSize:11}}>· 11:42 AM</span></div><div style={{color:"var(--ink-1)",marginTop:2}}>Auto-generated code · next for {f.clientCode} = {nextSeq(f.clientCode)}</div></div></div>
+        </div>
+      </div>
+
+      <aside className="edit-aside">
+        <SlateCard f={f} onExport={()=>toast("Exporting slate JPG…")}/>
+        <div>
+          <div style={{fontSize:11,color:"var(--ink-2)",textTransform:"uppercase",letterSpacing:"0.06em",fontWeight:600,marginBottom:8}}>Quick Actions</div>
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            <button className="btn" style={{justifyContent:"flex-start",width:"100%"}} onClick={()=>{navigator.clipboard.writeText(f.code); toast(`Copied ${f.code}`);}}>{S.Copy} Copy ISCI code</button>
+            <button className="btn" style={{justifyContent:"flex-start",width:"100%"}} onClick={()=>go({page:"create", prefillClient:f.clientCode})}>{S.Copy} Duplicate as new cutdown</button>
+            <button className="btn" style={{justifyContent:"flex-start",width:"100%"}} onClick={()=>{navigator.clipboard.writeText(window.location.href); toast("Share link copied");}}>{S.Link} Copy share link</button>
+          </div>
+        </div>
+        <div>
+          <div style={{fontSize:11,color:"var(--ink-2)",textTransform:"uppercase",letterSpacing:"0.06em",fontWeight:600,marginBottom:8}}>Related Codes</div>
+          {(() => { const rel = data.isciCodes.filter(c=>c.client===f.client && c.code!==f.code).slice(0,3); return rel.length ? rel.map(r=><a key={r.code} onClick={()=>go({page:"detail",rec:r})} style={{display:"flex",justifyContent:"space-between",padding:"6px 8px",borderRadius:4,fontSize:12,cursor:"pointer"}}><span className="mono" style={{color:"var(--accent)",fontWeight:600}}>{r.code}</span><span style={{color:"var(--ink-2)",fontFamily:"var(--font-mono)",fontSize:11}}>{r.length}s · {r.placement}</span></a>) : <div style={{color:"var(--ink-3)",fontFamily:"var(--font-mono)",fontSize:12,padding:"6px 8px"}}>No other codes for {f.client} yet.</div>; })()}
+        </div>
+      </aside>
+    </div>
+    <div className="savebar">
+      <div className="stat"><span className={`d ${dirty?"warn":""}`}/>{dirty ? "Unsaved changes" : `All changes saved · 11:42:08 AM`}</div>
+      <div style={{display:"flex",gap:8}}>
+        <button className="btn" onClick={()=>go({page:"detail",rec})}>Cancel</button>
+        <button className="btn" onClick={()=>{setDirty(false); toast("Saved, opening new…"); setTimeout(()=>go({page:"create"}),400);}}>Save &amp; new</button>
+        <button className="btn primary" onClick={()=>{setDirty(false); toast(`Updated ${f.code}`); go({page:"detail",rec:f});}}>Update ISCI</button>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ============================= DETAIL (READ-ONLY) ============================= */
+function Detail({ rec, go, theme, setTheme, toast }) {
+  const data = window.ISCIZ_DATA;
+  const f = rec;
+  const rows1 = [["Client", f.client],["ISCI Code", f.code, true],["Campaign", f.campaign],["Job Number", f.jobNumber, true]];
+  const rows2 = [["Spot Title", f.title, true],["Description", f.description||"—"]];
+  const rows3 = [["Air Date", fmtDate(f.airDate)],["Market", f.market||"National"],["Agency", f.agency||"R&R Partners"],["Assigned Editor", f.assignedEditor],["Language", f.language]];
+  const rows4 = [["Length", `${f.length}s`, true],["Aspect Ratio", f.aspectRatio, true],["File Format", f.fileFormat, true],["Placement", f.placement],["Audio", f.audio],["Accessibility", f.accessibility]];
+
+  return <div className="app">
+    <TopBar page="detail" go={go} theme={theme} setTheme={setTheme} onCmdK={()=>{}}/>
+    <div className="edit">
+      <div className="edit-form">
+        <div className="crumbs"><a onClick={()=>go({page:"dash"})}>{S.Back} Dashboard</a><span className="s">/</span><span style={{color:"var(--ink)"}}>{f.code}</span></div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:20}}>
+          <div>
+            <h1 className="etitle">ISCI <span className="mono">{f.code}</span> <span className="ebadge readonly">{S.Eye} Read only</span></h1>
+            <div className="esub">{f.client} · {f.campaign} · Created {fmtDate(f.createdAt)} by {f.createdBy}</div>
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <button className="btn" onClick={()=>{navigator.clipboard.writeText(f.code); toast(`Copied ${f.code}`);}}>{S.Copy} Copy code</button>
+            <button className="btn" onClick={()=>{navigator.clipboard.writeText(window.location.href); toast("Share link copied");}}>{S.Link} Share</button>
+            <button className="btn primary" onClick={()=>go({page:"edit",rec:f})}>{S.Edit} Edit</button>
+          </div>
+        </div>
+
+        <div className="sec"><h3><span className="n">01</span>Basic Details</h3>
+          <div>{rows1.map(([k,v,mono]) => <div className="ro-row" key={k}><span className="k">{k}</span><span className={`v ${mono?"mono":""}`}>{v}</span></div>)}</div>
+        </div>
+        <div className="sec"><h3><span className="n">02</span>Spot Details</h3>
+          <div>{rows2.map(([k,v,mono]) => <div className="ro-row" key={k}><span className="k">{k}</span><span className={`v ${mono?"mono":""}`} style={{maxWidth:"60%",textAlign:"right"}}>{v}</span></div>)}</div>
+        </div>
+        <div className="sec"><h3><span className="n">03</span>Schedule &amp; People</h3>
+          <div>{rows3.map(([k,v,mono]) => <div className="ro-row" key={k}><span className="k">{k}</span><span className={`v ${mono?"mono":""}`}>{v}</span></div>)}</div>
+        </div>
+        <div className="sec"><h3><span className="n">04</span>Technical</h3>
+          <div>{rows4.map(([k,v,mono]) => <div className="ro-row" key={k}><span className="k">{k}</span><span className={`v ${mono?"mono":""}`}>{v}</span></div>)}</div>
+        </div>
+
+        <div className="sec"><h3><span className="n">05</span>Activity</h3>
+          <div className="hist"><div className="d new"/><div><div><strong style={{color:"var(--ink)"}}>{f.createdBy}</strong> <span style={{color:"var(--ink-3)",fontFamily:"var(--font-mono)",fontSize:11}}>· {fmtDate(f.createdAt)}</span></div><div style={{color:"var(--ink-1)",marginTop:2}}>Created ISCI {f.code}</div></div></div>
+          <div className="hist"><div className="d"/><div><div><strong style={{color:"var(--ink)"}}>System</strong></div><div style={{color:"var(--ink-1)",marginTop:2}}>Auto-generated from sequence</div></div></div>
+        </div>
+      </div>
+
+      <aside className="edit-aside">
+        <SlateCard f={f} mode="read-only" onExport={()=>toast("Exporting slate JPG…")}/>
+        <div>
+          <div style={{fontSize:11,color:"var(--ink-2)",textTransform:"uppercase",letterSpacing:"0.06em",fontWeight:600,marginBottom:8}}>Quick Actions</div>
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            <button className="btn" style={{justifyContent:"flex-start",width:"100%"}} onClick={()=>{navigator.clipboard.writeText(f.code); toast(`Copied ${f.code}`);}}>{S.Copy} Copy ISCI code</button>
+            <button className="btn" style={{justifyContent:"flex-start",width:"100%"}} onClick={()=>go({page:"create", prefillClient:f.clientCode})}>{S.Copy} Duplicate as new cutdown</button>
+            <button className="btn" style={{justifyContent:"flex-start",width:"100%"}}>{S.Down2} Export slate JPG</button>
+          </div>
+        </div>
+        <div>
+          <div style={{fontSize:11,color:"var(--ink-2)",textTransform:"uppercase",letterSpacing:"0.06em",fontWeight:600,marginBottom:8}}>Related Codes</div>
+          {(() => { const rel = data.isciCodes.filter(c=>c.client===f.client && c.code!==f.code).slice(0,4); return rel.length ? rel.map(r=><a key={r.code} onClick={()=>go({page:"detail",rec:r})} style={{display:"flex",justifyContent:"space-between",padding:"6px 8px",borderRadius:4,fontSize:12,cursor:"pointer"}}><span className="mono" style={{color:"var(--accent)",fontWeight:600}}>{r.code}</span><span style={{color:"var(--ink-2)",fontFamily:"var(--font-mono)",fontSize:11}}>{r.length}s · {r.placement}</span></a>) : <div style={{color:"var(--ink-3)",fontFamily:"var(--font-mono)",fontSize:12,padding:"6px 8px"}}>No other codes for {f.client} yet. <a onClick={()=>go({page:"create",prefillClient:f.clientCode})} style={{color:"var(--accent)",cursor:"pointer"}}>Create one →</a></div>; })()}
+        </div>
+      </aside>
+    </div>
+    <div className="savebar">
+      <div className="stat">{S.Eye}<span style={{color:"var(--ink-2)",fontFamily:"var(--font-mono)",fontSize:12}}>Read-only view · visible to Admins, Editors, AEs &amp; clients with link</span></div>
+      <div style={{display:"flex",gap:8}}>
+        <button className="btn" onClick={()=>go({page:"dash"})}>Back</button>
+        <button className="btn primary" onClick={()=>go({page:"edit",rec:f})}>{S.Edit} Edit ISCI</button>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ============================= NEXT SEQUENCE ============================= */
+function nextSeq(clientCode) {
+  const data = window.ISCIZ_DATA;
+  const existing = data.isciCodes.filter(c => c.clientCode===clientCode).map(c => {
+    const m = c.code.match(/^[A-Z]+(\d+)$/); return m ? parseInt(m[1],10) : 0;
+  });
+  const next = Math.max(0, ...existing) + 1;
+  const padded = String(next).padStart(4, "0");
+  return `${clientCode}${padded}`;
+}
+
+/* ============================= CREATE ============================= */
+function Create({ go, theme, setTheme, toast, prefillClient }) {
+  const data = window.ISCIZ_DATA;
+  const firstClient = prefillClient ? data.clients.find(c=>c.code===prefillClient) : data.clients[0];
+  const [f, setF] = useState({
+    clientCode: firstClient.code, client: firstClient.name,
+    code: nextSeq(firstClient.code),
+    campaign: "", jobNumber: "", title: "", description: "",
+    airDate: "", market: "National", agency: "R&R Partners",
+    assignedEditor: "Marco Silva", language: "English",
+    length: 30, aspectRatio: "16:9", fileFormat: "ProRes",
+    placement: "Broadcast", audio: "Stereo LR", accessibility: "Clean",
+  });
+  const [touched, setTouched] = useState({});
+  const up = (k,v) => { setF(p => ({...p, [k]:v})); };
+  const touch = (k) => setTouched(t => ({...t, [k]:true}));
+
+  useEffect(() => { up("code", nextSeq(f.clientCode)); }, [f.clientCode]);
+  useEffect(() => {
+    const t = `${f.clientCode}_${(f.campaign||"Untitled").replace(/\s+/g,"")}_${f.length}s_${f.placement}`;
+    setF(p=>({...p,title:t}));
+  }, [f.clientCode,f.campaign,f.length,f.placement]);
+
+  const req = ["client","code","campaign","jobNumber","title"];
+  const errors = {
+    client: !f.client ? "Client is required" : "",
+    code: !f.code ? "ISCI Code is required" : "",
+    campaign: !f.campaign.trim() ? "Campaign name is required" : "",
+    jobNumber: !f.jobNumber.trim() ? "Job number is required" : "",
+    title: !f.title.trim() ? "Spot title is required" : "",
+  };
+  const canSave = req.every(k => !errors[k]);
+  const fErr = (k) => touched[k] && errors[k];
+
+  return <div className="app">
+    <TopBar page="create" go={go} theme={theme} setTheme={setTheme} onCmdK={()=>{}}/>
+    <div className="edit">
+      <div className="edit-form">
+        <div className="crumbs"><a onClick={()=>go({page:"dash"})}>{S.Back} Dashboard</a><span className="s">/</span><span style={{color:"var(--ink)"}}>New ISCI</span></div>
+        <h1 className="etitle">New ISCI <span className="mono">{f.code}</span> <span className="ebadge new">{S.Plus} Draft</span></h1>
+        <div className="esub">Sequence auto-assigned from {f.clientCode}. Title auto-generates as you fill fields.</div>
+
+        <div className="sec"><h3><span className="n">01</span>Basic Details <span style={{color:"var(--accent)",fontFamily:"var(--font-mono)",fontWeight:400}}>· required</span></h3>
+          <div className="flds">
+            <div className={`fld ${fErr("client")?"has-err":""}`}><label>Client <span className="req">*</span></label>
+              <select className="sel" value={f.client} onBlur={()=>touch("client")} onChange={e=>{const c=data.clients.find(x=>x.name===e.target.value);up("client",c.name);up("clientCode",c.code);}}>
+                {data.clients.map(c=><option key={c.code}>{c.name}</option>)}
+              </select>
+              <span className="hint">Client code: <strong style={{color:"var(--ink)"}}>{f.clientCode}</strong></span>
+              {fErr("client") && <span className="err">{errors.client}</span>}
+            </div>
+            <div className="fld"><label>ISCI Code <span className="req">*</span></label>
+              <div className="auto"><input className="inp mono ro" value={f.code} readOnly/><span className="badge">AUTO</span></div>
+              <span className="hint">{f.clientCode} + next sequence. Becomes immutable on save.</span>
+            </div>
+            <div className={`fld ${fErr("campaign")?"has-err":""}`}><label>Campaign <span className="req">*</span></label>
+              <input className="inp" value={f.campaign} placeholder="e.g. Spring Launch 2026" onBlur={()=>touch("campaign")} onChange={e=>up("campaign",e.target.value)}/>
+              {fErr("campaign") && <span className="err">{errors.campaign}</span>}
+            </div>
+            <div className={`fld ${fErr("jobNumber")?"has-err":""}`}><label>Job Number <span className="req">*</span></label>
+              <input className="inp mono" value={f.jobNumber} placeholder="e.g. 123123" onBlur={()=>touch("jobNumber")} onChange={e=>up("jobNumber",e.target.value)}/>
+              {fErr("jobNumber") && <span className="err">{errors.jobNumber}</span>}
+            </div>
+          </div>
+        </div>
+
+        <div className="sec"><h3><span className="n">02</span>Spot Details</h3>
+          <div className="flds">
+            <div className={`fld ${fErr("title")?"has-err":""}`} style={{gridColumn:"1/-1"}}><label>Spot Title <span className="req">*</span></label>
+              <div className="auto"><input className="inp mono" value={f.title} onBlur={()=>touch("title")} onChange={e=>up("title",e.target.value)}/><span className="badge">AUTO</span></div>
+              <span className="hint">Auto-generated from Client · Campaign · Length · Placement. Edit to override.</span>
+              {fErr("title") && <span className="err">{errors.title}</span>}
+            </div>
+            <div className="fld" style={{gridColumn:"1/-1"}}><label>Description / Notes</label><textarea className="ta" value={f.description} onChange={e=>up("description",e.target.value)} placeholder="Optional — anything the editor should know about this spot."/></div>
+          </div>
+        </div>
+
+        <div className="sec"><h3><span className="n">03</span>Schedule &amp; People <span style={{color:"var(--ink-3)",fontFamily:"var(--font-mono)",fontWeight:400}}>· optional</span></h3>
+          <div className="flds">
+            <div className="fld"><label>Air / Start Date</label><input className="inp mono" type="date" value={f.airDate} onChange={e=>up("airDate",e.target.value)}/></div>
+            <div className="fld"><label>Market</label><select className="sel" value={f.market} onChange={e=>up("market",e.target.value)}><option>National</option><option>Regional</option><option>Local</option></select></div>
+            <div className="fld"><label>Agency</label><select className="sel" value={f.agency} onChange={e=>up("agency",e.target.value)}>{data.agencies.map(a=><option key={a.name}>{a.name}</option>)}</select></div>
+            <div className="fld"><label>Assigned Editor</label><select className="sel" value={f.assignedEditor} onChange={e=>up("assignedEditor",e.target.value)}>{data.editors.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>Language</label><select className="sel" value={f.language} onChange={e=>up("language",e.target.value)}><option>English</option><option>Spanish</option><option>French</option></select></div>
+          </div>
+        </div>
+
+        <div className="sec"><h3><span className="n">04</span>Technical <span style={{color:"var(--ink-3)",fontFamily:"var(--font-mono)",fontWeight:400}}>· optional</span></h3>
+          <div className="flds">
+            <div className="fld"><label>Length (sec)</label><select className="sel" value={f.length} onChange={e=>up("length",+e.target.value)}>{data.lengths.map(l=><option key={l} value={l}>{l}s</option>)}</select></div>
+            <div className="fld"><label>Aspect Ratio</label><select className="sel" value={f.aspectRatio} onChange={e=>up("aspectRatio",e.target.value)}>{data.aspectRatios.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>File Format</label><select className="sel" value={f.fileFormat} onChange={e=>up("fileFormat",e.target.value)}>{data.fileFormats.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>Placement</label><select className="sel" value={f.placement} onChange={e=>up("placement",e.target.value)}>{data.placements.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>Audio</label><select className="sel" value={f.audio} onChange={e=>up("audio",e.target.value)}>{data.audioOptions.map(a=><option key={a}>{a}</option>)}</select></div>
+            <div className="fld"><label>Accessibility</label><select className="sel" value={f.accessibility} onChange={e=>up("accessibility",e.target.value)}>{data.accessibilityOptions.map(a=><option key={a}>{a}</option>)}</select></div>
+          </div>
+        </div>
+      </div>
+
+      <aside className="edit-aside">
+        <SlateCard f={f} mode="draft" onExport={()=>toast("Save first to export slate")}/>
+        <div>
+          <div style={{fontSize:11,color:"var(--ink-2)",textTransform:"uppercase",letterSpacing:"0.06em",fontWeight:600,marginBottom:8}}>Next in sequence</div>
+          <div style={{background:"var(--paper)",border:"1px solid var(--line)",borderRadius:6,padding:12,fontFamily:"var(--font-mono)",fontSize:13}}>
+            <div style={{color:"var(--ink-2)",fontSize:11,marginBottom:6}}>After you save this one:</div>
+            <div style={{color:"var(--accent)",fontWeight:600,fontSize:15}}>{f.clientCode}{String((parseInt(f.code.match(/\d+/)[0])+1)).padStart(4,"0")}</div>
+          </div>
+        </div>
+        <div>
+          <div style={{fontSize:11,color:"var(--ink-2)",textTransform:"uppercase",letterSpacing:"0.06em",fontWeight:600,marginBottom:8}}>Last 3 for {f.client}</div>
+          {data.isciCodes.filter(c=>c.clientCode===f.clientCode).slice(0,3).map(r=><a key={r.code} onClick={()=>go({page:"detail",rec:r})} style={{display:"flex",justifyContent:"space-between",padding:"6px 8px",borderRadius:4,fontSize:12,cursor:"pointer"}}><span className="mono" style={{color:"var(--accent)",fontWeight:600}}>{r.code}</span><span style={{color:"var(--ink-2)",fontFamily:"var(--font-mono)",fontSize:11}}>{r.length}s · {r.placement}</span></a>)}
+          {data.isciCodes.filter(c=>c.clientCode===f.clientCode).length===0 && <div style={{color:"var(--ink-3)",fontFamily:"var(--font-mono)",fontSize:12,padding:"6px 8px"}}>No existing codes — this will be the first for {f.client}.</div>}
+        </div>
+      </aside>
+    </div>
+    <div className="savebar">
+      <div className="stat">{canSave ? <><span className="d"/>Ready to save</> : <><span className="d warn"/>{Object.values(errors).filter(Boolean).length} required field{Object.values(errors).filter(Boolean).length!==1?"s":""} missing</>}</div>
+      <div style={{display:"flex",gap:8}}>
+        <button className="btn" onClick={()=>go({page:"dash"})}>Cancel</button>
+        <button className="btn" disabled={!canSave} onClick={()=>{toast(`Created ${f.code}, opening new…`); setTimeout(()=>{window.ISCIZ_DATA.isciCodes.unshift({...f,createdBy:"Stevey McVideo",createdAt:new Date().toISOString().slice(0,10)}); go({page:"create", prefillClient:f.clientCode});}, 400);}}>Save &amp; new</button>
+        <button className="btn primary" disabled={!canSave} onClick={()=>{window.ISCIZ_DATA.isciCodes.unshift({...f,createdBy:"Stevey McVideo",createdAt:new Date().toISOString().slice(0,10)}); toast(`Created ${f.code}`); go({page:"detail",rec:f});}}>Create ISCI</button>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ============================= APP ============================= */
+function App() {
+  const [theme, setTheme] = useTheme();
+  const [route, setRoute] = useState({page:"dash"});
+  const [toastMsg, setToast] = useState(null);
+  const toast = useCallback((m) => { setToast(m); setTimeout(()=>setToast(null), 2000); }, []);
+  const go = (r) => { setRoute(r); window.scrollTo(0,0); };
+  let page;
+  if (route.page==="dash") page = <Dashboard go={go} theme={theme} setTheme={setTheme} toast={toast}/>;
+  else if (route.page==="edit") page = <Edit rec={route.rec} go={go} theme={theme} setTheme={setTheme} toast={toast}/>;
+  else if (route.page==="detail") page = <Detail rec={route.rec} go={go} theme={theme} setTheme={setTheme} toast={toast}/>;
+  else if (route.page==="create") page = <Create go={go} theme={theme} setTheme={setTheme} toast={toast} prefillClient={route.prefillClient}/>;
+  return <>{page}{toastMsg && <div className="toast">{S.Check}{toastMsg}</div>}</>;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

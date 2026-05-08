@@ -198,21 +198,32 @@ const EditISCI = () => {
     <div className={styles.editISCI}>
 
       <div className={styles.pageContent}>
-        {/* Sticky header section */}
         <div className={styles.stickyHeader}>
           <div className={styles.headerContent}>
-            <h2>{userIsAdmin ? "Edit ISCI Code" : "View ISCI Code"}</h2>
-            {!isLoading && !error && (
-              <div className={styles.headerActions}>
-                <button type="button" className="btn-text" onClick={handleCancel}>
-                  {userIsAdmin ? "Cancel" : "Back"}
-                </button>
-                {userIsAdmin && (
-                  <button type="button" className="btn-primary" onClick={handleSubmitClick}>
-                    Update ISCI
-                  </button>
-                )}
-              </div>
+            <div className={styles.crumbs}>
+              <button type="button" onClick={() => navigate("/")}>Dashboard</button>
+              <span className={styles.sep}>/</span>
+              <button type="button" onClick={() => navigate(`/isci/${isciCode}`)}>
+                {code?.brand || "ISCI"}
+              </button>
+              <span className={styles.sep}>/</span>
+              <span>{isciCode}</span>
+              <span className={styles.sep}>/</span>
+              <span>{userIsAdmin ? "Edit" : "View"}</span>
+            </div>
+            <h1 className={styles.title}>
+              <span className={styles.titleCode}>{isciCode}</span>
+              {code?.spotTitle && <span>{code.spotTitle}</span>}
+              <span className={`${styles.titleBadge} ${userIsAdmin ? styles.titleBadgeEdit : ""}`}>
+                {userIsAdmin ? "Editing" : "Read-only"}
+              </span>
+            </h1>
+            {code && (
+              <p className={styles.subtitle}>
+                {code.brand}
+                {code.campaignName ? ` · ${code.campaignName}` : ""}
+                {code.spotLength ? ` · ${code.spotLength}s` : ""}
+              </p>
             )}
           </div>
         </div>
@@ -230,50 +241,126 @@ const EditISCI = () => {
               </button>
             </div>
           ) : (
-            <>
-              <ISCIForm
-                code={code}
-                onSubmit={handleUpdateCode}
-                onCancel={handleCancel}
-                allCodes={allCodes}
-                hideActions={true}
-                hideTitle={true}
-                formRef={formRef}
-                viewOnly={!userIsAdmin}
-              />
-              <div className={styles.slateHistoryRow}>
-                <Slate code={code} />
-                <div className={styles.auditSection}>
-                  <h3>History</h3>
-                  <div className={styles.auditGrid}>
-                    <div className={styles.auditItem}>
-                      <span className={styles.auditLabel}>Created By:</span>
-                      <span className={styles.auditValue}>{code.createdBy || "Unknown"}</span>
+            <div className={styles.editGrid}>
+              <div className={styles.formColumn}>
+                <ISCIForm
+                  code={code}
+                  onSubmit={handleUpdateCode}
+                  onCancel={handleCancel}
+                  allCodes={allCodes}
+                  hideActions={true}
+                  hideTitle={true}
+                  formRef={formRef}
+                  viewOnly={!userIsAdmin}
+                />
+
+                {/* 05 — Activity */}
+                <div className={styles.activitySection}>
+                  <h3 className={styles.activityTitle}>
+                    <span className={styles.activityNumber}>05</span> Activity
+                  </h3>
+                  <div className={styles.activityFeed}>
+                    <div className={styles.activityRow}>
+                      <span className={`${styles.activityDot} ${styles.activityDotNew}`} aria-hidden="true" />
+                      <div className={styles.activityBody}>
+                        <div className={styles.activityHead}>
+                          <strong>{code.createdBy || "Unknown"}</strong>
+                          <span className={styles.activityMeta}>
+                            · {formatDate(code.createdAt)} · {formatTime(code.createdAt)}
+                          </span>
+                        </div>
+                        <div className={styles.activityText}>Created ISCI {code.code}</div>
+                      </div>
                     </div>
-                    <div className={styles.auditItem}>
-                      <span className={styles.auditLabel}>Date Created:</span>
-                      <span className={styles.auditValue}>{formatDate(code.createdAt)}</span>
-                    </div>
-                  </div>
-                  <div className={styles.auditHistory}>
-                    {getEditHistory().length > 0 ? (
-                      getEditHistory()
-                        .slice()
-                        .reverse()
-                        .map((entry, index) => (
-                          <p key={`${entry.timestamp}-${index}`} className={styles.auditEntry}>
-                            edited by {entry.user || "Unknown"} on {formatDate(entry.timestamp)} at {formatTime(entry.timestamp)}
-                          </p>
-                        ))
-                    ) : (
-                      <p className={styles.auditEmpty}>No edits yet</p>
-                    )}
+
+                    {getEditHistory()
+                      .slice()
+                      .reverse()
+                      .map((entry, index) => (
+                        <div key={`${entry.timestamp}-${index}`} className={styles.activityRow}>
+                          <span className={styles.activityDot} aria-hidden="true" />
+                          <div className={styles.activityBody}>
+                            <div className={styles.activityHead}>
+                              <strong>{entry.user || "Unknown"}</strong>
+                              <span className={styles.activityMeta}>
+                                · {formatDate(entry.timestamp)} · {formatTime(entry.timestamp)}
+                              </span>
+                            </div>
+                            <div className={styles.activityText}>
+                              {entry.description || "Edited record"}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                   </div>
                 </div>
               </div>
-            </>
+              <aside className={styles.aside}>
+                <Slate code={code} />
+                <div className={styles.quickActions}>
+                  <div className={styles.quickActionsLabel}>Quick Actions</div>
+                  <button
+                    type="button"
+                    className={styles.qaButton}
+                    onClick={() => {
+                      if (navigator.clipboard) navigator.clipboard.writeText(code.code);
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    Copy ISCI code
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.qaButton}
+                    onClick={() => navigate(`/create?from=${encodeURIComponent(code.code)}`)}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    Duplicate as new cutdown
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.qaButton}
+                    onClick={() => {
+                      if (navigator.clipboard) navigator.clipboard.writeText(window.location.href);
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
+                      <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
+                    </svg>
+                    Copy share link
+                  </button>
+                </div>
+              </aside>
+            </div>
           )}
         </div>
+
+        {!isLoading && !error && (
+          <footer className={styles.footer}>
+            <div className={styles.footerStatus}>
+              <span className={styles.footerDot} aria-hidden="true" />
+              All changes saved
+              {code?.updatedAt && <> · {formatTime(code.updatedAt)}</>}
+            </div>
+            <div className={styles.footerActions}>
+              <button type="button" className={styles.footerBtn} onClick={handleCancel}>
+                {userIsAdmin ? "Cancel" : "Back"}
+              </button>
+              {userIsAdmin && (
+                <button type="button" className={`${styles.footerBtn} ${styles.footerBtnPrimary}`} onClick={handleSubmitClick}>
+                  Update ISCI
+                </button>
+              )}
+            </div>
+          </footer>
+        )}
       </div>
     </div>
   );

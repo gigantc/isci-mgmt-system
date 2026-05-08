@@ -65,6 +65,8 @@ export async function action({ request }) {
           firstName: data.firstName,
           lastName: data.lastName,
           userType: data.userType || "editor",
+          active: data.active !== undefined ? data.active : true,
+          lastActiveAt: data.lastActiveAt ? new Date(data.lastActiveAt) : null,
           recentlyViewed: JSON.stringify(data.recentlyViewed || []),
           profileImage: data.profileImage || null,
           createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
@@ -113,6 +115,10 @@ export async function action({ request }) {
       if (data.firstName !== undefined) updateData.firstName = data.firstName;
       if (data.lastName !== undefined) updateData.lastName = data.lastName;
       if (data.userType !== undefined) updateData.userType = data.userType;
+      if (data.active !== undefined) updateData.active = data.active;
+      if (data.lastActiveAt !== undefined) {
+        updateData.lastActiveAt = data.lastActiveAt ? new Date(data.lastActiveAt) : null;
+      }
       if (data.recentlyViewed !== undefined) {
         updateData.recentlyViewed = JSON.stringify(data.recentlyViewed);
       }
