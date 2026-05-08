@@ -53,6 +53,7 @@ const UserManager = () => {
   const [sortBy, setSortBy] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
   const pendingDeleteRef = useRef(null);
+  const originalStateRef = useRef(null);
 
   const {
     items: users,
@@ -128,6 +129,45 @@ const UserManager = () => {
       });
     },
   });
+
+  const handleEditUser = (user) => {
+    originalStateRef.current = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      userType: user.userType,
+      active: user.active !== false,
+    };
+    handleEdit(user);
+  };
+
+  const handleDrawerClose = async () => {
+    if (!editingUser) { resetForm(); return; }
+
+    const isDirty =
+      formData.password ||
+      formData.firstName !== originalStateRef.current?.firstName ||
+      formData.lastName !== originalStateRef.current?.lastName ||
+      formData.email !== originalStateRef.current?.email ||
+      formData.userType !== originalStateRef.current?.userType ||
+      (editingUser.active !== false) !== originalStateRef.current?.active;
+
+    if (!isDirty) { resetForm(); return; }
+
+    const shouldSave = await confirm({
+      title: "Unsaved Changes",
+      message: "You have unsaved changes. Save before closing?",
+      confirmText: "Save Changes",
+      cancelText: "Discard",
+      isDangerous: false,
+    });
+
+    if (shouldSave) {
+      handleSubmit();
+    } else {
+      resetForm();
+    }
+  };
 
   const doDelete = (user) => {
     if (showForm) resetForm();
@@ -309,7 +349,7 @@ const UserManager = () => {
                           type="button"
                           title="Edit"
                           className={styles.actionBtn}
-                          onClick={() => handleEdit(u)}
+                          onClick={() => handleEditUser(u)}
                         >
                           <IconEdit />
                         </button>
@@ -333,7 +373,7 @@ const UserManager = () => {
 
       <Drawer
         open={showForm}
-        onClose={resetForm}
+        onClose={handleDrawerClose}
         title={editingUser ? "Edit User" : "Add User"}
         subtitle={
           editingUser
@@ -350,7 +390,7 @@ const UserManager = () => {
               )}
             </div>
             <div className={styles.footerRight}>
-              <button type="button" className={styles.btnSecondary} onClick={resetForm}>
+              <button type="button" className={styles.btnSecondary} onClick={handleDrawerClose}>
                 Cancel
               </button>
               <button type="button" className={styles.btnPrimary} onClick={handleSubmit}>
