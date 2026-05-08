@@ -2,112 +2,205 @@
 .agencyManager {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
+
+// ── Page header ──────────────────────────────────────────────────────────────
+
+.pgHead {
+  padding: 1.375rem 1.25rem 0.875rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.pgTitle {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.125rem;
+  color: var(--ink);
+}
+
+.pgSub {
+  font-size: 0.75rem;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  margin: 0;
+
+  strong { color: var(--ink); font-weight: 500; }
+}
+
+// ── Toolbar ───────────────────────────────────────────────────────────────────
 
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-1);
+  flex-shrink: 0;
 }
 
 .searchBox {
   flex: 1;
   max-width: 440px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 30px;
+  padding: 0 0.625rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  transition: border-color 0.12s, box-shadow 0.12s;
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: var(--ink-2);
+    flex-shrink: 0;
+  }
 
   input {
-    width: 100%;
-    height: 36px;
-    padding: 0 0.875rem;
-    background: var(--paper-2);
-    border: 1px solid var(--line);
-    border-radius: 6px;
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: none;
+    font-size: 0.8125rem;
     color: var(--ink);
-    font-size: 0.875rem;
-    outline: none;
+    font-family: inherit;
 
-    &::placeholder { color: var(--ink-1); }
-
-    &:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-ring);
-    }
+    &::placeholder { color: var(--ink-3); }
   }
 }
 
-.loadingState,
-.emptyState {
-  text-align: center;
-  padding: 3rem 1rem;
+.filterChips {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.625rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 0.75rem;
   color: var(--ink-1);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+
+  &:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+}
+
+.chipOn {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.chipCount {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  opacity: 0.65;
+}
+
+// ── Scroll / cards area ───────────────────────────────────────────────────────
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
 }
 
 .emptyState {
   padding: 5rem 1rem;
+  text-align: center;
+  color: var(--ink-1);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
 
   h3 { color: var(--ink); font-size: 1rem; margin: 0; }
-  p { font-size: 0.875rem; margin: 0 0 0.5rem; }
+  p { font-size: 0.8125rem; margin: 0; }
 }
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 0.875rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
 }
 
+// ── Card ──────────────────────────────────────────────────────────────────────
+
 .card {
-  position: relative;
-  background: var(--paper-2);
+  background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 1rem 1.125rem;
+  border-radius: 6px;
+  padding: 0.875rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  cursor: pointer;
-  transition: border-color 0.12s, transform 0.12s, box-shadow 0.12s;
+  gap: 0.625rem;
+  position: relative;
+  transition: border-color 0.12s, box-shadow 0.12s;
 
   &:hover {
     border-color: var(--line-strong);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 }
 
-.cardInactive {
-  opacity: 0.55;
-}
+.cardInactive { opacity: 0.6; }
 
 .favStar {
   position: absolute;
-  top: 0.625rem;
-  right: 0.75rem;
+  top: 0.5rem;
+  right: 0.5rem;
   color: var(--accent);
-  font-size: 0.95rem;
+  width: 14px;
+  height: 14px;
+  display: flex;
+
+  svg { width: 14px; height: 14px; }
 }
 
 .cardTop {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 0.625rem;
 }
 
-.icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  background: var(--paper-3);
-  color: var(--ink-1);
+.agencyIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: var(--paper-2);
   display: grid;
   place-items: center;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 0.8rem;
-  flex-shrink: 0;
+  color: var(--ink-2);
+
+  svg { width: 14px; height: 14px; }
 }
 
 .cardInfo {
@@ -115,7 +208,7 @@
   min-width: 0;
 
   h3 {
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     font-weight: 600;
     margin: 0;
     color: var(--ink);
@@ -126,98 +219,112 @@
 }
 
 .cardSub {
-  margin-top: 0.25rem;
-  font-size: 0.75rem;
-  color: var(--ink-1);
-}
-
-.defaultLabel {
+  margin-top: 0.125rem;
+  font-size: 0.6875rem;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 600;
+}
+
+.defaultTag {
   color: var(--accent);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 600;
 }
 
-.setDefaultBtn {
-  background: transparent;
-  border: none;
-  padding: 0;
-  font-size: 0.75rem;
-  color: var(--ink-1);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  cursor: pointer;
-
-  &:hover { color: var(--accent); }
+.partnerTag {
+  color: var(--ink-3);
 }
 
+// Status badge
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.statusDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusActive {
+  background: var(--ok-soft);
+  color: var(--ok);
+  .statusDot { background: var(--ok); }
+}
+
+.statusInactive {
+  background: var(--paper-2);
+  color: var(--ink-2);
+  .statusDot { background: var(--ink-3); }
+}
+
+// Card meta row
 .cardMeta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding-top: 0.75rem;
+  padding-top: 0.625rem;
   border-top: 1px dashed var(--line);
 }
 
-.createdText {
+.createdDate {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.6875rem;
   color: var(--ink-3);
 }
 
-.activeToggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0;
-  background: transparent;
-  border: none;
+.rowActions {
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.1s;
+
+  .card:hover & { opacity: 1; }
+}
+
+.actionBtn {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  color: var(--ink-2);
   cursor: pointer;
-}
-
-.toggleLabel {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ink-1);
-}
-
-.toggleTrack {
-  position: relative;
-  width: 32px;
-  height: 18px;
-  border-radius: 12px;
-  background: var(--paper-3);
-  border: none;
-  transition: background 0.15s;
   padding: 0;
-  cursor: pointer;
-  display: inline-block;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
 
-  &:disabled { cursor: not-allowed; opacity: 0.6; }
+  svg { width: 12px; height: 12px; }
+
+  &:hover {
+    color: var(--ink);
+    border-color: var(--line-strong);
+    background: var(--paper-1);
+  }
 }
 
-.toggleOn {
-  background: var(--accent);
+.actionBtnDanger {
+  &:hover {
+    color: var(--danger);
+    border-color: var(--danger-soft);
+    background: var(--danger-soft);
+  }
 }
 
-.toggleKnob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  transition: left 0.15s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-
-  .toggleOn & { left: 16px; }
-}
+// ── Drawer form ───────────────────────────────────────────────────────────────
 
 .drawerForm {
   display: flex;
@@ -231,59 +338,163 @@
   gap: 0.375rem;
 
   label {
-    font-size: 0.7rem;
+    font-size: 0.6875rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--ink-1);
+    color: var(--ink-2);
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
   }
 
   input {
     width: 100%;
-    height: 36px;
-    padding: 0 0.75rem;
-    background: var(--paper-2);
+    height: 32px;
+    padding: 0 0.625rem;
+    background: var(--paper);
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: 4px;
     color: var(--ink);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     outline: none;
+    font-family: inherit;
 
     &:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-ring);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
   }
 }
 
-.inputError { border-color: var(--danger) !important; }
+.req { color: var(--accent); }
 
 .fieldError {
-  font-size: 0.7rem;
+  font-size: 0.6875rem;
   color: var(--danger);
   font-family: var(--font-mono);
 }
+
+.inputError { border-color: var(--danger) !important; }
 
 .rowSwitch {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 0.875rem;
+  padding: 0.625rem 0.75rem;
   border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--paper-2);
-  gap: 1rem;
+  border-radius: 4px;
+  background: var(--paper-1);
 }
 
 .switchTitle {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--ink);
   font-weight: 500;
 }
 
 .switchHint {
-  font-size: 0.7rem;
-  color: var(--ink-1);
+  font-size: 0.6875rem;
+  color: var(--ink-2);
   font-family: var(--font-mono);
   margin-top: 2px;
+}
+
+.toggleTrack {
+  position: relative;
+  width: 30px;
+  height: 16px;
+  border-radius: 10px;
+  background: var(--paper-3);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s;
+
+  &:disabled { cursor: not-allowed; opacity: 0.5; }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    transition: left 0.15s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.toggleOn {
+  background: var(--ok);
+
+  &::after { left: 16px; }
+}
+
+// ── Drawer footer buttons ─────────────────────────────────────────────────────
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s, border-color 0.12s;
+
+  &:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover { background: var(--paper-1); border-color: var(--line-strong); }
+}
+
+.btnDanger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger-soft);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+
+  svg { width: 13px; height: 13px; }
+
+  &:hover { background: var(--danger-soft); border-color: var(--danger); }
+}
+
+.footerRight {
+  display: flex;
+  gap: 0.5rem;
 }

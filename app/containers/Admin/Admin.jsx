@@ -10,9 +10,9 @@ import styles from "./Admin.module.scss";
 const TAB_KEY = "isciz-admin-tab";
 
 const SECTIONS = [
-  { id: "brands", label: "Clients", description: "Brand configuration" },
-  { id: "agencies", label: "Agencies", description: "Agency roster" },
-  { id: "users", label: "Users", description: "Access & roles" },
+  { id: "brands", label: "Clients" },
+  { id: "agencies", label: "Agencies" },
+  { id: "users", label: "Users" },
 ];
 
 const Admin = () => {
@@ -46,8 +46,6 @@ const Admin = () => {
     if (typeof window !== "undefined") window.localStorage.setItem(TAB_KEY, id);
   };
 
-  const current = SECTIONS.find((s) => s.id === activeTab) || SECTIONS[0];
-
   const counts = {
     brands: brands.length,
     agencies: agencies.length,
@@ -59,20 +57,17 @@ const Admin = () => {
       <aside className={styles.sidebar}>
         <div className={styles.sbGroup}>
           <div className={styles.sbLabel}>Admin</div>
-          {SECTIONS.map((s) => {
-            const countKey = s.id === "brands" ? "brands" : s.id;
-            return (
-              <button
-                key={s.id}
-                type="button"
-                className={`${styles.sbItem} ${activeTab === s.id ? styles.sbItemOn : ""}`}
-                onClick={() => handleSelect(s.id)}
-              >
-                <span>{s.label}</span>
-                <span className={styles.sbCount}>{counts[countKey]}</span>
-              </button>
-            );
-          })}
+          {SECTIONS.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              className={`${styles.sbItem} ${activeTab === s.id ? styles.sbItemOn : ""}`}
+              onClick={() => handleSelect(s.id)}
+            >
+              <span>{s.label}</span>
+              <span className={styles.sbCount}>{counts[s.id]}</span>
+            </button>
+          ))}
         </div>
 
         <div className={styles.sbGroup}>
@@ -89,13 +84,7 @@ const Admin = () => {
       </aside>
 
       <main className={styles.main}>
-        <header className={styles.mainHeader}>
-          <div>
-            <h1>{current.label}</h1>
-            <p className={styles.mainSubtitle}>{current.description}</p>
-          </div>
-        </header>
-        <div className={styles.scrollableContent}>
+        <div className={`${styles.scrollableContent} ${styles.scrollableContentFlush}`}>
           {activeTab === "brands" && <BrandManager />}
           {activeTab === "agencies" && <AgencyManager />}
           {activeTab === "users" && <UserManager />}

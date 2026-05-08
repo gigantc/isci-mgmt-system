@@ -1,14 +1,24 @@
-import { useState, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
 import { useResourceManager, useConfirmDialog } from "@/hooks";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Drawer from "@/components/Drawer";
 import styles from "./UserManager.module.scss";
 
-const ROLE_FILTERS = [
-  { id: "all", label: "All" },
-  { id: "admin", label: "Admin" },
-  { id: "editor", label: "Editor" },
-];
+const IconSearch = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/>
+  </svg>
+);
+const IconEdit = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+  </svg>
+);
+const IconTrash = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/>
+  </svg>
+);
 
 const initialsFor = (u) => {
   const f = (u.firstName || "?").charAt(0);
@@ -24,12 +34,25 @@ const avatarColor = (u) => {
   return `hsl(${hue}, 45%, 45%)`;
 };
 
+const fmtDate = (d) => {
+  if (!d) return "—";
+  const dt = new Date(d);
+  return `${String(dt.getMonth() + 1).padStart(2, "0")}/${String(dt.getDate()).padStart(2, "0")}/${String(dt.getFullYear()).slice(2)}`;
+};
+
+const SortIcon = ({ col, sortBy, sortDir }) => (
+  <span className={styles.sortIcon}>
+    {sortBy === col ? (sortDir === "asc" ? "↑" : "↓") : "↕"}
+  </span>
+);
+
 const UserManager = () => {
   const { dialogProps, confirm } = useConfirmDialog();
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
+  const pendingDeleteRef = useRef(null);
 
   const {
     items: users,
@@ -41,6 +64,7 @@ const UserManager = () => {
     handleChange,
     handleSubmit,
     handleEdit,
+    handleDelete,
     handleToggleActive,
     handleNew,
     resetForm,
@@ -93,36 +117,51 @@ const UserManager = () => {
       ...(data.password ? { password: data.password } : {}),
       profileUpdatedAt: now,
     }),
+    confirmDelete: async () => {
+      const user = pendingDeleteRef.current;
+      return confirm({
+        title: "Delete User",
+        message: `Delete ${user?.firstName} ${user?.lastName} (${user?.email})? This can't be undone.`,
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        isDangerous: true,
+      });
+    },
   });
+
+  const doDelete = (user) => {
+    if (showForm) resetForm();
+    pendingDeleteRef.current = user;
+    handleDelete(user);
+  };
+
+  const activeCount = users.filter((u) => u.active !== false).length;
+  const inactiveCount = users.length - activeCount;
+  const adminCount = users.filter((u) => u.userType === "admin").length;
 
   const displayed = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = users.filter((u) => {
-      if (roleFilter !== "all" && u.userType !== roleFilter) return false;
-      if (!q) return true;
-      const name = `${u.firstName} ${u.lastName}`.toLowerCase();
-      return name.includes(q) || (u.email || "").toLowerCase().includes(q);
+      if (filter === "active" && u.active === false) return false;
+      if (filter === "inactive" && u.active !== false) return false;
+      if (filter === "admin" && u.userType !== "admin") return false;
+      if (q) {
+        const name = `${u.firstName} ${u.lastName}`.toLowerCase();
+        return name.includes(q) || (u.email || "").toLowerCase().includes(q);
+      }
+      return true;
     });
 
     list = [...list].sort((a, b) => {
-      let av;
-      let bv;
+      let av, bv;
       switch (sortBy) {
         case "email":
-          av = a.email || "";
-          bv = b.email || "";
-          break;
+          av = a.email || ""; bv = b.email || ""; break;
         case "role":
-          av = a.userType || "";
-          bv = b.userType || "";
-          break;
+          av = a.userType || ""; bv = b.userType || ""; break;
         case "created":
           av = new Date(a.createdAt).getTime() || 0;
           bv = new Date(b.createdAt).getTime() || 0;
-          break;
-        case "lastActive":
-          av = a.lastActiveAt ? new Date(a.lastActiveAt).getTime() : 0;
-          bv = b.lastActiveAt ? new Date(b.lastActiveAt).getTime() : 0;
           break;
         case "name":
         default:
@@ -134,23 +173,40 @@ const UserManager = () => {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return list;
-  }, [users, search, roleFilter, sortBy, sortDir]);
+  }, [users, search, filter, sortBy, sortDir]);
 
   const toggleSort = (col) => {
-    if (sortBy === col) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(col);
-      setSortDir("asc");
-    }
+    if (sortBy === col) setSortDir(sortDir === "asc" ? "desc" : "asc");
+    else { setSortBy(col); setSortDir("asc"); }
   };
 
-  const sortIndicator = (col) => (sortBy === col ? (sortDir === "asc" ? " ▲" : " ▼") : "");
+  const previewInitials =
+    `${(formData.firstName || "").charAt(0)}${(formData.lastName || "").charAt(0)}`.toUpperCase() || "?";
+  const previewColor = editingUser
+    ? avatarColor(editingUser)
+    : avatarColor({ firstName: formData.firstName, lastName: formData.lastName, email: formData.email });
 
   return (
     <div className={styles.userManager}>
+      <header className={styles.pgHead}>
+        <div>
+          <h1 className={styles.pgTitle}>Users</h1>
+          <p className={styles.pgSub}>
+            <strong>{displayed.length}</strong> of {users.length}
+            {" · "}
+            <strong>{activeCount}</strong> active
+            {" · "}
+            <strong>{adminCount}</strong> admin{adminCount !== 1 ? "s" : ""}
+          </p>
+        </div>
+        <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
+          + Add User
+        </button>
+      </header>
+
       <div className={styles.toolbar}>
         <div className={styles.searchBox}>
+          <IconSearch />
           <input
             type="text"
             placeholder="Search name or email…"
@@ -158,43 +214,61 @@ const UserManager = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-
-        <div className={styles.chips} role="group" aria-label="Role filter">
-          {ROLE_FILTERS.map((r) => (
+        <div className={styles.filterChips}>
+          {[
+            { id: "all", label: "All", count: users.length },
+            { id: "active", label: "Active", count: activeCount },
+            { id: "inactive", label: "Inactive", count: inactiveCount },
+            { id: "admin", label: "Admins", count: adminCount },
+          ].map(({ id, label, count }) => (
             <button
-              key={r.id}
+              key={id}
               type="button"
-              className={`${styles.chip} ${roleFilter === r.id ? styles.chipActive : ""}`}
-              onClick={() => setRoleFilter(r.id)}
+              className={`${styles.chip} ${filter === id ? styles.chipOn : ""}`}
+              onClick={() => setFilter(id)}
             >
-              {r.label}
+              {label}
+              <span className={styles.chipCount}>{count}</span>
             </button>
           ))}
         </div>
-
-        <button type="button" className="btn-primary" onClick={handleNew}>
-          + Add User
-        </button>
       </div>
 
-      {isLoading ? (
-        <div className={styles.loadingState}>Loading users…</div>
-      ) : displayed.length === 0 ? (
-        <div className={styles.emptyState}>
-          <h3>No users match</h3>
-          <p>Try a different search or role filter.</p>
-        </div>
-      ) : (
-        <div className={styles.tableWrap}>
+      <div className={styles.tableWrap}>
+        {isLoading ? (
+          <div className={styles.emptyState}><p>Loading users…</p></div>
+        ) : displayed.length === 0 ? (
+          <div className={styles.emptyState}>
+            <h3>No users {search || filter !== "all" ? "match" : "yet"}</h3>
+            <p>
+              {search || filter !== "all"
+                ? "Try a different search or filter."
+                : "Add your first user to get started."}
+            </p>
+            {!search && filter === "all" && (
+              <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
+                + Add User
+              </button>
+            )}
+          </div>
+        ) : (
           <table className={styles.table}>
             <thead>
               <tr>
-                <th onClick={() => toggleSort("name")}>Name{sortIndicator("name")}</th>
-                <th onClick={() => toggleSort("email")}>Email{sortIndicator("email")}</th>
-                <th onClick={() => toggleSort("role")}>Role{sortIndicator("role")}</th>
-                <th onClick={() => toggleSort("lastActive")}>Last Active{sortIndicator("lastActive")}</th>
+                <th onClick={() => toggleSort("name")}>
+                  Name <SortIcon col="name" sortBy={sortBy} sortDir={sortDir} />
+                </th>
+                <th onClick={() => toggleSort("email")}>
+                  Email <SortIcon col="email" sortBy={sortBy} sortDir={sortDir} />
+                </th>
+                <th onClick={() => toggleSort("role")}>
+                  Role <SortIcon col="role" sortBy={sortBy} sortDir={sortDir} />
+                </th>
+                <th onClick={() => toggleSort("created")}>
+                  Created <SortIcon col="created" sortBy={sortBy} sortDir={sortDir} />
+                </th>
                 <th>Status</th>
-                <th style={{ width: 64 }}>Actions</th>
+                <th style={{ width: 72 }} />
               </tr>
             </thead>
             <tbody>
@@ -207,9 +281,7 @@ const UserManager = () => {
                         <span className={styles.avatar} style={{ background: avatarColor(u) }}>
                           {initialsFor(u)}
                         </span>
-                        <span className={styles.name}>
-                          {u.firstName} {u.lastName}
-                        </span>
+                        <span className={styles.name}>{u.firstName} {u.lastName}</span>
                       </div>
                     </td>
                     <td className={styles.email}>{u.email}</td>
@@ -218,30 +290,30 @@ const UserManager = () => {
                         {u.userType === "admin" ? "Admin" : "Editor"}
                       </span>
                     </td>
-                    <td className={styles.created}>
-                      {u.lastActiveAt ? new Date(u.lastActiveAt).toLocaleDateString() : "—"}
-                    </td>
+                    <td className={styles.created}>{fmtDate(u.createdAt)}</td>
                     <td>
-                      <button
-                        type="button"
-                        className={`${styles.statusToggle} ${active ? styles.statusActive : styles.statusInactive}`}
-                        onClick={() => handleToggleActive(u)}
-                        aria-pressed={active}
-                        title={active ? "Deactivate user" : "Activate user"}
-                      >
+                      <span className={`${styles.statusBadge} ${active ? styles.statusActive : styles.statusInactive}`}>
                         <span className={styles.statusDot} />
                         {active ? "Active" : "Inactive"}
-                      </button>
+                      </span>
                     </td>
                     <td>
                       <div className={styles.rowActions}>
                         <button
                           type="button"
-                          className={styles.iconBtn}
-                          onClick={() => handleEdit(u)}
                           title="Edit"
+                          className={styles.actionBtn}
+                          onClick={() => handleEdit(u)}
                         >
-                          ✎
+                          <IconEdit />
+                        </button>
+                        <button
+                          type="button"
+                          title="Delete"
+                          className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                          onClick={() => doDelete(u)}
+                        >
+                          <IconTrash />
                         </button>
                       </div>
                     </td>
@@ -250,44 +322,64 @@ const UserManager = () => {
               })}
             </tbody>
           </table>
-        </div>
-      )}
+        )}
+      </div>
 
       <Drawer
         open={showForm}
         onClose={resetForm}
         title={editingUser ? "Edit User" : "Add User"}
-        subtitle={editingUser ? editingUser.email : "No invite email is sent"}
+        subtitle={
+          editingUser
+            ? `${editingUser.firstName} ${editingUser.lastName} · ${editingUser.email}`
+            : "No invite email is sent"
+        }
         footer={
           <>
-            <button type="button" className="btn-text" onClick={resetForm}>
-              Cancel
-            </button>
-            <button type="button" className="btn-primary" onClick={handleSubmit}>
-              {editingUser ? "Save Changes" : "Add User"}
-            </button>
+            <div>
+              {editingUser && (
+                <button type="button" className={styles.btnDanger} onClick={() => doDelete(editingUser)}>
+                  <IconTrash /> Delete
+                </button>
+              )}
+            </div>
+            <div className={styles.footerRight}>
+              <button type="button" className={styles.btnSecondary} onClick={resetForm}>
+                Cancel
+              </button>
+              <button type="button" className={styles.btnPrimary} onClick={handleSubmit}>
+                {editingUser ? "Save Changes" : "Add User"}
+              </button>
+            </div>
           </>
         }
       >
         <form onSubmit={handleSubmit} className={styles.drawerForm}>
+          <div className={styles.avatarPreview}>
+            <div className={styles.avatarLg} style={{ background: previewColor }}>
+              {previewInitials}
+            </div>
+          </div>
+
           <div className={styles.fieldRow}>
             <div className={styles.field}>
-              <label htmlFor="firstName">First Name</label>
+              <label htmlFor="um-firstName">First Name <span className={styles.req}>*</span></label>
               <input
                 type="text"
-                id="firstName"
+                id="um-firstName"
                 name="firstName"
                 value={formData.firstName || ""}
                 onChange={handleChange}
                 className={errors.firstName ? styles.inputError : ""}
+                autoFocus
               />
               {errors.firstName && <span className={styles.fieldError}>{errors.firstName}</span>}
             </div>
             <div className={styles.field}>
-              <label htmlFor="lastName">Last Name</label>
+              <label htmlFor="um-lastName">Last Name <span className={styles.req}>*</span></label>
               <input
                 type="text"
-                id="lastName"
+                id="um-lastName"
                 name="lastName"
                 value={formData.lastName || ""}
                 onChange={handleChange}
@@ -298,10 +390,10 @@ const UserManager = () => {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="um-email">Email <span className={styles.req}>*</span></label>
             <input
               type="email"
-              id="email"
+              id="um-email"
               name="email"
               value={formData.email || ""}
               onChange={handleChange}
@@ -311,25 +403,29 @@ const UserManager = () => {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="userType">Role</label>
+            <label htmlFor="um-userType">Role</label>
             <select
-              id="userType"
+              id="um-userType"
               name="userType"
               value={formData.userType || "editor"}
               onChange={handleChange}
             >
-              <option value="editor">Editor</option>
-              <option value="admin">Admin</option>
+              <option value="editor">Editor — can create and edit ISCI codes</option>
+              <option value="admin">Admin — full access, manages clients &amp; users</option>
             </select>
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="password">
-              Password {editingUser ? "(leave blank to keep current)" : ""}
+            <label htmlFor="um-password">
+              Password{" "}
+              {editingUser
+                ? <span className={styles.fieldOptional}>(leave blank to keep current)</span>
+                : <span className={styles.req}>*</span>
+              }
             </label>
             <input
               type="password"
-              id="password"
+              id="um-password"
               name="password"
               value={formData.password || ""}
               onChange={handleChange}
@@ -338,6 +434,26 @@ const UserManager = () => {
             />
             {errors.password && <span className={styles.fieldError}>{errors.password}</span>}
           </div>
+
+          {editingUser && (
+            <div className={styles.rowSwitch}>
+              <div>
+                <div className={styles.switchTitle}>Status</div>
+                <div className={styles.switchHint}>
+                  {editingUser.active !== false
+                    ? "Can sign in and create codes"
+                    : "Cannot sign in. Existing codes unaffected."}
+                </div>
+              </div>
+              <button
+                type="button"
+                className={`${styles.toggleTrack} ${editingUser.active !== false ? styles.toggleOn : ""}`}
+                onClick={() => handleToggleActive(editingUser)}
+                aria-pressed={editingUser.active !== false}
+                aria-label="Toggle active status"
+              />
+            </div>
+          )}
         </form>
       </Drawer>
 
