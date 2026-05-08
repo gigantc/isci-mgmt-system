@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { isAuthenticated, getUserSession } from "@/utils/auth";
-import { useFetchData, useExportData, useImportData } from "@/hooks";
+import { useFetchData, useExportData, useImportData, useConfirmDialog } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import styles from "./Reports.module.scss";
 
 const CSV_HEADERS = [
@@ -400,7 +401,30 @@ const IMPORT_MODES = [
   },
 ];
 
+const IMPORT_MODE_CONFIRM = {
+  add: {
+    title: "Import new codes",
+    message: (rows) => `Add ${rows} row${rows !== 1 ? "s" : ""}? Codes that already exist will be skipped.`,
+    confirmText: "Import",
+    isDangerous: false,
+  },
+  update: {
+    title: "Import and update codes",
+    message: (rows) => `Import ${rows} row${rows !== 1 ? "s" : ""}? Existing codes that match by ISCI code will be overwritten.`,
+    confirmText: "Import",
+    isDangerous: false,
+  },
+  replace: {
+    title: "Replace all data",
+    message: (rows) => `This will delete every existing ISCI code and replace them with the ${rows} row${rows !== 1 ? "s" : ""} in this file. This cannot be undone.`,
+    confirmText: "Delete and replace",
+    isDangerous: true,
+  },
+};
+
 const ImportSection = ({ onImported }) => {
+  const { dialogProps, confirm } = useConfirmDialog();
+
   const {
     file: importFile,
     preview: importPreview,
@@ -417,6 +441,19 @@ const ImportSection = ({ onImported }) => {
     onSuccess: () => onImported?.(),
   });
 
+  const handleImportWithConfirm = async () => {
+    const cfg = IMPORT_MODE_CONFIRM[importMode];
+    const rows = importPreview?.rowCount ?? 0;
+    const ok = await confirm({
+      title: cfg.title,
+      message: cfg.message(rows),
+      confirmText: cfg.confirmText,
+      cancelText: "Cancel",
+      isDangerous: cfg.isDangerous,
+    });
+    if (ok) handleImport();
+  };
+
   return (
     <section className={styles.section}>
       <header className={styles.pgHead}>
@@ -429,7 +466,7 @@ const ImportSection = ({ onImported }) => {
         <button
           type="button"
           className={styles.btnPrimary}
-          onClick={handleImport}
+          onClick={handleImportWithConfirm}
           disabled={!importFile || isImporting}
         >
           <IconUpload /> {isImporting ? "Importing…" : "Import CSV"}
@@ -545,6 +582,8 @@ const ImportSection = ({ onImported }) => {
           </div>
         )}
       </div>
+
+      <ConfirmDialog {...dialogProps} />
     </section>
   );
 };
