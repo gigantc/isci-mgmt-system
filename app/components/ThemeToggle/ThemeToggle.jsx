@@ -21,18 +21,18 @@ const MoonIcon = () => (
  * by an inline script in root.jsx (`themeBootstrap`) so there's no flash.
  */
 const ThemeToggle = () => {
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
     if (typeof document === "undefined") return;
-    setTheme(document.documentElement.classList.contains("theme-light") ? "light" : "dark");
+    setTheme(document.documentElement.classList.contains("theme-dark") ? "dark" : "light");
   }, []);
 
   const setThemeTo = (next) => {
     if (next === theme) return;
     setTheme(next);
     if (typeof document !== "undefined") {
-      document.documentElement.classList.toggle("theme-light", next === "light");
+      document.documentElement.classList.toggle("theme-dark", next === "dark");
     }
     if (typeof window !== "undefined") {
       try { window.localStorage.setItem(THEME_KEY, next); } catch { /* ignore */ }

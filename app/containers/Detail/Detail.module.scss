@@ -1,10 +1,9 @@
-@use "@/styles/variables" as v;
 
 .detail {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 50px);
-  background: v.$black;
+  background: var(--paper);
 }
 
 .pageContent {
@@ -38,7 +37,7 @@
 
 .titleLabel {
   font-weight: 700;
-  color: v.$text-primary;
+  color: var(--ink);
 }
 
 .readOnlyBadge {
@@ -46,7 +45,7 @@
   align-items: center;
   padding: 0.25rem 0.55rem;
   font-size: 0.625rem;
-  font-family: v.$font-mono;
+  font-family: var(--font-mono);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -64,9 +63,9 @@
   font-size: 13px;
   font-weight: 500;
   font-family: inherit;
-  border: 1px solid v.$border-color;
-  background: v.$paper-1;
-  color: v.$text-primary;
+  border: 1px solid var(--line);
+  background: var(--paper-1);
+  color: var(--ink);
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.12s, border-color 0.12s, color 0.12s;
@@ -77,20 +76,20 @@
   }
 
   &:hover:not(:disabled) {
-    background: v.$paper-2;
-    border-color: v.$text-secondary;
+    background: var(--paper-2);
+    border-color: var(--ink-1);
   }
 }
 
 .headerBtnPrimary {
-  background: v.$accent;
-  color: v.$accent-text;
-  border-color: v.$accent;
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
 
   &:hover:not(:disabled) {
-    background: v.$hover;
-    border-color: v.$hover;
-    color: v.$accent-text;
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: var(--accent-text);
   }
 }
 
@@ -99,12 +98,12 @@
   align-items: center;
   gap: 0.35rem;
   font-size: 0.7rem;
-  color: v.$text-secondary;
-  font-family: v.$font-mono;
+  color: var(--ink-1);
+  font-family: var(--font-mono);
   margin-bottom: 0.625rem;
 
   a, button {
-    color: v.$text-secondary;
+    color: var(--ink-1);
     background: none;
     border: 0;
     cursor: pointer;
@@ -112,11 +111,11 @@
     font: inherit;
     letter-spacing: 0.02em;
 
-    &:hover { color: v.$accent; }
+    &:hover { color: var(--accent); }
   }
 
   .sep {
-    color: v.$ink-3;
+    color: var(--ink-3);
   }
 }
 
@@ -129,12 +128,12 @@
   align-items: baseline;
   gap: 0.75rem;
   flex-wrap: wrap;
-  color: v.$text-primary;
+  color: var(--ink);
 }
 
 .titleCode {
-  font-family: v.$font-mono;
-  color: v.$accent;
+  font-family: var(--font-mono);
+  color: var(--accent);
   font-size: 1.75rem;
   letter-spacing: 0.02em;
 }
@@ -142,8 +141,8 @@
 .subtitle {
   margin: 0.4rem 0 0;
   font-size: 0.75rem;
-  color: v.$text-secondary;
-  font-family: v.$font-mono;
+  color: var(--ink-1);
+  font-family: var(--font-mono);
 }
 
 .scrollableContent {
@@ -157,17 +156,17 @@
 .loadingState {
   text-align: center;
   padding: 3rem 1rem;
-  color: v.$text-secondary;
+  color: var(--ink-1);
   font-size: 0.875rem;
 }
 
 .errorState {
   text-align: center;
   padding: 3rem 2rem;
-  color: v.$text-secondary;
+  color: var(--ink-1);
 
   h3 {
-    color: v.$red;
+    color: var(--danger);
     margin-bottom: 0.75rem;
     font-size: 1.125rem;
   }
@@ -206,8 +205,8 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1.5rem;
-  border-top: 1px solid v.$border-color;
-  background: v.$black;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
 }
 
 .footerStatus {
@@ -215,15 +214,15 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.75rem;
-  font-family: v.$font-mono;
-  color: v.$text-secondary;
+  font-family: var(--font-mono);
+  color: var(--ink-1);
 }
 
 .footerDot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: v.$text-secondary;
+  background: var(--ink-1);
   display: inline-block;
 }
 
@@ -242,16 +241,16 @@
   font-size: 13px;
   font-weight: 500;
   font-family: inherit;
-  border: 1px solid v.$border-color;
-  background: v.$paper-1;
-  color: v.$text-primary;
+  border: 1px solid var(--line);
+  background: var(--paper-1);
+  color: var(--ink);
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.12s, border-color 0.12s, color 0.12s;
 
   &:hover:not(:disabled) {
-    background: v.$paper-2;
-    border-color: v.$text-secondary;
+    background: var(--paper-2);
+    border-color: var(--ink-1);
   }
 
   &:disabled {
@@ -261,14 +260,14 @@
 }
 
 .footerBtnPrimary {
-  background: v.$accent;
-  color: v.$accent-text;
-  border-color: v.$accent;
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
 
   &:hover:not(:disabled) {
-    background: v.$hover;
-    border-color: v.$hover;
-    color: v.$accent-text;
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: var(--accent-text);
   }
 }
 
@@ -282,7 +281,7 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: v.$text-secondary;
+  color: var(--ink-1);
   font-weight: 600;
   margin: 0 0 0.25rem;
 }
@@ -293,25 +292,25 @@
   gap: 0.5rem;
   width: 100%;
   padding: 0.5rem 0.75rem;
-  background: v.$paper-1;
-  border: 1px solid v.$border-color;
+  background: var(--paper-1);
+  border: 1px solid var(--line);
   border-radius: 6px;
-  color: v.$text-primary;
+  color: var(--ink);
   font-size: 0.8125rem;
   text-align: left;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 
   &:hover {
-    background: v.$paper-2;
-    border-color: v.$accent;
+    background: var(--paper-2);
+    border-color: var(--accent);
   }
 
   svg {
     width: 14px;
     height: 14px;
     flex-shrink: 0;
-    color: v.$text-secondary;
+    color: var(--ink-1);
   }
 }
 
@@ -323,10 +322,10 @@
 .activityTitle {
   font-size: 0.6875rem;
   font-weight: 600;
-  color: v.$text-secondary;
+  color: var(--ink-1);
   margin: 0 0 0.375rem;
   padding-bottom: 0.375rem;
-  border-bottom: 1px solid v.$border-color;
+  border-bottom: 1px solid var(--line);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   display: flex;
@@ -335,8 +334,8 @@
 }
 
 .activityNumber {
-  font-family: v.$font-mono;
-  color: v.$ink-3;
+  font-family: var(--font-mono);
+  color: var(--ink-3);
   font-weight: 400;
   letter-spacing: 0.04em;
 }
@@ -352,7 +351,7 @@
   grid-template-columns: 20px 1fr;
   gap: 10px;
   padding: 10px 0;
-  border-bottom: 1px dashed v.$border-color;
+  border-bottom: 1px dashed var(--line);
   font-size: 12px;
 
   &:last-child { border-bottom: none; }
@@ -362,12 +361,12 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: v.$ink-3;
+  background: var(--ink-3);
   margin-top: 6px;
 }
 
 .activityDotNew {
-  background: v.$accent;
+  background: var(--accent);
 }
 
 .activityBody { min-width: 0; }
@@ -379,18 +378,18 @@
   flex-wrap: wrap;
 
   strong {
-    color: v.$text-primary;
+    color: var(--ink);
     font-weight: 600;
   }
 }
 
 .activityMeta {
-  color: v.$ink-3;
-  font-family: v.$font-mono;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
   font-size: 11px;
 }
 
 .activityText {
-  color: v.$text-secondary;
+  color: var(--ink-1);
   margin-top: 2px;
 }

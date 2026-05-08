@@ -1,10 +1,9 @@
-@use "@/styles/variables" as v;
 
 .profilePage {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 48px);
-  background: v.$bg-primary;
+  background: var(--paper);
 }
 
 .pageContent {
@@ -16,8 +15,8 @@
 
 .stickyHeader {
   padding: 1.125rem 1.5rem 0.875rem;
-  border-bottom: 1px solid v.$border-color;
-  background: v.$bg-primary;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -36,12 +35,12 @@
   align-items: center;
   gap: 0.35rem;
   font-size: 0.7rem;
-  color: v.$text-secondary;
-  font-family: v.$font-mono;
+  color: var(--ink-1);
+  font-family: var(--font-mono);
   margin-bottom: 0.625rem;
 
   a, button {
-    color: v.$text-secondary;
+    color: var(--ink-1);
     background: none;
     border: 0;
     cursor: pointer;
@@ -49,10 +48,10 @@
     font: inherit;
     letter-spacing: 0.02em;
 
-    &:hover { color: v.$accent; }
+    &:hover { color: var(--accent); }
   }
 
-  .sep { color: v.$ink-3; }
+  .sep { color: var(--ink-3); }
 }
 
 .title {
@@ -60,14 +59,14 @@
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: v.$text-primary;
+  color: var(--ink);
 }
 
 .subtitle {
   margin: 0.25rem 0 0;
   font-size: 0.75rem;
-  color: v.$text-secondary;
-  font-family: v.$font-mono;
+  color: var(--ink-1);
+  font-family: var(--font-mono);
 }
 
 .headerActions {
@@ -94,23 +93,23 @@
   gap: 1rem;
 
   .errorMessage {
-    background: v.$red-soft;
-    border: 1px solid v.$red;
-    color: v.$red;
+    background: var(--danger-soft);
+    border: 1px solid var(--danger);
+    color: var(--danger);
     padding: 0.5rem 0.75rem;
     border-radius: 4px;
     font-size: 0.75rem;
-    font-family: v.$font-mono;
+    font-family: var(--font-mono);
   }
 
   .successMessage {
-    background: v.$teal-soft;
-    border: 1px solid v.$teal;
-    color: v.$teal;
+    background: var(--ok-soft);
+    border: 1px solid var(--ok);
+    color: var(--ok);
     padding: 0.5rem 0.75rem;
     border-radius: 4px;
     font-size: 0.75rem;
-    font-family: v.$font-mono;
+    font-family: var(--font-mono);
   }
 
   .formSectionsRow {
@@ -124,8 +123,8 @@
   }
 
   .formSection {
-    background: v.$paper-2;
-    border: 1px solid v.$border-color;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
     border-radius: 8px;
     padding: 1.125rem 1.25rem;
     display: flex;
@@ -135,19 +134,19 @@
     h3 {
       font-size: 0.7rem;
       font-weight: 600;
-      color: v.$text-secondary;
+      color: var(--ink-1);
       margin: 0 0 0.5rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid v.$border-color;
+      border-bottom: 1px solid var(--line);
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
 
     .sectionNote {
       font-size: 0.7rem;
-      color: v.$text-secondary;
+      color: var(--ink-1);
       margin: -0.25rem 0 0.25rem;
-      font-family: v.$font-mono;
+      font-family: var(--font-mono);
     }
   }
 
@@ -165,7 +164,7 @@
     label {
       font-size: 0.7rem;
       font-weight: 500;
-      color: v.$text-secondary;
+      color: var(--ink-1);
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
@@ -175,19 +174,19 @@
       height: 34px;
       padding: 0 0.625rem;
       font-size: 0.8125rem;
-      border: 1px solid v.$border-color;
+      border: 1px solid var(--line);
       border-radius: 4px;
-      background: v.$bg-primary;
-      color: v.$text-primary;
+      background: var(--paper);
+      color: var(--ink);
       outline: none;
       transition: border-color 0.12s, box-shadow 0.12s;
 
       &:focus {
-        border-color: v.$accent;
-        box-shadow: 0 0 0 3px v.$accent-ring;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-ring);
       }
 
-      &::placeholder { color: v.$text-secondary; }
+      &::placeholder { color: var(--ink-1); }
     }
   }
 
@@ -203,7 +202,7 @@
         height: 96px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid v.$border-color;
+        border: 2px solid var(--line);
       }
     }
 
@@ -221,17 +220,17 @@
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.04em;
-          background: v.$accent;
-          color: v.$accent-text;
-          border: 1px solid v.$accent;
+          background: var(--accent);
+          color: var(--accent-text);
+          border: 1px solid var(--accent);
           border-radius: 4px;
           cursor: pointer;
           margin-right: 0.625rem;
           transition: background 0.12s;
 
           &:hover {
-            background: v.$accent-hover;
-            border-color: v.$accent-hover;
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
           }
         }
       }
@@ -239,21 +238,21 @@
   }
 
   .profileMeta {
-    background: v.$paper-2;
-    border: 1px solid v.$border-color;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
     border-radius: 8px;
     padding: 1rem 1.125rem;
 
     p {
       margin: 0 0 0.5rem;
       font-size: 0.75rem;
-      color: v.$text-secondary;
-      font-family: v.$font-mono;
+      color: var(--ink-1);
+      font-family: var(--font-mono);
 
       &:last-child { margin-bottom: 0; }
 
       strong {
-        color: v.$text-primary;
+        color: var(--ink);
         font-weight: 500;
       }
     }

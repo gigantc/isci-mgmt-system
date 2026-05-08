@@ -1,8 +1,7 @@
-@use "@/styles/variables" as v;
 
 .slateContainer {
-  background: v.$paper-1;
-  border: 1px solid v.$border-color;
+  background: var(--paper-1);
+  border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
 
@@ -12,12 +11,12 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.625rem 0.875rem;
-    border-bottom: 1px solid v.$border-color;
+    border-bottom: 1px solid var(--line);
 
     h3 {
       font-size: 0.6875rem;
       font-weight: 600;
-      color: v.$text-secondary;
+      color: var(--ink-1);
       margin: 0;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -28,9 +27,9 @@
       padding: 0 0.625rem;
       font-size: 0.7rem;
       font-weight: 600;
-      color: v.$text-primary;
-      background: v.$bg-primary;
-      border: 1px solid v.$border-color;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--line);
       border-radius: 4px;
       cursor: pointer;
       text-transform: uppercase;
@@ -38,8 +37,8 @@
       transition: border-color 0.12s, color 0.12s;
 
       &:hover {
-        color: v.$accent;
-        border-color: v.$accent;
+        color: var(--accent);
+        border-color: var(--accent);
       }
     }
   }
@@ -64,10 +63,10 @@
   .slateNote {
     margin: 0;
     padding: 0.625rem 0.875rem;
-    border-top: 1px solid v.$border-color;
+    border-top: 1px solid var(--line);
     font-size: 0.7rem;
-    color: v.$text-secondary;
-    font-family: v.$font-mono;
+    color: var(--ink-1);
+    font-family: var(--font-mono);
     text-align: center;
   }
 }

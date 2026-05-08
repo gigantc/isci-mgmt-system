@@ -1,4 +1,3 @@
-@use "@/styles/variables" as v;
 
 .isciList {
   width: 100%;
@@ -19,12 +18,12 @@
       padding: 0.5rem 0.75rem;
       text-align: left;
       font-weight: 500;
-      color: v.$text-secondary;
+      color: var(--ink-1);
       text-transform: uppercase;
       font-size: 0.6875rem;
       letter-spacing: 0.04em;
-      background: v.$paper-1;
-      border-bottom: 1px solid v.$border-color;
+      background: var(--paper-1);
+      border-bottom: 1px solid var(--line);
       position: sticky;
       top: 0;
       z-index: 5;
@@ -38,7 +37,7 @@
       user-select: none;
       transition: color 0.12s;
 
-      &:hover { color: v.$text-primary; }
+      &:hover { color: var(--ink); }
     }
   }
 
@@ -50,13 +49,13 @@
     position: relative;
 
     &:hover {
-      outline: 1px solid v.$accent;
+      outline: 1px solid var(--accent);
       outline-offset: -1px;
       z-index: 1;
     }
 
     &:hover .gridItems > span {
-      background: v.$paper-2;
+      background: var(--paper-2);
     }
 
     &:hover .actionsCell .rowAction {
@@ -64,7 +63,7 @@
     }
 
     &.selected .gridItems > span {
-      background: v.$accent-soft;
+      background: var(--accent-soft);
     }
   }
 
@@ -73,8 +72,8 @@
 
     > span {
       padding: 0.625rem 0.75rem;
-      color: v.$ink-1;
-      border-bottom: 1px solid v.$border-color;
+      color: var(--ink-1);
+      border-bottom: 1px solid var(--line);
       display: flex;
       align-items: center;
       white-space: nowrap;
@@ -85,16 +84,16 @@
   }
 
   .gridItems > span.codeCell {
-    font-family: v.$font-mono;
+    font-family: var(--font-mono);
     font-weight: 600;
-    color: v.$accent;
+    color: var(--accent);
     font-size: 0.78rem;
     letter-spacing: 0.02em;
   }
 
   .clientCell {
     gap: 0.5rem;
-    color: v.$text-primary;
+    color: var(--ink);
     font-weight: 500;
   }
 
@@ -106,22 +105,22 @@
   }
 
   .mutedCell {
-    color: v.$ink-2;
-    font-family: v.$font-mono;
+    color: var(--ink-2);
+    font-family: var(--font-mono);
     font-size: 0.75rem;
   }
 
   .numCell {
-    color: v.$ink-2;
-    font-family: v.$font-mono;
+    color: var(--ink-2);
+    font-family: var(--font-mono);
     font-size: 0.75rem;
     justify-content: flex-end;
   }
 
   .spotTitleCell {
-    font-family: v.$font-mono;
+    font-family: var(--font-mono);
     font-size: 0.75rem;
-    color: v.$text-primary;
+    color: var(--ink);
     overflow: hidden;
     text-overflow: ellipsis;
     display: block !important;
@@ -136,10 +135,10 @@
   .rowAction {
     width: 22px;
     height: 22px;
-    border: 1px solid v.$border-color;
-    background: v.$bg-primary;
+    border: 1px solid var(--line);
+    background: var(--paper);
     border-radius: 3px;
-    color: v.$text-secondary;
+    color: var(--ink-1);
     cursor: pointer;
     display: grid;
     place-items: center;
@@ -149,14 +148,14 @@
     transition: opacity 0.1s, color 0.1s, border-color 0.1s;
 
     &:hover {
-      color: v.$text-primary;
-      border-color: v.$line-strong;
+      color: var(--ink);
+      border-color: var(--line-strong);
     }
   }
 
   .rowActionDanger:hover {
-    color: v.$red;
-    border-color: v.$red;
+    color: var(--danger);
+    border-color: var(--danger);
   }
 
   &.compact {
@@ -167,7 +166,7 @@
 .emptyState {
   text-align: center;
   padding: 5rem 1.5rem;
-  color: v.$text-secondary;
+  color: var(--ink-1);
 
   p {
     font-size: 0.875rem;

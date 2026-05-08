@@ -1,9 +1,8 @@
-@use "@/styles/variables" as v;
 
 .reportsPage {
 
   .pageContent {
-    background: v.$black;
+    background: var(--paper);
     border-radius: 0px 0px 32px 32px;
     margin: 0 auto;
     width: calc(100% - 2rem);
@@ -16,7 +15,7 @@
   .stickyHeader {
     position: sticky;
     top: 0;
-    background: v.$black;
+    background: var(--paper);
     padding: 2.3rem 3rem 0 3rem;
     z-index: 10;
 
@@ -28,7 +27,7 @@
     .tabs {
       display: flex;
       gap: 0.5rem;
-      border-bottom: 2px solid v.$border-color;
+      border-bottom: 2px solid var(--line);
       margin-bottom: 2rem;
     }
 
@@ -38,21 +37,21 @@
       font-weight: 600;
       border: none;
       background: transparent;
-      color: v.$text-secondary;
+      color: var(--ink-1);
       cursor: pointer;
       transition: all 0.2s;
       border-bottom: 3px solid transparent;
       margin-bottom: -2px;
 
       &:hover {
-        color: v.$text-primary;
-        background: v.$overlay-1;
+        color: var(--ink);
+        background: var(--overlay-1);
       }
 
       &.active {
-        color: v.$accent;
-        border-bottom-color: v.$accent;
-        background: v.$accent-subtle;
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+        background: var(--accent-subtle);
       }
     }
   }
@@ -68,7 +67,7 @@
   .loadingState {
     text-align: center;
     padding: 3rem 1rem;
-    color: v.$text-secondary;
+    color: var(--ink-1);
     font-size: 1.125rem;
   }
 
@@ -79,15 +78,15 @@
   }
 
   .filtersCard {
-    background: v.$overlay-1;
+    background: var(--overlay-1);
     border-radius: 8px;
-    border: 1px solid v.$border-color;
+    border: 1px solid var(--line);
     padding: 2rem;
 
     h3 {
       font-size: 1.25rem;
       font-weight: 700;
-      color: v.$text-primary;
+      color: var(--ink);
       margin: 0 0 1.5rem 0;
     }
 
@@ -106,25 +105,25 @@
       label {
         font-size: 0.875rem;
         font-weight: 600;
-        color: v.$text-primary;
+        color: var(--ink);
       }
 
       input,
       select {
         padding: 0.625rem 0.75rem;
         font-size: 0.9375rem;
-        border: 1px solid v.$border-color;
+        border: 1px solid var(--line);
         border-radius: 6px;
         transition: all 0.2s;
         font-family: inherit;
-        background-color: v.$overlay-2;
-        color: v.$text-primary;
+        background-color: var(--overlay-2);
+        color: var(--ink);
         cursor: pointer;
 
         &:focus {
           outline: none;
-          border-color: v.$accent;
-          box-shadow: 0 0 0 3px v.$accent-ring;
+          border-color: var(--accent);
+          box-shadow: 0 0 0 3px var(--accent-ring);
         }
       }
     }
@@ -138,24 +137,24 @@
         padding: 0.625rem 1.5rem;
         font-size: 0.9375rem;
         font-weight: 600;
-        border: 1px solid v.$border-color;
+        border: 1px solid var(--line);
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.2s;
-        color: v.$text-primary;
-        background-color: v.$overlay-2;
+        color: var(--ink);
+        background-color: var(--overlay-2);
 
         &:hover {
-          background-color: v.$overlay-3;
+          background-color: var(--overlay-3);
         }
       }
     }
   }
 
   .exportCard {
-    background: v.$overlay-1;
+    background: var(--overlay-1);
     border-radius: 8px;
-    border: 1px solid v.$border-color;
+    border: 1px solid var(--line);
     padding: 2rem;
     display: flex;
     justify-content: space-between;
@@ -165,13 +164,13 @@
       h3 {
         font-size: 1.25rem;
         font-weight: 700;
-        color: v.$text-primary;
+        color: var(--ink);
         margin: 0 0 0.5rem 0;
       }
 
       .resultCount {
         font-size: 0.9375rem;
-        color: v.$text-secondary;
+        color: var(--ink-1);
         margin: 0;
       }
     }
@@ -184,13 +183,13 @@
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
-      color: v.$accent-text;
-      background-color: v.$accent;
+      color: var(--accent-text);
+      background-color: var(--accent);
       white-space: nowrap;
 
       &:hover {
-        background-color: v.$hover;
-        color: v.$white;
+        background-color: var(--accent-hover);
+        color: var(--ink);
       }
 
       &:active {
@@ -198,14 +197,14 @@
       }
 
       &:disabled {
-        background-color: v.$disabled;
-        color: v.$text-secondary;
+        background-color: var(--paper-3);
+        color: var(--ink-1);
         cursor: not-allowed;
         opacity: 0.5;
 
         &:hover {
-          background-color: v.$disabled;
-          color: v.$text-secondary;
+          background-color: var(--paper-3);
+          color: var(--ink-1);
         }
       }
     }
@@ -213,22 +212,22 @@
 
   .importSection {
     .importCard {
-      background: v.$overlay-1;
+      background: var(--overlay-1);
       border-radius: 8px;
-      border: 1px solid v.$border-color;
+      border: 1px solid var(--line);
       padding: 2rem;
 
       h3 {
         font-size: 1.25rem;
         font-weight: 700;
-        color: v.$text-primary;
+        color: var(--ink);
         margin: 0 0 1.5rem 0;
       }
 
       .templateSection {
         margin-bottom: 2rem;
         padding: 1rem;
-        background: v.$overlay-1;
+        background: var(--overlay-1);
         border-radius: 6px;
         display: flex;
         justify-content: space-between;
@@ -236,22 +235,22 @@
 
         p {
           margin: 0;
-          color: v.$text-secondary;
+          color: var(--ink-1);
         }
 
         .btnTemplate {
           padding: 0.5rem 1rem;
           font-size: 0.875rem;
           font-weight: 600;
-          border: 1px solid v.$border-color;
+          border: 1px solid var(--line);
           border-radius: 6px;
           cursor: pointer;
           transition: all 0.2s;
-          color: v.$text-primary;
-          background-color: v.$overlay-2;
+          color: var(--ink);
+          background-color: var(--overlay-2);
 
           &:hover {
-            background-color: v.$overlay-3;
+            background-color: var(--overlay-3);
           }
         }
       }
@@ -262,7 +261,7 @@
         label {
           font-size: 0.875rem;
           font-weight: 600;
-          color: v.$text-primary;
+          color: var(--ink);
           margin-bottom: 0.75rem;
           display: block;
         }
@@ -296,23 +295,23 @@
         .uploadLabel {
           display: block;
           padding: 2rem;
-          border: 2px dashed v.$border-color;
+          border: 2px dashed var(--line);
           border-radius: 8px;
           text-align: center;
           cursor: pointer;
           transition: all 0.2s;
-          color: v.$text-secondary;
+          color: var(--ink-1);
 
           &:hover {
-            border-color: v.$accent;
-            background: v.$accent-subtle;
-            color: v.$text-primary;
+            border-color: var(--accent);
+            background: var(--accent-subtle);
+            color: var(--ink);
           }
         }
       }
 
       .previewCard {
-        background: v.$overlay-1;
+        background: var(--overlay-1);
         border-radius: 6px;
         padding: 1rem;
         margin-bottom: 1.5rem;
@@ -320,13 +319,13 @@
         h4 {
           font-size: 1rem;
           font-weight: 600;
-          color: v.$text-primary;
+          color: var(--ink);
           margin: 0 0 0.5rem 0;
         }
 
         p {
           font-size: 0.875rem;
-          color: v.$text-secondary;
+          color: var(--ink-1);
           margin: 0.25rem 0;
         }
       }
@@ -337,20 +336,20 @@
         margin-bottom: 1.5rem;
 
         &.success {
-          background: v.$teal-soft;
-          border: 1px solid v.$teal;
+          background: var(--ok-soft);
+          border: 1px solid var(--ok);
 
           h4 {
-            color: v.$teal;
+            color: var(--ok);
           }
         }
 
         &.error {
-          background: v.$red-soft;
-          border: 1px solid v.$red-soft;
+          background: var(--danger-soft);
+          border: 1px solid var(--danger-soft);
 
           h4 {
-            color: v.$red;
+            color: var(--danger);
           }
         }
 
@@ -362,7 +361,7 @@
 
         p {
           font-size: 0.875rem;
-          color: v.$text-secondary;
+          color: var(--ink-1);
           margin: 0.25rem 0;
         }
 
@@ -384,17 +383,17 @@
           border-radius: 6px;
           cursor: pointer;
           transition: all 0.2s;
-          color: v.$accent-text;
-          background-color: v.$accent;
+          color: var(--accent-text);
+          background-color: var(--accent);
 
           &:hover {
-            background-color: v.$hover;
-            color: v.$white;
+            background-color: var(--accent-hover);
+            color: var(--ink);
           }
 
           &:disabled {
-            background-color: v.$disabled;
-            color: v.$text-secondary;
+            background-color: var(--paper-3);
+            color: var(--ink-1);
             cursor: not-allowed;
             opacity: 0.5;
           }

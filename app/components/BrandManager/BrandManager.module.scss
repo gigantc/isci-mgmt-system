@@ -1,4 +1,3 @@
-@use "@/styles/variables" as v;
 
 .brandManager {
   display: flex;
@@ -20,19 +19,19 @@
     width: 100%;
     height: 36px;
     padding: 0 0.875rem;
-    background: v.$paper-2;
-    border: 1px solid v.$border-color;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
     border-radius: 6px;
-    color: v.$text-primary;
+    color: var(--ink);
     font-size: 0.875rem;
     outline: none;
     transition: border-color 0.12s, box-shadow 0.12s;
 
-    &::placeholder { color: v.$text-secondary; }
+    &::placeholder { color: var(--ink-1); }
 
     &:focus {
-      border-color: v.$accent;
-      box-shadow: 0 0 0 3px v.$accent-ring;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-ring);
     }
   }
 }
@@ -41,7 +40,7 @@
 .emptyState {
   text-align: center;
   padding: 3rem 1rem;
-  color: v.$text-secondary;
+  color: var(--ink-1);
 }
 
 .emptyState {
@@ -51,7 +50,7 @@
   align-items: center;
   gap: 0.75rem;
 
-  h3 { color: v.$text-primary; font-size: 1rem; margin: 0; }
+  h3 { color: var(--ink); font-size: 1rem; margin: 0; }
   p { font-size: 0.875rem; margin: 0 0 0.5rem; }
 }
 
@@ -63,8 +62,8 @@
 
 .card {
   position: relative;
-  background: v.$paper-2;
-  border: 1px solid v.$border-color;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 1rem 1.125rem;
   display: flex;
@@ -74,7 +73,7 @@
   transition: border-color 0.12s, transform 0.12s, box-shadow 0.12s;
 
   &:hover {
-    border-color: v.$line-strong;
+    border-color: var(--line-strong);
     transform: translateY(-1px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   }
@@ -97,7 +96,7 @@
   display: grid;
   place-items: center;
   color: #fff;
-  font-family: v.$font-mono;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -112,7 +111,7 @@
     font-size: 0.9375rem;
     font-weight: 600;
     margin: 0;
-    color: v.$text-primary;
+    color: var(--ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -127,10 +126,10 @@
 }
 
 .codeTag {
-  font-family: v.$font-mono;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 600;
-  color: v.$accent;
+  color: var(--accent);
   letter-spacing: 0.04em;
 }
 
@@ -145,13 +144,13 @@
   justify-content: space-between;
   gap: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px dashed v.$border-color;
+  border-top: 1px dashed var(--line);
 }
 
 .countText {
-  font-family: v.$font-mono;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: v.$ink-3;
+  color: var(--ink-3);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -167,11 +166,11 @@
 }
 
 .toggleLabel {
-  font-family: v.$font-mono;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: v.$text-secondary;
+  color: var(--ink-1);
 }
 
 .toggleTrack {
@@ -179,7 +178,7 @@
   width: 32px;
   height: 18px;
   border-radius: 12px;
-  background: v.$paper-3;
+  background: var(--paper-3);
   border: none;
   transition: background 0.15s;
   padding: 0;
@@ -188,7 +187,7 @@
 }
 
 .toggleOn {
-  background: v.$accent;
+  background: var(--accent);
 }
 
 .toggleKnob {
@@ -220,7 +219,7 @@
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: v.$text-secondary;
+    color: var(--ink-1);
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -231,34 +230,34 @@
     width: 100%;
     height: 36px;
     padding: 0 0.75rem;
-    background: v.$paper-2;
-    border: 1px solid v.$border-color;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
     border-radius: 6px;
-    color: v.$text-primary;
+    color: var(--ink);
     font-size: 0.875rem;
     outline: none;
 
     &:focus {
-      border-color: v.$accent;
-      box-shadow: 0 0 0 3px v.$accent-ring;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-ring);
     }
   }
 }
 
 .inputError {
-  border-color: v.$red !important;
+  border-color: var(--danger) !important;
 }
 
 .inputLocked {
-  background: v.$paper-3 !important;
-  color: v.$text-secondary !important;
+  background: var(--paper-3) !important;
+  color: var(--ink-1) !important;
   cursor: not-allowed;
 }
 
 .fieldError {
   font-size: 0.7rem;
-  color: v.$red;
-  font-family: v.$font-mono;
+  color: var(--danger);
+  font-family: var(--font-mono);
 }
 
 .colorRow {
@@ -276,7 +275,7 @@
 
 .colorHex {
   flex: 1;
-  font-family: v.$font-mono !important;
+  font-family: var(--font-mono) !important;
   text-transform: uppercase;
 }
 
@@ -284,15 +283,15 @@
   height: 36px;
   padding: 0 0.625rem;
   background: transparent;
-  border: 1px solid v.$border-color;
+  border: 1px solid var(--line);
   border-radius: 4px;
-  color: v.$text-secondary;
+  color: var(--ink-1);
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   cursor: pointer;
 
-  &:hover { color: v.$text-primary; border-color: v.$line-strong; }
+  &:hover { color: var(--ink); border-color: var(--line-strong); }
 }
 
 .lockIcon {
@@ -303,14 +302,14 @@
 .lockWarn {
   margin-top: 0.25rem;
   padding: 0.625rem 0.75rem;
-  background: v.$yellow-soft;
-  border: 1px solid v.$yellow;
+  background: var(--warn-soft);
+  border: 1px solid var(--warn);
   border-radius: 6px;
   font-size: 0.75rem;
-  color: v.$text-primary;
+  color: var(--ink);
   line-height: 1.4;
 
-  strong { color: v.$yellow; font-weight: 600; }
+  strong { color: var(--warn); font-weight: 600; }
 }
 
 .rowSwitch {
@@ -318,20 +317,20 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 0.875rem;
-  border: 1px solid v.$border-color;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: v.$paper-2;
+  background: var(--paper-2);
 }
 
 .switchTitle {
   font-size: 0.875rem;
-  color: v.$text-primary;
+  color: var(--ink);
   font-weight: 500;
 }
 
 .switchHint {
   font-size: 0.7rem;
-  color: v.$text-secondary;
-  font-family: v.$font-mono;
+  color: var(--ink-1);
+  font-family: var(--font-mono);
   margin-top: 2px;
 }

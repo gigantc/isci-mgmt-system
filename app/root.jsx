@@ -28,7 +28,7 @@ export const links = () => [
 
 // Inline script executed before hydration so the saved theme is applied
 // synchronously — avoids a flash of dark-mode on light-theme reload.
-const themeBootstrap = `(function(){try{var t=localStorage.getItem('isciz-theme');if(t==='light'){document.documentElement.classList.add('theme-light');}}catch(e){}})();`;
+const themeBootstrap = `(function(){try{var t=localStorage.getItem('isciz-theme');if(t==='dark'){document.documentElement.classList.add('theme-dark');}}catch(e){}})();`;
 
 export function Layout({ children }) {
   return (

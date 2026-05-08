@@ -1,9 +1,8 @@
-@use "@/styles/variables" as v;
 
 .group {
   display: inline-flex;
   gap: 2px;
-  border: 1px solid v.$border-color;
+  border: 1px solid var(--line);
   border-radius: 20px;
   padding: 2px;
   background: transparent;
@@ -17,7 +16,7 @@
   border-radius: 12px;
   display: grid;
   place-items: center;
-  color: v.$text-secondary;
+  color: var(--ink-1);
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
 
@@ -27,11 +26,11 @@
   }
 
   &:hover {
-    color: v.$text-primary;
+    color: var(--ink);
   }
 }
 
 .optionActive {
-  background: v.$paper-2;
-  color: v.$text-primary;
+  background: var(--paper-2);
+  color: var(--ink);
 }

@@ -1,10 +1,9 @@
-@use "@/styles/variables" as v;
 
 .createISCI {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 48px);
-  background: v.$bg-primary;
+  background: var(--paper);
 }
 
 .pageContent {
@@ -16,8 +15,8 @@
 
 .stickyHeader {
   padding: 1.125rem 1.5rem 0.875rem;
-  border-bottom: 1px solid v.$border-color;
-  background: v.$bg-primary;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -36,12 +35,12 @@
   align-items: center;
   gap: 0.35rem;
   font-size: 0.7rem;
-  color: v.$text-secondary;
-  font-family: v.$font-mono;
+  color: var(--ink-1);
+  font-family: var(--font-mono);
   margin-bottom: 0.625rem;
 
   a, button {
-    color: v.$text-secondary;
+    color: var(--ink-1);
     background: none;
     border: 0;
     cursor: pointer;
@@ -49,11 +48,11 @@
     font: inherit;
     letter-spacing: 0.02em;
 
-    &:hover { color: v.$accent; }
+    &:hover { color: var(--accent); }
   }
 
   .sep {
-    color: v.$ink-3;
+    color: var(--ink-3);
   }
 }
 
@@ -66,7 +65,7 @@
   align-items: baseline;
   gap: 0.75rem;
   flex-wrap: wrap;
-  color: v.$text-primary;
+  color: var(--ink);
 }
 
 .titleBadge {
@@ -74,25 +73,25 @@
   align-items: center;
   padding: 0.15rem 0.45rem;
   font-size: 0.625rem;
-  font-family: v.$font-mono;
+  font-family: var(--font-mono);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   border-radius: 3px;
-  background: v.$paper-3;
-  color: v.$text-secondary;
+  background: var(--paper-3);
+  color: var(--ink-1);
 }
 
 .titleBadgeNew {
-  background: v.$accent-soft;
-  color: v.$accent;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .subtitle {
   margin: 0.25rem 0 0;
   font-size: 0.75rem;
-  color: v.$text-secondary;
-  font-family: v.$font-mono;
+  color: var(--ink-1);
+  font-family: var(--font-mono);
 }
 
 .headerActions {
@@ -134,34 +133,34 @@
 .slatePlaceholder {
   padding: 1rem 1.125rem;
   border-radius: 8px;
-  background-color: v.$paper-1;
-  border: 1px solid v.$border-color;
+  background-color: var(--paper-1);
+  border: 1px solid var(--line);
 }
 
 .slateLabel,
 .tipLabel {
   font-size: 0.6875rem;
   font-weight: 600;
-  color: v.$text-secondary;
+  color: var(--ink-1);
   margin: 0 0 0.625rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 .slateBody {
-  border: 1px dashed v.$border-color;
+  border: 1px dashed var(--line);
   border-radius: 6px;
   padding: 2rem 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 140px;
-  background: v.$bg-primary;
+  background: var(--paper);
 }
 
 .slateHint {
-  color: v.$ink-3;
-  font-family: v.$font-mono;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   text-align: center;
   line-height: 1.5;
@@ -170,20 +169,20 @@
 .tipCard {
   padding: 1rem 1.125rem;
   border-radius: 8px;
-  background-color: v.$paper-1;
-  border: 1px solid v.$border-color;
+  background-color: var(--paper-1);
+  border: 1px solid var(--line);
 }
 
 .tipList {
   margin: 0;
   padding-left: 1.1rem;
   list-style: disc;
-  color: v.$text-secondary;
+  color: var(--ink-1);
   font-size: 0.8125rem;
   line-height: 1.6;
 
   strong {
-    color: v.$text-primary;
+    color: var(--ink);
     font-weight: 600;
   }
 }
@@ -191,7 +190,7 @@
 .loadingState {
   text-align: center;
   padding: 3rem 1rem;
-  color: v.$text-secondary;
+  color: var(--ink-1);
   font-size: 0.875rem;
 }
 
@@ -202,8 +201,8 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1.5rem;
-  border-top: 1px solid v.$border-color;
-  background: v.$bg-primary;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
 }
 
 .footerStatus {
@@ -211,15 +210,15 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.75rem;
-  font-family: v.$font-mono;
-  color: v.$text-secondary;
+  font-family: var(--font-mono);
+  color: var(--ink-1);
 }
 
 .footerDot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: v.$accent;
+  background: var(--accent);
   display: inline-block;
 }
 
@@ -238,16 +237,16 @@
   font-size: 13px;
   font-weight: 500;
   font-family: inherit;
-  border: 1px solid v.$border-color;
-  background: v.$paper-1;
-  color: v.$text-primary;
+  border: 1px solid var(--line);
+  background: var(--paper-1);
+  color: var(--ink);
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.12s, border-color 0.12s, color 0.12s;
 
   &:hover:not(:disabled) {
-    background: v.$paper-2;
-    border-color: v.$text-secondary;
+    background: var(--paper-2);
+    border-color: var(--ink-1);
   }
 
   &:disabled {
@@ -257,13 +256,13 @@
 }
 
 .footerBtnPrimary {
-  background: v.$accent;
-  color: v.$accent-text;
-  border-color: v.$accent;
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
 
   &:hover:not(:disabled) {
-    background: v.$hover;
-    border-color: v.$hover;
-    color: v.$accent-text;
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: var(--accent-text);
   }
 }
