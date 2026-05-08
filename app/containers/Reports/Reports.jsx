@@ -424,6 +424,7 @@ const IMPORT_MODE_CONFIRM = {
 
 const ImportSection = ({ onImported }) => {
   const { dialogProps, confirm } = useConfirmDialog();
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const {
     file: importFile,
@@ -432,6 +433,7 @@ const ImportSection = ({ onImported }) => {
     mode: importMode,
     isImporting,
     handleFileUpload,
+    handleFileDrop,
     handleImport,
     setMode: setImportMode,
     clearFile,
@@ -518,13 +520,20 @@ const ImportSection = ({ onImported }) => {
             id="rep-csvUpload"
             className={styles.fileInput}
           />
-          <label htmlFor="rep-csvUpload" className={`${styles.dropzone} ${importFile ? styles.dropzoneFilled : ""}`}>
+          <label
+            htmlFor="rep-csvUpload"
+            className={`${styles.dropzone} ${importFile ? styles.dropzoneFilled : ""} ${isDragOver ? styles.dropzoneDragOver : ""}`}
+            onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+            onDragEnter={(e) => { e.preventDefault(); setIsDragOver(true); }}
+            onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setIsDragOver(false); }}
+            onDrop={(e) => { setIsDragOver(false); handleFileDrop(e); }}
+          >
             <IconFile />
             <span className={styles.dropzoneText}>
-              {importFile ? importFile.name : "Choose CSV file"}
+              {importFile ? importFile.name : "Drop CSV here or click to choose"}
             </span>
             <span className={styles.dropzoneHint}>
-              {importFile ? "Click to choose a different file" : "CSV with ISCI Code, Client, Spot Title, etc."}
+              {importFile ? "Click or drop to choose a different file" : "Accepts .csv files"}
             </span>
           </label>
 

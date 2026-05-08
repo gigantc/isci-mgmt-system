@@ -513,6 +513,15 @@
   svg { color: var(--accent); }
 }
 
+.dropzoneDragOver {
+  border-color: var(--accent);
+  border-width: 2px;
+  background: var(--accent-soft);
+  cursor: copy;
+
+  svg { color: var(--accent); }
+}
+
 .dropzoneText {
   font-size: 0.875rem;
   font-weight: 500;
