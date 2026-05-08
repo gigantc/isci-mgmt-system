@@ -97,7 +97,7 @@ const ProfileMenu = ({ profileImage }) => {
             </div>
 
             <div className={styles.aboutBody}>
-              <p className={styles.version}>Version 1.0.0-beta</p>
+              <p className={styles.version}>Version 1.0.1</p>
               <p className={styles.copyright}>© {currentYear} R&R partners. All Rights Reserved.</p>
               <p className={styles.credit}>Built with ❤️ by Dan Freeman</p>
             </div>
