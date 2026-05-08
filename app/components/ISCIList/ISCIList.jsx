@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { isAdmin } from "@/utils/auth";
+import { colorForCode } from "@/utils/palette";
 import styles from "./ISCIList.module.scss";
 
-const ISCIList = ({ codes, onDelete }) => {
+const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) => {
   const navigate = useNavigate();
   const userIsAdmin = isAdmin();
   const [sortColumn, setSortColumn] = useState(null);
@@ -97,7 +98,7 @@ const ISCIList = ({ codes, onDelete }) => {
   }
 
   return (
-    <div className={styles.isciList}>
+    <div className={`${styles.isciList} ${density === "compact" ? styles.compact : ""}`}>
       <div className={styles.gridContainer}>
         {/* Header Row */}
         <div className={styles.gridHeader}>
@@ -111,50 +112,60 @@ const ISCIList = ({ codes, onDelete }) => {
             Campaign {getSortIndicator("campaign")}
           </span>
           <span onClick={() => handleSort("jobNumber")} className={styles.sortable}>
-            Job Number {getSortIndicator("jobNumber")}
+            Job # {getSortIndicator("jobNumber")}
           </span>
           <span onClick={() => handleSort("spotTitle")} className={styles.sortable}>
             Spot Title {getSortIndicator("spotTitle")}
           </span>
           <span onClick={() => handleSort("length")} className={styles.sortable}>
-            Length {getSortIndicator("length")}
+            Len {getSortIndicator("length")}
           </span>
           <span onClick={() => handleSort("airDate")} className={styles.sortable}>
-            Air/Start Date {getSortIndicator("airDate")}
+            Air Date {getSortIndicator("airDate")}
           </span>
+          <span />
         </div>
 
         {/* Data Rows */}
-        {sortData(codes).map((code) => (
-          <div key={code.id} className={styles.gridRow}>
+        {sortData(codes).map((code, idx) => (
+          <div
+            key={code.id}
+            className={`${styles.gridRow} ${idx === selectedIndex ? styles.selected : ""}`}
+            onClick={() => navigate(`/isci/${code.code}`)}
+          >
             <div className={styles.gridItems}>
-              <span className={styles.codeCell}>
-                <p>{code.code}</p>
-                <div className={styles.controls}>
-                    <button
-                      className={styles.btnEdit}
-                      onClick={() => navigate(`/edit/${code.code}`)}
-                      title={userIsAdmin ? "Edit" : "View"}
-                    >
-                      {userIsAdmin ? "Edit" : "View"}
-                    </button>
-                    {userIsAdmin && (
-                      <button
-                        className={styles.btnEdit}
-                        onClick={() => onDelete(code.id)}
-                        title="Delete"
-                      >
-                        Delete
-                      </button>
-                    )}
-                </div>
+              <span className={styles.codeCell}>{code.code}</span>
+              <span className={styles.clientCell}>
+                <span className={styles.clientDot} style={{ background: code.brandColor || colorForCode(code.brandCode || code.brand) }} />
+                {code.brand}
               </span>
-              <span>{code.brand}</span>
-              <span>{code.campaignName || "N/A"}</span>
-              <span>{code.jobNumber || "N/A"}</span>
+              <span className={styles.mutedCell}>{code.campaignName || "—"}</span>
+              <span className={styles.mutedCell}>{code.jobNumber || "—"}</span>
               <span className={styles.spotTitleCell}>{code.spotTitle}</span>
-              <span>{code.spotLength ? `${code.spotLength}s` : "N/A"}</span>
-              <span>{formatDate(code.airDate)}</span>
+              <span className={styles.numCell}>{code.spotLength ? `${code.spotLength}s` : "—"}</span>
+              <span className={styles.mutedCell}>{formatDate(code.airDate)}</span>
+              <span className={styles.actionsCell}>
+                {userIsAdmin && (
+                  <button
+                    type="button"
+                    className={styles.rowAction}
+                    onClick={(e) => { e.stopPropagation(); navigate(`/edit/${code.code}`); }}
+                    title="Edit"
+                  >
+                    ✎
+                  </button>
+                )}
+                {userIsAdmin && (
+                  <button
+                    type="button"
+                    className={`${styles.rowAction} ${styles.rowActionDanger}`}
+                    onClick={(e) => { e.stopPropagation(); onDelete(code.id); }}
+                    title="Delete"
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
             </div>
           </div>
         ))}

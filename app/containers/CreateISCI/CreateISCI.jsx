@@ -106,44 +106,83 @@ const CreateISCI = () => {
     }
   };
 
-  // Render page
   return (
     <div className={styles.createISCI}>
-
       <div className={styles.pageContent}>
-        {/* Sticky header section */}
         <div className={styles.stickyHeader}>
           <div className={styles.headerContent}>
-            <h2>Create New ISCI Code</h2>
-            {!isLoading && (
-              <div className={styles.headerActions}>
-                <button type="button" className="btn-text" onClick={handleCancel}>
-                  Cancel
-                </button>
-                <button type="button" className="btn-primary" onClick={handleSubmitClick}>
-                  Create ISCI
-                </button>
-              </div>
-            )}
+            <div className={styles.crumbs}>
+              <button type="button" onClick={() => navigate("/")}>Dashboard</button>
+              <span className={styles.sep}>/</span>
+              <span>New ISCI Code</span>
+            </div>
+            <h1 className={styles.title}>
+              Create ISCI Code
+              <span className={`${styles.titleBadge} ${styles.titleBadgeNew}`}>New</span>
+            </h1>
+            <p className={styles.subtitle}>Select a client to auto-generate the code.</p>
           </div>
         </div>
 
-        {/* Scrollable content area */}
         <div className={styles.scrollableContent}>
           {isLoading ? (
-            <div className={styles.loadingState}>Loading...</div>
+            <div className={styles.loadingState}>Loading…</div>
           ) : (
-            <ISCIForm
-              code={null}
-              onSubmit={handleCreateCode}
-              onCancel={handleCancel}
-              allCodes={codes}
-              hideActions={true}
-              hideTitle={true}
-              formRef={formRef}
-            />
+            <div className={styles.editGrid}>
+              <div className={styles.formColumn}>
+                <ISCIForm
+                  code={null}
+                  onSubmit={handleCreateCode}
+                  onCancel={handleCancel}
+                  allCodes={codes}
+                  hideActions={true}
+                  hideTitle={true}
+                  formRef={formRef}
+                />
+              </div>
+              <aside className={styles.aside}>
+                <div className={styles.slatePlaceholder}>
+                  <div className={styles.slateLabel}>Slate Preview</div>
+                  <div className={styles.slateBody}>
+                    <div className={styles.slateHint}>
+                      The slate becomes available once the ISCI is saved.
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.tipCard}>
+                  <div className={styles.tipLabel}>Tips</div>
+                  <ul className={styles.tipList}>
+                    <li>Select a <strong>Client</strong> to auto-generate the code.</li>
+                    <li><strong>Spot Title</strong> is required.</li>
+                    <li>Leave the <strong>Air / Start Date</strong> blank and check TBD if unknown.</li>
+                  </ul>
+                </div>
+              </aside>
+            </div>
           )}
         </div>
+
+        {!isLoading && (
+          <footer className={styles.footer}>
+            <div className={styles.footerStatus}>
+              <span className={styles.footerDot} aria-hidden="true" />
+              Draft · not saved
+            </div>
+            <div className={styles.footerActions}>
+              <button type="button" className={styles.footerBtn} onClick={handleCancel}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={`${styles.footerBtn} ${styles.footerBtnPrimary}`}
+                onClick={handleSubmitClick}
+              >
+                Create ISCI
+              </button>
+            </div>
+          </footer>
+        )}
       </div>
     </div>
   );

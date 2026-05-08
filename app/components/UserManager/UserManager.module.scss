@@ -1,378 +1,539 @@
-@use "@/styles/variables" as v;
 
 .userManager {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
 
+// ── Page header ──────────────────────────────────────────────────────────────
 
-  .userFormSection {
-    background: rgba(v.$white, 0.02);
-    border-radius: 8px;
-    border: 1px solid v.$border-color;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    animation: slideDown 0.3s ease-out;
-    transform-origin: top;
+.pgHead {
+  padding: 1.375rem 1.25rem 0.875rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
 
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-        max-height: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-        margin-bottom: 0;
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-        max-height: 1000px;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        margin-bottom: 2rem;
-      }
-    }
+.pgTitle {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.125rem;
+  color: var(--ink);
+}
 
-    @keyframes slideUp {
-      from {
-        opacity: 1;
-        transform: translateY(0);
-        max-height: 1000px;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        margin-bottom: 2rem;
-      }
-      to {
-        opacity: 0;
-        transform: translateY(-20px);
-        max-height: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-        margin-bottom: 0;
-      }
-    }
+.pgSub {
+  font-size: 0.75rem;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  margin: 0;
 
-    &.closing {
-      animation: slideUp 0.3s ease-out forwards;
-    }
+  strong { color: var(--ink); font-weight: 500; }
+}
 
-    .formHeader {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
+// ── Toolbar ───────────────────────────────────────────────────────────────────
 
-      h2 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: v.$text-primary;
-        margin: 0;
-      }
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-1);
+  flex-shrink: 0;
+}
 
-      .btnClose {
-        background: none;
-        border: none;
-        color: v.$text-secondary;
-        font-size: 2rem;
-        line-height: 1;
-        cursor: pointer;
-        padding: 0;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 4px;
-        transition: all 0.2s ease-in-out;
+.searchBox {
+  flex: 1;
+  max-width: 440px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 30px;
+  padding: 0 0.625rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  transition: border-color 0.12s, box-shadow 0.12s;
 
-        &:hover {
-          background-color: rgba(v.$red, 0.15);
-          color: v.$red;
-        }
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
 
-        &:active {
-          transform: scale(0.95);
-        }
-      }
+  svg {
+    width: 14px;
+    height: 14px;
+    color: var(--ink-2);
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: none;
+    font-size: 0.8125rem;
+    color: var(--ink);
+    font-family: inherit;
+
+    &::placeholder { color: var(--ink-3); }
+  }
+}
+
+.filterChips {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.625rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--ink-1);
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+
+  &:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+}
+
+.chipOn {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.chipCount {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  opacity: 0.65;
+}
+
+// ── Table area ────────────────────────────────────────────────────────────────
+
+.tableWrap {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.emptyState {
+  padding: 5rem 1rem;
+  text-align: center;
+  color: var(--ink-1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+
+  h3 { color: var(--ink); font-size: 1rem; margin: 0; }
+  p { font-size: 0.8125rem; margin: 0; }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--paper-1);
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover { color: var(--ink); }
+    &:first-child { padding-left: 1.25rem; }
+    &:last-child { cursor: default; }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--line);
+
+    &:last-child { border-bottom: none; }
+
+    &:hover {
+      background: var(--paper-1);
+
+      .rowActions { opacity: 1; }
     }
   }
 
-  .userForm {
-    .formRow {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1rem;
+  tbody td {
+    padding: 0.625rem 0.75rem;
+    color: var(--ink);
+    white-space: nowrap;
 
-      @media (max-width: 768px) {
-        grid-template-columns: 1fr;
-      }
-    }
+    &:first-child { padding-left: 1.25rem; }
+  }
+}
 
-    .formGroup {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+.sortIcon {
+  font-size: 0.5625rem;
+  color: var(--ink-3);
+  margin-left: 3px;
+}
 
-      label {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: v.$text-primary;
-      }
+.rowInactive {
+  opacity: 0.55;
+}
 
-      input, select {
-        padding: 0.625rem 0.75rem;
-        font-size: 0.9375rem;
-        border: 1px solid v.$border-color;
-        border-radius: 6px;
-        transition: all 0.2s;
-        font-family: inherit;
-        background-color: rgba(v.$white, 0.05);
-        color: v.$text-primary;
+// ── Table cells ───────────────────────────────────────────────────────────────
 
-        &:focus {
-          outline: none;
-          border-color: v.$accent;
-          box-shadow: 0 0 0 3px rgba(v.$accent, 0.2);
-        }
+.nameCell {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
 
-        &.error {
-          border-color: v.$red;
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
 
-          &:focus {
-            border-color: v.$red;
-            box-shadow: 0 0 0 3px rgba(v.$red, 0.2);
-          }
-        }
+.name {
+  color: var(--ink);
+  font-weight: 500;
+}
 
-        &::placeholder {
-          color: v.$text-secondary;
-        }
-      }
+.email {
+  color: var(--ink-1);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
 
-      select {
-        cursor: pointer;
-      }
+.role {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  background: var(--paper-2);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  border-radius: 3px;
+}
 
-      .errorMessage {
-        font-size: 0.8125rem;
-        color: v.$red;
-        margin-top: -0.25rem;
-      }
-    }
+.roleAdmin {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
 
-    .formActions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      margin-top: 1.5rem;
+.created {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ink-2);
+}
 
-      button {
-        padding: 0.625rem 1.5rem;
-        font-size: 0.9375rem;
-        font-weight: 600;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
+// Status badge (non-interactive)
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
 
-      .btnCancel {
-        color: v.$text-primary;
-        background-color: transparent;
-        border: none;
-        text-transform:uppercase;
-        &:hover {
-         opacity:0.7;
-        }
-      }
+.statusDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
-      .btnSubmit {
-        color: v.$accent-text;
-        background-color: v.$accent;
+.statusActive {
+  background: var(--ok-soft);
+  color: var(--ok);
+  .statusDot { background: var(--ok); }
+}
 
-        &:hover {
-          background-color: v.$hover;
-          color: v.$white;
-        }
+.statusInactive {
+  background: var(--paper-2);
+  color: var(--ink-2);
+  .statusDot { background: var(--ink-3); }
+}
 
-        &:active {
-          transform: scale(0.98);
-        }
-      }
-    }
+// Row actions (hover reveal)
+.rowActions {
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.actionBtn {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  color: var(--ink-2);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+
+  svg { width: 12px; height: 12px; }
+
+  &:hover {
+    color: var(--ink);
+    border-color: var(--line-strong);
+    background: var(--paper-1);
+  }
+}
+
+.actionBtnDanger {
+  &:hover {
+    color: var(--danger);
+    border-color: var(--danger-soft);
+    background: var(--danger-soft);
+  }
+}
+
+// ── Drawer form ───────────────────────────────────────────────────────────────
+
+.drawerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.avatarPreview {
+  display: flex;
+  justify-content: center;
+  padding: 0.25rem 0 0.375rem;
+}
+
+.avatarLg {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  label {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 
-  .usersListSection {
-    .listHeader {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      padding: 1rem 0;
-      background-color: v.$bg-primary;
+  input,
+  select {
+    width: 100%;
+    height: 32px;
+    padding: 0 0.625rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--ink);
+    font-size: 0.8125rem;
+    outline: none;
+    font-family: inherit;
 
-      h2 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: v.$text-primary;
-        margin: 0;
-      }
-
-      .btnAddNew {
-        padding: 0.625rem 1.5rem;
-        font-size: 0.9375rem;
-        font-weight: 600;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.2s;
-        color: v.$accent-text;
-        background-color: v.$accent;
-
-        &:hover {
-          background-color: v.$hover;
-          color: v.$white;
-        }
-
-        &:active {
-          transform: scale(0.98);
-        }
-      }
-    }
-
-    .emptyState {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: v.$text-secondary;
-      background: rgba(v.$white, 0.02);
-      border-radius: 8px;
-      border: 1px solid v.$border-color;
+    &:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
   }
+}
 
-  .usersTableWrapper {
-    max-height: 600px;
-    overflow-y: auto;
-    overflow-x: auto;
-    background: rgba(v.$white, 0.02);
-    border-radius: 8px;
-    border: 1px solid v.$border-color;
+.req { color: var(--accent); }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
+.fieldOptional {
+  font-size: 0.625rem;
+  color: var(--ink-3);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
 
-      thead {
-        background-color: rgba(v.$white, 0.03);
+.inputError { border-color: var(--danger) !important; }
 
-        tr {
-          border-bottom: 2px solid v.$border-color;
-        }
+.fieldError {
+  font-size: 0.6875rem;
+  color: var(--danger);
+  font-family: var(--font-mono);
+}
 
-        th {
-          position: sticky;
-          top: 0;
-          z-index: 5;
-          padding: 0.75rem 1rem;
-          text-align: left;
-          font-weight: 600;
-          color: v.$text-primary;
-          text-transform: uppercase;
-          font-size: 0.75rem;
-          letter-spacing: 0.05em;
-          background-color: v.$gray;
-          border-bottom: 2px solid v.$border-color;
-        }
-      }
+.rowSwitch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper-1);
+}
 
-      tbody {
-        tr {
-          border-bottom: 1px solid v.$border-color-light;
-          transition: background-color 0.15s;
+.switchTitle {
+  font-size: 0.8125rem;
+  color: var(--ink);
+  font-weight: 500;
+}
 
-          &:hover {
-            background-color: rgba(v.$white, 0.03);
-          }
-        }
+.switchHint {
+  font-size: 0.6875rem;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
 
-        td {
-          padding: 1rem;
-          color: v.$text-secondary;
+.toggleTrack {
+  position: relative;
+  width: 30px;
+  height: 16px;
+  border-radius: 10px;
+  background: var(--paper-3);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s;
 
-          &.actionsCell {
-            display: flex;
-            gap: 0.5rem;
-            white-space: nowrap;
-          }
-        }
-      }
-    }
-
-    .typeBadge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: capitalize;
-
-      &.admin {
-        background-color: rgba(v.$pink, 0.15);
-        color: v.$pink;
-        border: 1px solid rgba(v.$pink, 0.3);
-      }
-
-      &.editor {
-        background-color: rgba(v.$blue, 0.15);
-        color: v.$blue;
-        border: 1px solid rgba(v.$blue, 0.3);
-      }
-    }
-
-    .btnEdit,
-    .btnDelete {
-      padding: 0.375rem 0.75rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btnEdit {
-      color: v.$accent-text;
-      background-color: v.$accent;
-
-      &:hover {
-        background-color: v.$hover;
-        color: v.$white;
-      }
-    }
-
-    .btnDelete {
-      color: v.$white;
-      background-color: rgba(v.$red, 0.2);
-      border: 1px solid rgba(v.$red, 0.4);
-
-      &:hover {
-        background-color: v.$red;
-        border-color: v.$red;
-      }
-    }
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    transition: left 0.15s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
+}
 
-  .loadingState {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: v.$text-secondary;
-    font-size: 1.125rem;
-  }
+.toggleOn {
+  background: var(--ok);
+
+  &::after { left: 16px; }
+}
+
+// ── Drawer footer buttons ─────────────────────────────────────────────────────
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s, border-color 0.12s;
+
+  &:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover { background: var(--paper-1); border-color: var(--line-strong); }
+}
+
+.btnDanger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger-soft);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+
+  svg { width: 13px; height: 13px; }
+
+  &:hover { background: var(--danger-soft); border-color: var(--danger); }
+}
+
+.footerRight {
+  display: flex;
+  gap: 0.5rem;
 }

@@ -1,24 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation, Link } from "react-router";
-import { getUserSession, isAdmin } from "@/utils/auth";
+import { getUserSession } from "@/utils/auth";
 import ProfileMenu from "@/components/ProfileMenu";
+import ThemeToggle from "@/components/ThemeToggle";
 import styles from "./Header.module.scss";
 import { ReactComponent as Logo } from "@/assets/Logo.svg";
 import DefaultProfileImage from "@/assets/default_profile_image.jpg";
 
 const Header = () => {
-  // Initialize user immediately to prevent flash
-  const [user, setUser] = useState(() => {
-    // Check if we're on the client side
-    if (typeof window !== "undefined") {
-      return getUserSession();
-    }
-    return null;
-  });
+  const [user, setUser] = useState(null);
   const location = useLocation();
 
-  // Only check for user updates when navigating to profile page
-  // This prevents unnecessary re-renders on every route change
+  useEffect(() => {
+    setUser(getUserSession());
+  }, []);
+
   useEffect(() => {
     if (location.pathname === "/profile") {
       const currentUser = getUserSession();
@@ -65,7 +61,7 @@ const Header = () => {
 
       <div className={styles.title}>
         <Logo className={styles.logo} aria-hidden="true" focusable="false" />
-        <h1>ISCIz <span>alpha</span></h1>
+        <h1>ISCIz <span>beta</span></h1>
       </div>
 
       <div className={styles.headerActions}>
@@ -85,7 +81,7 @@ const Header = () => {
           Reports
         </Link>
 
-        {isAdmin() && (
+        {user?.userType === "admin" && (
           <Link
             to="/admin"
             className={`${styles.navLink} ${isActive("/admin") ? styles.active : ""}`}
@@ -97,12 +93,12 @@ const Header = () => {
       </div>
 
       <div className={styles.profile}>
+        <ThemeToggle />
         <div className={styles.name}>
           <p>{displayName}</p>
           <p>{displayRole}</p>
         </div>
-        <img src={profileImage} alt="Profile" />
-        <ProfileMenu />
+        <ProfileMenu profileImage={profileImage} />
       </div>
     </header>
   )

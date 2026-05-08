@@ -1,0 +1,36 @@
+
+.group {
+  display: inline-flex;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 2px;
+  background: transparent;
+}
+
+.option {
+  width: 24px;
+  height: 22px;
+  background: none;
+  border: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--ink-1);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    color: var(--ink);
+  }
+}
+
+.optionActive {
+  background: var(--paper-2);
+  color: var(--ink);
+}

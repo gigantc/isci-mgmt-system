@@ -32,10 +32,12 @@ export async function loader() {
       orderBy: { createdAt: "desc" },
     });
 
-    // Denormalize brand name for frontend compatibility
+    // Denormalize brand name + color + code for frontend compatibility
     const codesWithBrandName = codes.map((code) => ({
       ...code,
       brand: code.brand.name,
+      brandCode: code.brand.code,
+      brandColor: code.brand.color || null,
       editHistory: parseEditHistory(code.editHistory),
     }));
 
@@ -109,6 +111,7 @@ export async function action({ request }) {
           airDate: data.airDate || null,
           aspectRatio: data.aspectRatio || "16:9",
           channel: data.channel || "Broadcast",
+          musicRights: data.musicRights || null,
           agency: data.agency || null,
           market: data.market || null,
           createdBy: data.createdBy || null,
@@ -170,6 +173,7 @@ export async function action({ request }) {
       if (data.airDate !== undefined) updateData.airDate = data.airDate || null;
       if (data.aspectRatio !== undefined) updateData.aspectRatio = data.aspectRatio;
       if (data.channel !== undefined) updateData.channel = data.channel;
+      if (data.musicRights !== undefined) updateData.musicRights = data.musicRights || null;
       if (data.agency !== undefined) updateData.agency = data.agency || null;
       if (data.market !== undefined) updateData.market = data.market || null;
       if (data.updatedBy !== undefined) updateData.updatedBy = data.updatedBy || null;
