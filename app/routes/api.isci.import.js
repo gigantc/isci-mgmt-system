@@ -8,27 +8,57 @@
 import { prisma } from "@/lib/prisma";
 import { normalizeMarketValue } from "@/utils/markets";
 
+// Parse a single CSV line correctly, handling quoted fields and empty values.
+const parseCSVLine = (line) => {
+  const result = [];
+  let i = 0;
+  while (i <= line.length) {
+    if (i === line.length) { result.push(""); break; }
+    if (line[i] === '"') {
+      let field = "";
+      i++;
+      while (i < line.length) {
+        if (line[i] === '"' && line[i + 1] === '"') { field += '"'; i += 2; }
+        else if (line[i] === '"') { i++; break; }
+        else { field += line[i++]; }
+      }
+      result.push(field);
+      if (line[i] === ",") i++;
+    } else {
+      const end = line.indexOf(",", i);
+      if (end === -1) { result.push(line.slice(i).trim()); break; }
+      result.push(line.slice(i, end).trim());
+      i = end + 1;
+    }
+  }
+  return result;
+};
+
 /**
  * POST /api/isci/import - Import ISCI codes from CSV data
+ *
+ * Expected column order (matches export + template):
+ * ISCI Code, Client, Campaign Name, Job Number, Spot Title, Description,
+ * Air Date, Market, Agency, Language, Spot Length, Aspect Ratio,
+ * File Format, Channel, Audio, Accessibility, Music Rights, Created At, Updated At
  */
 export async function action({ request }) {
   try {
     const { csvData, importMode } = await request.json();
 
-    // Parse CSV data
     const lines = csvData.trim().split("\n");
-    const headers = lines[0].split(",").map(h => h.replace(/"/g, "").trim());
+    const headers = parseCSVLine(lines[0]).map(h => h.trim());
     const headerIndex = headers.reduce((acc, header, index) => {
       acc[header.toLowerCase()] = index;
       return acc;
     }, {});
 
+    // Look up by column name first; fall back to positional index if headers are missing.
+    // Fallback indices match the current export/template column order.
     const getValue = (values, names, fallbackIndex = null) => {
       for (const name of names) {
         const index = headerIndex[name.toLowerCase()];
-        if (index !== undefined) {
-          return values[index] || "";
-        }
+        if (index !== undefined) return values[index] || "";
       }
       if (fallbackIndex !== null && values[fallbackIndex] !== undefined) {
         return values[fallbackIndex] || "";
@@ -51,25 +81,27 @@ export async function action({ request }) {
       const line = lines[i];
       if (!line.trim()) continue;
 
-      // Simple CSV parsing (handles quoted fields)
-      const values = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g)?.map(v => v.replace(/^"|"$/g, "").trim()) || [];
+      const values = parseCSVLine(line);
 
+      const rawSpotLength = getValue(values, ["Spot Length"], 10);
       const code = {
-        code: getValue(values, ["ISCI Code", "Code"], 0),
-        brand: getValue(values, ["Client", "Brand", "Brand/Client"], 1),
-        campaignName: getValue(values, ["Campaign Name"], 2) || null,
-        spotTitle: getValue(values, ["Spot Title"], 3),
-        spotLength: getValue(values, ["Spot Length"], 4) ? parseInt(getValue(values, ["Spot Length"], 4)) : null,
-        channel: getValue(values, ["Channel", "Placement"], 5) || "Broadcast",
-        aspectRatio: getValue(values, ["Aspect Ratio"], 6) || "16:9",
-        language: getValue(values, ["Language"], 7) || "English",
-        closedCaptioning: getValue(values, ["Closed Captioning", "Accessibility"], 8) || "Clean",
-        audio: getValue(values, ["Audio"], 9) || "Stereo LR",
-        fileFormat: getValue(values, ["File Format"], 10) || "Pro Res",
-        airDate: getValue(values, ["Air Date", "Air/Start Date"], 11) || null,
-        description: getValue(values, ["Description"], 12) || null,
-        agency: getValue(values, ["Agency"]) || null,
-        market: normalizeMarketValue(getValue(values, ["Market"])) || null
+        code:             getValue(values, ["ISCI Code", "Code"], 0),
+        brand:            getValue(values, ["Client", "Brand", "Brand/Client"], 1),
+        campaignName:     getValue(values, ["Campaign Name"], 2) || null,
+        jobNumber:        getValue(values, ["Job Number"], 3) || null,
+        spotTitle:        getValue(values, ["Spot Title"], 4),
+        description:      getValue(values, ["Description"], 5) || null,
+        airDate:          getValue(values, ["Air Date", "Air/Start Date"], 6) || null,
+        market:           normalizeMarketValue(getValue(values, ["Market"], 7)) || null,
+        agency:           getValue(values, ["Agency"], 8) || null,
+        language:         getValue(values, ["Language"], 9) || "English",
+        spotLength:       rawSpotLength ? parseInt(rawSpotLength, 10) : null,
+        aspectRatio:      getValue(values, ["Aspect Ratio"], 11) || "16:9",
+        fileFormat:       getValue(values, ["File Format"], 12) || "Pro Res",
+        channel:          getValue(values, ["Channel", "Placement"], 13) || "Broadcast",
+        audio:            getValue(values, ["Audio"], 14) || "Stereo LR",
+        closedCaptioning: getValue(values, ["Accessibility", "Closed Captioning"], 15) || "Clean",
+        musicRights:      getValue(values, ["Music Rights"], 16) || null,
       };
 
       // Validation

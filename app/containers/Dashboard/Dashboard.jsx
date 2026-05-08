@@ -78,9 +78,11 @@ const Dashboard = () => {
     }
   };
 
-  const currentUserName = useMemo(() => {
-    const u = typeof window !== "undefined" ? getUserSession() : null;
-    return u ? `${u.firstName} ${u.lastName}` : null;
+  const [currentUserName, setCurrentUserName] = useState(null);
+
+  useEffect(() => {
+    const u = getUserSession();
+    setCurrentUserName(u ? `${u.firstName} ${u.lastName}` : null);
   }, []);
 
   // Group counts for sidebar (based on unfiltered codes so counts don't collapse)

@@ -1,74 +1,63 @@
 
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: oklch(0.15 0.02 255 / 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  animation: fadeIn 0.2s ease-out;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.15s ease-out;
 }
 
 .dialog {
-  background-color: var(--paper-3);
-  border: 1px solid rgba(255, 250, 231, 0.05);
-  border-radius: 16px;
-  max-width: 500px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  max-width: 420px;
   width: 90%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.2s ease-out;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  animation: slideUp 0.15s ease-out;
 }
 
 .header {
-  padding: 24px 24px 16px 24px;
-  border-bottom: 1px solid rgba(255, 250, 231, 0.1);
+  padding: 1.25rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--line);
 
   h3 {
     margin: 0;
     color: var(--ink);
-    font-size: 20px;
+    font-size: 1rem;
     font-weight: 600;
+    letter-spacing: -0.01em;
   }
 }
 
 .body {
-  padding: 24px;
+  padding: 1rem 1.25rem;
 
   p {
     margin: 0;
-    color: var(--ink);
-    font-size: 16px;
-    line-height: 1.5;
+    color: var(--ink-1);
+    font-size: 0.8125rem;
+    line-height: 1.55;
   }
 }
 
 .actions {
-  padding: 16px 24px 24px 24px;
+  padding: 0.75rem 1.25rem 1.25rem;
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 0.5rem;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
