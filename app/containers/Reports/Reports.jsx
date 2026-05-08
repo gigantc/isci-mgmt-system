@@ -76,10 +76,14 @@ const Reports = () => {
       navigate("/login");
       return;
     }
-    setUser(getUserSession());
+    const currentUser = getUserSession();
+    setUser(currentUser);
     if (typeof window !== "undefined") {
       const stored = window.localStorage.getItem(TAB_KEY);
-      if (stored === "export" || stored === "import") setActiveTab(stored);
+      const isAdmin = currentUser?.userType === "admin";
+      if (stored === "export" || (stored === "import" && isAdmin)) {
+        setActiveTab(stored);
+      }
     }
   }, [navigate]);
 
