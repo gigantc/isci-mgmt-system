@@ -50,6 +50,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: zoom-in;
+    position: relative;
+
+    &:hover .previewHint {
+      opacity: 1;
+    }
 
     .canvas {
       width: 100%;
@@ -60,6 +66,23 @@
     }
   }
 
+  .previewHint {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.625rem;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
   .slateNote {
     margin: 0;
     padding: 0.625rem 0.875rem;
@@ -68,5 +91,55 @@
     color: var(--ink-1);
     font-family: var(--font-mono);
     text-align: center;
+  }
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.modalContent {
+  position: relative;
+  max-width: 92vw;
+  max-height: 92vh;
+  cursor: default;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.6);
+}
+
+.modalImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 92vh;
+  object-fit: contain;
+}
+
+.modalClose {
+  position: absolute;
+  top: -2.25rem;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  transition: color 0.12s, border-color 0.12s;
+
+  &:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.7);
   }
 }
