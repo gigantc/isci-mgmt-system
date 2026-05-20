@@ -2,8 +2,8 @@
 
 This document provides context for AI assistants (like Claude) working on this project.
 
-**Version**: 0.9.1-alpha - Database Migration & Quick Wins
-**Last Updated**: January 26, 2026
+**Version**: 1.0.1
+**Last Updated**: May 8, 2026
 
 For detailed version history, see [CHANGELOG.md](CHANGELOG.md)
 For deployment instructions, see [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md)

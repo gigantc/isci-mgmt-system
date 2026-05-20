@@ -1,9 +1,11 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { getMarketLabel } from "@/utils/markets";
 import styles from "./Slate.module.scss";
 
 const Slate = ({ code }) => {
   const canvasRef = useRef(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalSrc, setModalSrc] = useState(null);
 
   // Format date as MM-DD-YY
   const formatDate = (dateString) => {
@@ -127,6 +129,20 @@ const Slate = ({ code }) => {
     });
   }, [code]);
 
+  const handlePreviewClick = () => {
+    if (canvasRef.current) {
+      setModalSrc(canvasRef.current.toDataURL("image/jpeg", 0.95));
+      setModalOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!modalOpen) return;
+    const onKey = (e) => { if (e.key === "Escape") setModalOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [modalOpen]);
+
   const handleExport = () => {
     if (!canvasRef.current) return;
 
@@ -156,13 +172,23 @@ const Slate = ({ code }) => {
         </button>
       </div>
 
-      <div className={styles.slatePreview}>
+      <div className={styles.slatePreview} onClick={handlePreviewClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handlePreviewClick()}>
         <canvas ref={canvasRef} className={styles.canvas} />
+        <div className={styles.previewHint}>Click to enlarge</div>
       </div>
 
       <p className={styles.slateNote}>
-        Slate dimensions: 1920x1080 (16:9) - Click "Export as JPG" to download
+        Slate dimensions: 1920x1080 (16:9) — Click "Export as JPG" to download
       </p>
+
+      {modalOpen && (
+        <div className={styles.modalOverlay} onClick={() => setModalOpen(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.modalClose} onClick={() => setModalOpen(false)} aria-label="Close preview">✕</button>
+            <img src={modalSrc} alt="Slate Preview" className={styles.modalImage} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -53,6 +53,7 @@ const UserManager = () => {
   const [sortBy, setSortBy] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
   const pendingDeleteRef = useRef(null);
+  const originalStateRef = useRef(null);
 
   const {
     items: users,
@@ -75,6 +76,7 @@ const UserManager = () => {
       email: "",
       password: "",
       userType: "editor",
+      active: true,
     },
     hasActiveToggle: true,
     validate: (data, list, editing) => {
@@ -114,6 +116,7 @@ const UserManager = () => {
       lastName: data.lastName,
       email: data.email,
       userType: data.userType,
+      active: data.active,
       ...(data.password ? { password: data.password } : {}),
       profileUpdatedAt: now,
     }),
@@ -128,6 +131,45 @@ const UserManager = () => {
       });
     },
   });
+
+  const handleEditUser = (user) => {
+    originalStateRef.current = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      userType: user.userType,
+      active: user.active !== false, // normalise to boolean
+    };
+    handleEdit(user);
+  };
+
+  const handleDrawerClose = async () => {
+    if (!editingUser) { resetForm(); return; }
+
+    const isDirty =
+      formData.password ||
+      formData.firstName !== originalStateRef.current?.firstName ||
+      formData.lastName !== originalStateRef.current?.lastName ||
+      formData.email !== originalStateRef.current?.email ||
+      formData.userType !== originalStateRef.current?.userType ||
+      formData.active !== originalStateRef.current?.active;
+
+    if (!isDirty) { resetForm(); return; }
+
+    const shouldSave = await confirm({
+      title: "Unsaved Changes",
+      message: "You have unsaved changes. Save before closing?",
+      confirmText: "Save Changes",
+      cancelText: "Discard",
+      isDangerous: false,
+    });
+
+    if (shouldSave) {
+      handleSubmit();
+    } else {
+      resetForm();
+    }
+  };
 
   const doDelete = (user) => {
     if (showForm) resetForm();
@@ -278,9 +320,15 @@ const UserManager = () => {
                   <tr key={u.id} className={active ? "" : styles.rowInactive}>
                     <td>
                       <div className={styles.nameCell}>
-                        <span className={styles.avatar} style={{ background: avatarColor(u) }}>
-                          {initialsFor(u)}
-                        </span>
+                        {u.profileImage ? (
+                          <span className={styles.avatar}>
+                            <img src={u.profileImage} alt={initialsFor(u)} className={styles.avatarImg} />
+                          </span>
+                        ) : (
+                          <span className={styles.avatar} style={{ background: avatarColor(u) }}>
+                            {initialsFor(u)}
+                          </span>
+                        )}
                         <span className={styles.name}>{u.firstName} {u.lastName}</span>
                       </div>
                     </td>
@@ -303,7 +351,7 @@ const UserManager = () => {
                           type="button"
                           title="Edit"
                           className={styles.actionBtn}
-                          onClick={() => handleEdit(u)}
+                          onClick={() => handleEditUser(u)}
                         >
                           <IconEdit />
                         </button>
@@ -327,7 +375,7 @@ const UserManager = () => {
 
       <Drawer
         open={showForm}
-        onClose={resetForm}
+        onClose={handleDrawerClose}
         title={editingUser ? "Edit User" : "Add User"}
         subtitle={
           editingUser
@@ -344,7 +392,7 @@ const UserManager = () => {
               )}
             </div>
             <div className={styles.footerRight}>
-              <button type="button" className={styles.btnSecondary} onClick={resetForm}>
+              <button type="button" className={styles.btnSecondary} onClick={handleDrawerClose}>
                 Cancel
               </button>
               <button type="button" className={styles.btnPrimary} onClick={handleSubmit}>
@@ -356,9 +404,15 @@ const UserManager = () => {
       >
         <form onSubmit={handleSubmit} className={styles.drawerForm}>
           <div className={styles.avatarPreview}>
-            <div className={styles.avatarLg} style={{ background: previewColor }}>
-              {previewInitials}
-            </div>
+            {editingUser?.profileImage ? (
+              <div className={styles.avatarLg}>
+                <img src={editingUser.profileImage} alt={previewInitials} className={styles.avatarImg} />
+              </div>
+            ) : (
+              <div className={styles.avatarLg} style={{ background: previewColor }}>
+                {previewInitials}
+              </div>
+            )}
           </div>
 
           <div className={styles.fieldRow}>
@@ -440,16 +494,16 @@ const UserManager = () => {
               <div>
                 <div className={styles.switchTitle}>Status</div>
                 <div className={styles.switchHint}>
-                  {editingUser.active !== false
+                  {formData.active
                     ? "Can sign in and create codes"
                     : "Cannot sign in. Existing codes unaffected."}
                 </div>
               </div>
               <button
                 type="button"
-                className={`${styles.toggleTrack} ${editingUser.active !== false ? styles.toggleOn : ""}`}
-                onClick={() => handleToggleActive(editingUser)}
-                aria-pressed={editingUser.active !== false}
+                className={`${styles.toggleTrack} ${formData.active ? styles.toggleOn : ""}`}
+                onClick={() => handleChange({ target: { name: "active", value: !formData.active } })}
+                aria-pressed={formData.active}
                 aria-label="Toggle active status"
               />
             </div>
