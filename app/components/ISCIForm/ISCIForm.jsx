@@ -1,12 +1,52 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useFetchData } from "@/hooks";
 import { MARKET_OPTIONS, getMarketLabel, normalizeMarketValue } from "@/utils/markets";
 import styles from "./ISCIForm.module.scss";
+
+const BASE_CHANNELS = [
+  "Broadcast",
+  "CTV",
+  "Digital",
+  "Direct TV",
+  "Hulu",
+  "OLV",
+  "OTT",
+  "Pre-Roll",
+  "Radio",
+  "Social",
+  "Sojern",
+  "Streaming Radio",
+  "Terrestrial Radio",
+  "Trade Desk",
+  "YouTube",
+];
+
+const BASE_LANGUAGES = [
+  "English",
+  "Spanish",
+  "French",
+  "German",
+  "Italian",
+  "Portuguese",
+  "Japanese",
+  "Korean",
+  "Mandarin",
+  "Cantonese",
+  "Arabic",
+];
+
+const capitalizeLanguage = (value) => {
+  const trimmed = (value || "").trim();
+  if (!trimmed) return "";
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+};
 
 const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef, viewOnly = false }) => {
   const [isAirDateTbd, setIsAirDateTbd] = useState(false);
   const [aspectRatioChoice, setAspectRatioChoice] = useState("16:9");
   const [customAspectRatio, setCustomAspectRatio] = useState("");
+  const [isOtherLanguage, setIsOtherLanguage] = useState(false);
+  const [isOtherChannel, setIsOtherChannel] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
     brandId: "",
@@ -48,6 +88,51 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
   const { data: agencies } = useFetchData("/api/agencies", {
     filter: activeAgenciesFilter
   });
+
+  const languagesTransform = useCallback(
+    (data) => (Array.isArray(data?.languages) ? data.languages : []),
+    []
+  );
+  const { data: dbLanguages } = useFetchData("/api/isci/languages", {
+    transform: languagesTransform,
+  });
+
+  const channelsTransform = useCallback(
+    (data) => (Array.isArray(data?.channels) ? data.channels : []),
+    []
+  );
+  const { data: dbChannels } = useFetchData("/api/isci/channels", {
+    transform: channelsTransform,
+  });
+
+  const mergeWithBase = (base, extras) => {
+    const set = new Set([...base, ...(extras || [])]);
+    const extrasSorted = Array.from(set)
+      .filter((v) => !base.includes(v))
+      .sort((a, b) => a.localeCompare(b));
+    return [...base, ...extrasSorted];
+  };
+
+  const mergedLanguages = useMemo(
+    () => mergeWithBase(BASE_LANGUAGES, dbLanguages),
+    [dbLanguages]
+  );
+
+  const mergedChannels = useMemo(
+    () => mergeWithBase(BASE_CHANNELS, dbChannels),
+    [dbChannels]
+  );
+
+  // Keep the "Other" flags in sync with each merged option list.
+  useEffect(() => {
+    if (!formData.language) return;
+    setIsOtherLanguage(!mergedLanguages.includes(formData.language));
+  }, [mergedLanguages, formData.language]);
+
+  useEffect(() => {
+    if (!formData.channel) return;
+    setIsOtherChannel(!mergedChannels.includes(formData.channel));
+  }, [mergedChannels, formData.channel]);
 
   // Set default agency when agencies load and we're creating a new code
   useEffect(() => {
@@ -138,6 +223,14 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
       newErrors.spotTitle = "Spot Title is required";
     }
 
+    if (isOtherLanguage && !formData.language.trim()) {
+      newErrors.language = "Please enter a language";
+    }
+
+    if (isOtherChannel && !formData.channel.trim()) {
+      newErrors.channel = "Please enter a placement";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -197,6 +290,8 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
     if (validateForm()) {
       onSubmit({
         ...formData,
+        language: isOtherLanguage ? capitalizeLanguage(formData.language) : formData.language,
+        channel: isOtherChannel ? formData.channel.trim() : formData.channel,
         airDate: isAirDateTbd ? "TBD" : formData.airDate,
         aspectRatio: aspectRatioChoice === "custom" ? customAspectRatio.trim() : aspectRatioChoice,
         spotLength: formData.spotLength ? parseInt(formData.spotLength, 10) : null,
@@ -462,22 +557,53 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               <select
                 id="language"
                 name="language"
-                value={formData.language}
-                onChange={handleChange}
+                value={isOtherLanguage ? "Other" : formData.language}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  if (value === "Other") {
+                    setIsOtherLanguage(true);
+                    setFormData((prev) => ({ ...prev, language: "" }));
+                  } else {
+                    setIsOtherLanguage(false);
+                    setFormData((prev) => ({ ...prev, language: value }));
+                    if (errors.language) {
+                      setErrors((prev) => ({ ...prev, language: "" }));
+                    }
+                  }
+                }}
                 disabled={viewOnly}
               >
-                <option value="English">English</option>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Italian">Italian</option>
-                <option value="Portuguese">Portuguese</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Korean">Korean</option>
-                <option value="Mandarin">Mandarin</option>
-                <option value="Cantonese">Cantonese</option>
-                <option value="Arabic">Arabic</option>
+                {mergedLanguages.map((lang) => (
+                  <option key={lang} value={lang}>{lang}</option>
+                ))}
+                <option value="Other">Other…</option>
               </select>
+              {isOtherLanguage && (
+                <>
+                  <input
+                    type="text"
+                    name="language"
+                    value={formData.language}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setFormData((prev) => ({ ...prev, language: value }));
+                      if (errors.language) {
+                        setErrors((prev) => ({ ...prev, language: "" }));
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const normalized = capitalizeLanguage(e.target.value);
+                      setFormData((prev) => ({ ...prev, language: normalized }));
+                    }}
+                    placeholder="Enter language (e.g., Polish)"
+                    disabled={viewOnly}
+                    className={errors.language ? "error" : ""}
+                  />
+                  {errors.language && (
+                    <span className={styles.errorMessage}>{errors.language}</span>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -557,26 +683,55 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               <select
                 id="channel"
                 name="channel"
-                value={formData.channel}
-                onChange={handleChange}
+                value={isOtherChannel ? "Other" : formData.channel}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  if (value === "Other") {
+                    setIsOtherChannel(true);
+                    setFormData((prev) => ({ ...prev, channel: "" }));
+                  } else {
+                    setIsOtherChannel(false);
+                    setFormData((prev) => ({ ...prev, channel: value }));
+                    if (errors.channel) {
+                      setErrors((prev) => ({ ...prev, channel: "" }));
+                    }
+                  }
+                }}
                 disabled={viewOnly}
               >
-                <option value="Broadcast">Broadcast</option>
-                <option value="CTV">CTV</option>
-                <option value="Digital">Digital</option>
-                <option value="Direct TV">Direct TV</option>
-                <option value="Hulu">Hulu</option>
-                <option value="OLV">OLV</option>
-                <option value="OTT">OTT</option>
-                <option value="Pre-Roll">Pre-Roll</option>
-                <option value="Radio">Radio</option>
-                <option value="Social">Social</option>
-                <option value="Sojern">Sojern</option>
-                <option value="Streaming Radio">Streaming Radio</option>
-                <option value="Terrestrial Radio">Terrestrial Radio</option>
-                <option value="Trade Desk">Trade Desk</option>
-                <option value="YouTube">YouTube</option>
+                {mergedChannels.map((ch) => (
+                  <option key={ch} value={ch}>{ch}</option>
+                ))}
+                <option value="Other">Other…</option>
               </select>
+              {isOtherChannel && (
+                <>
+                  <input
+                    type="text"
+                    name="channel"
+                    value={formData.channel}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      setFormData((prev) => ({ ...prev, channel: value }));
+                      if (errors.channel) {
+                        setErrors((prev) => ({ ...prev, channel: "" }));
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const trimmed = e.target.value.trim();
+                      if (trimmed !== e.target.value) {
+                        setFormData((prev) => ({ ...prev, channel: trimmed }));
+                      }
+                    }}
+                    placeholder="Enter placement (e.g., Reddit, Next Door, LVRJ)"
+                    disabled={viewOnly}
+                    className={errors.channel ? "error" : ""}
+                  />
+                  {errors.channel && (
+                    <span className={styles.errorMessage}>{errors.channel}</span>
+                  )}
+                </>
+              )}
             </div>
           </div>
 

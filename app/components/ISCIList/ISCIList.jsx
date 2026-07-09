@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { isAdmin } from "@/utils/auth";
 import { colorForCode } from "@/utils/palette";
+import { formatAirDateSlash } from "@/utils/dates";
 import styles from "./ISCIList.module.scss";
 
 const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) => {
@@ -9,13 +10,7 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
   const userIsAdmin = isAdmin();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    if (dateString === "TBD") return "TBD";
-    const parsed = Date.parse(dateString);
-    if (Number.isNaN(parsed)) return "N/A";
-    return new Date(parsed).toLocaleDateString();
-  };
+  const formatDate = formatAirDateSlash;
 
   const handleSort = (column) => {
     if (sortColumn === column) {
