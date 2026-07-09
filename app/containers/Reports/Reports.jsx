@@ -346,7 +346,7 @@ const ExportSection = ({ codes, brands, isLoading }) => {
                       <th>Campaign</th>
                       <th>Spot Title</th>
                       <th>Len</th>
-                      <th>Channel</th>
+                      <th>Placement</th>
                       <th>Air Date</th>
                     </tr>
                   </thead>

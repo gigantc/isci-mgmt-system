@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { isAdmin } from "@/utils/auth";
 import { colorForCode } from "@/utils/palette";
+import { formatAirDateSlash } from "@/utils/dates";
 import styles from "./ISCIList.module.scss";
 
 const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) => {
@@ -9,13 +10,7 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
   const userIsAdmin = isAdmin();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    if (dateString === "TBD") return "TBD";
-    const parsed = Date.parse(dateString);
-    if (Number.isNaN(parsed)) return "N/A";
-    return new Date(parsed).toLocaleDateString();
-  };
+  const formatDate = formatAirDateSlash;
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -58,6 +53,10 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
         case "length":
           aValue = a.spotLength || 0;
           bValue = b.spotLength || 0;
+          break;
+        case "channel":
+          aValue = a.channel || "";
+          bValue = b.channel || "";
           break;
         case "airDate": {
           const toSortableDate = (value) => {
@@ -120,6 +119,9 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
           <span onClick={() => handleSort("length")} className={styles.sortable}>
             Len {getSortIndicator("length")}
           </span>
+          <span onClick={() => handleSort("channel")} className={styles.sortable}>
+            Placement {getSortIndicator("channel")}
+          </span>
           <span onClick={() => handleSort("airDate")} className={styles.sortable}>
             Air Date {getSortIndicator("airDate")}
           </span>
@@ -143,6 +145,7 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
               <span className={styles.mutedCell}>{code.jobNumber || "—"}</span>
               <span className={styles.spotTitleCell}>{code.spotTitle}</span>
               <span className={styles.numCell}>{code.spotLength ? `${code.spotLength}s` : "—"}</span>
+              <span className={styles.mutedCell}>{code.channel || "—"}</span>
               <span className={styles.mutedCell}>{formatDate(code.airDate)}</span>
               <span className={styles.actionsCell}>
                 {userIsAdmin && (

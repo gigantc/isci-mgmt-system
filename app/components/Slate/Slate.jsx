@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { getMarketLabel } from "@/utils/markets";
+import { formatAirDateSlateShort } from "@/utils/dates";
 import styles from "./Slate.module.scss";
 
 const Slate = ({ code }) => {
@@ -7,17 +8,7 @@ const Slate = ({ code }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalSrc, setModalSrc] = useState(null);
 
-  // Format date as MM-DD-YY
-  const formatDate = (dateString) => {
-    if (!dateString || dateString === "TBD") return "TBD";
-    const parsed = Date.parse(dateString);
-    if (Number.isNaN(parsed)) return "TBD";
-    const date = new Date(parsed);
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const year = String(date.getFullYear()).slice(-2);
-    return `${month}-${day}-${year}`;
-  };
+  const formatDate = formatAirDateSlateShort;
 
   // Format spot length as :30 format
   const formatLength = (length) => {

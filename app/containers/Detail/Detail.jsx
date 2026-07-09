@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
 import Slate from "@/components/Slate";
 import { isAuthenticated, getUserSession, saveUserSession, isAdmin } from "@/utils/auth";
+import { formatAirDateDot } from "@/utils/dates";
 import styles from "./Detail.module.scss";
 
 /**
@@ -23,15 +24,7 @@ const Detail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return "N/A";
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${month}.${day}.${year}`;
-  };
+  const formatDate = formatAirDateDot;
 
   const formatTime = (dateString) => {
     if (!dateString) return "";

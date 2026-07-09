@@ -24,6 +24,45 @@
 
 .inputBadgeWrap input {
   padding-right: 76px;
+  width: 100%;
+}
+
+.fileNameDisplay {
+  border: none !important;
+  background: transparent !important;
+  padding-left: 0 !important;
+  opacity: 1 !important;
+  color: var(--ink) !important;
+  font-family: var(--font-mono, "JetBrains Mono", monospace) !important;
+  font-size: 0.8125rem;
+
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  &::placeholder {
+    font-family: inherit;
+    font-style: italic;
+    opacity: 0.6;
+  }
+}
+
+button.inputBadge {
+  pointer-events: auto;
+  cursor: pointer;
+  border: none;
+  transition: background 0.12s, color 0.12s;
+
+  &:hover:not(:disabled) {
+    color: var(--paper);
+    background: var(--accent);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .isciFormContainer {

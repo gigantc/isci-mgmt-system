@@ -54,6 +54,12 @@ export default [
   // API endpoint for ISCI import
   route("api/isci/import", "routes/api.isci.import.js"),
 
+  // API endpoint for distinct languages used across ISCI codes
+  route("api/isci/languages", "routes/api.isci.languages.js"),
+
+  // API endpoint for distinct channels (placements) used across ISCI codes
+  route("api/isci/channels", "routes/api.isci.channels.js"),
+
   // API endpoint for brands
   // Handles GET (load brands) and POST (save brands) requests
   route("api/brands", "routes/api.brands.js"),
