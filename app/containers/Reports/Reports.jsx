@@ -4,6 +4,10 @@ import { isAuthenticated, getUserSession } from "@/utils/auth";
 import { useFetchData, useExportData, useImportData, useConfirmDialog } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import DataQualityAlerts from "@/components/DataQualityAlerts";
+import PlacementMix from "@/components/PlacementMix";
+import CutdownFamilies from "@/components/CutdownFamilies";
+import CreationTrend from "@/components/CreationTrend";
 import styles from "./Reports.module.scss";
 
 const CSV_HEADERS = [
@@ -85,7 +89,14 @@ const Reports = () => {
     if (typeof window !== "undefined") {
       const stored = window.localStorage.getItem(TAB_KEY);
       const isAdmin = currentUser?.userType === "admin";
-      if (stored === "export" || (stored === "import" && isAdmin)) {
+      if (
+        stored === "export" ||
+        stored === "insights-quality" ||
+        stored === "insights-placement" ||
+        stored === "insights-cutdowns" ||
+        stored === "insights-trend" ||
+        (stored === "import" && isAdmin)
+      ) {
         setActiveTab(stored);
       }
     }
@@ -121,11 +132,35 @@ const Reports = () => {
         </div>
 
         <div className={styles.sbGroup}>
-          <div className={styles.sbLabel}>System</div>
-          <div className={`${styles.sbItem} ${styles.sbItemDisabled}`} aria-disabled="true">
-            <span>Insights</span>
-            <span className={`${styles.sbCount} ${styles.sbCountSoon}`}>soon</span>
-          </div>
+          <div className={styles.sbLabel}>Insights</div>
+          <button
+            type="button"
+            className={`${styles.sbItem} ${activeTab === "insights-quality" ? styles.sbItemOn : ""}`}
+            onClick={() => handleSelect("insights-quality")}
+          >
+            <span>Data quality</span>
+          </button>
+          <button
+            type="button"
+            className={`${styles.sbItem} ${activeTab === "insights-placement" ? styles.sbItemOn : ""}`}
+            onClick={() => handleSelect("insights-placement")}
+          >
+            <span>Placement mix</span>
+          </button>
+          <button
+            type="button"
+            className={`${styles.sbItem} ${activeTab === "insights-cutdowns" ? styles.sbItemOn : ""}`}
+            onClick={() => handleSelect("insights-cutdowns")}
+          >
+            <span>Cutdown families</span>
+          </button>
+          <button
+            type="button"
+            className={`${styles.sbItem} ${activeTab === "insights-trend" ? styles.sbItemOn : ""}`}
+            onClick={() => handleSelect("insights-trend")}
+          >
+            <span>Creation trend</span>
+          </button>
         </div>
       </aside>
 
@@ -141,12 +176,20 @@ const Reports = () => {
           {activeTab === "import" && isUserAdmin && (
             <ImportSection onImported={loadData} />
           )}
+          {activeTab === "insights-quality" && <DataQualityAlerts />}
+          {activeTab === "insights-placement" && <PlacementMix />}
+          {activeTab === "insights-cutdowns" && <CutdownFamilies />}
+          {activeTab === "insights-trend" && <CreationTrend />}
         </div>
 
         <footer className={styles.footer}>
           <div>
             {activeTab === "export" && `${codes.length} ${codes.length === 1 ? "code" : "codes"} available`}
             {activeTab === "import" && "CSV import"}
+            {activeTab === "insights-quality" && "Data quality alerts"}
+            {activeTab === "insights-placement" && "Placement mix by client"}
+            {activeTab === "insights-cutdowns" && "Cutdown families"}
+            {activeTab === "insights-trend" && "Codes created over the last 12 months"}
           </div>
           <div>
             Reports ·{" "}
