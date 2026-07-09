@@ -77,6 +77,10 @@ const Reports = () => {
       return;
     }
     const currentUser = getUserSession();
+    if (currentUser?.userType === "viewer") {
+      navigate("/");
+      return;
+    }
     setUser(currentUser);
     if (typeof window !== "undefined") {
       const stored = window.localStorage.getItem(TAB_KEY);

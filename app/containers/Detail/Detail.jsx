@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
 import Slate from "@/components/Slate";
-import { isAuthenticated, getUserSession, saveUserSession, isAdmin } from "@/utils/auth";
+import { isAuthenticated, getUserSession, saveUserSession, isAdmin, canEdit } from "@/utils/auth";
 import { formatAirDateDot } from "@/utils/dates";
 import styles from "./Detail.module.scss";
 
@@ -18,6 +18,7 @@ const Detail = () => {
   const navigate = useNavigate();
   const { code: isciCode } = useParams();
   const userIsAdmin = isAdmin();
+  const userCanEdit = canEdit();
 
   const [code, setCode] = useState(null);
   const [allCodes, setAllCodes] = useState([]);
@@ -167,7 +168,7 @@ const Detail = () => {
                       </svg>
                       Share
                     </button>
-                    {userIsAdmin && (
+                    {userCanEdit && (
                       <button
                         type="button"
                         className={`${styles.headerBtn} ${styles.headerBtnPrimary}`}
@@ -251,17 +252,19 @@ const Detail = () => {
                     </svg>
                     Copy ISCI code
                   </button>
-                  <button
-                    type="button"
-                    className={styles.qaButton}
-                    onClick={() => navigate(`/create?from=${encodeURIComponent(code.code)}`)}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="9" y="9" width="13" height="13" rx="2" />
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                    </svg>
-                    Duplicate as new cutdown
-                  </button>
+                  {userCanEdit && (
+                    <button
+                      type="button"
+                      className={styles.qaButton}
+                      onClick={() => navigate(`/create?from=${encodeURIComponent(code.code)}`)}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                      Duplicate as new cutdown
+                    </button>
+                  )}
                   <button
                     type="button"
                     className={styles.qaButton}

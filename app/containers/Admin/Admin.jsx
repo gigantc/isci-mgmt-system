@@ -74,7 +74,7 @@ const Admin = () => {
           <div className={styles.sbLabel}>System</div>
           <div className={`${styles.sbItem} ${styles.sbItemDisabled}`} aria-disabled="true">
             <span>Roles</span>
-            <span className={styles.sbCount}>2</span>
+            <span className={styles.sbCount}>3</span>
           </div>
           <div className={`${styles.sbItem} ${styles.sbItemDisabled}`} aria-disabled="true">
             <span>Audit log</span>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { isAdmin } from "@/utils/auth";
+import { isAdmin, canEdit } from "@/utils/auth";
 import { colorForCode } from "@/utils/palette";
 import { formatAirDateSlash } from "@/utils/dates";
 import styles from "./ISCIList.module.scss";
@@ -8,6 +8,7 @@ import styles from "./ISCIList.module.scss";
 const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) => {
   const navigate = useNavigate();
   const userIsAdmin = isAdmin();
+  const userCanEdit = canEdit();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const formatDate = formatAirDateSlash;
@@ -148,7 +149,7 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
               <span className={styles.mutedCell}>{code.channel || "—"}</span>
               <span className={styles.mutedCell}>{formatDate(code.airDate)}</span>
               <span className={styles.actionsCell}>
-                {userIsAdmin && (
+                {userCanEdit && (
                   <button
                     type="button"
                     className={styles.rowAction}

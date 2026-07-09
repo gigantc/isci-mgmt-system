@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { isAuthenticated, isAdmin, getUserSession } from "@/utils/auth";
+import { isAuthenticated, isAdmin, canEdit, getUserSession } from "@/utils/auth";
 import { useFetchData, useConfirmDialog } from "@/hooks";
 import { rankByFuzzy } from "@/utils/fuzzy";
 import { colorForCode } from "@/utils/palette";
@@ -157,12 +157,12 @@ const Dashboard = () => {
         }
       } else if (!isEditable && (e.key === "e" || e.key === "E")) {
         const chosen = filteredCodes[selectedIndex];
-        if (chosen && isAdmin()) {
+        if (chosen && canEdit()) {
           e.preventDefault();
           navigate(`/edit/${chosen.code}`);
         }
       } else if (!isEditable && (e.key === "n" || e.key === "N")) {
-        if (isAdmin()) {
+        if (canEdit()) {
           e.preventDefault();
           navigate("/create");
         }
@@ -251,7 +251,7 @@ const Dashboard = () => {
             {searchTerm ? ` · ${filteredCodes.length} matching` : ""}
           </p>
         </div>
-        {!isLoading && isAdmin() && (
+        {!isLoading && canEdit() && (
           <div className={styles.pgActions}>
             <button
               type="button"
@@ -334,7 +334,7 @@ const Dashboard = () => {
           <div className={styles.footerShortcuts}>
             <kbd>↑↓</kbd> navigate
             <kbd>⏎</kbd> view
-            {isAdmin() && (<><kbd>E</kbd> edit <kbd>N</kbd> new</>)}
+            {canEdit() && (<><kbd>E</kbd> edit <kbd>N</kbd> new</>)}
             <kbd>⌘K</kbd> palette
           </div>
         </footer>

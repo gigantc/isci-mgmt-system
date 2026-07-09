@@ -52,6 +52,34 @@ export function isAdmin() {
 }
 
 /**
+ * Check if user is a Viewer (read-only, no create/edit/admin/reports access).
+ */
+export function isViewer() {
+  const user = getUserSession();
+  return user && user.userType === "viewer";
+}
+
+/**
+ * Check if user can create/edit ISCI codes (admins and editors).
+ * Note: delete stays admin-only — use isAdmin() for that.
+ */
+export function canEdit() {
+  const user = getUserSession();
+  return user && (user.userType === "admin" || user.userType === "editor");
+}
+
+/**
+ * Human-readable label for the current user's role.
+ */
+export function getUserRoleLabel(user) {
+  const u = user ?? getUserSession();
+  if (!u) return "Guest";
+  if (u.userType === "admin") return "Admin";
+  if (u.userType === "viewer") return "Viewer";
+  return "Editor";
+}
+
+/**
  * Get full name of current user
  */
 export function getCurrentUserName() {

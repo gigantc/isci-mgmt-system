@@ -176,7 +176,7 @@ const Profile = () => {
             {currentUser && (
               <p className={styles.subtitle}>
                 {currentUser.email}
-                {currentUser.userType ? ` · ${currentUser.userType === "admin" ? "Admin" : "Editor"}` : ""}
+                {currentUser.userType ? ` · ${currentUser.userType === "admin" ? "Admin" : currentUser.userType === "viewer" ? "Viewer" : "Editor"}` : ""}
               </p>
             )}
           </div>
@@ -324,7 +324,7 @@ const Profile = () => {
               </div>
 
               <div className={styles.profileMeta}>
-                <p><strong>User Type:</strong> {currentUser?.userType === "admin" ? "Admin" : "Editor"}</p>
+                <p><strong>User Type:</strong> {currentUser?.userType === "admin" ? "Admin" : currentUser?.userType === "viewer" ? "Viewer" : "Editor"}</p>
                 <p><strong>Account Created:</strong> {formatDate(currentUser?.createdAt)}</p>
                 <p><strong>Last Profile Update:</strong> {formatDate(currentUser?.profileUpdatedAt)}</p>
               </div>
