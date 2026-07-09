@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-07-09
+
+### Client Feedback Round
+
+#### Added
+- **"Other" option for Language dropdown**: users can enter custom languages (e.g. Polish, Russian). New entries persist and appear in the dropdown for future codes. Values normalized to Title Case on blur.
+- **"Other" option for Placement dropdown**: users can enter niche placements (e.g. Reddit, Next Door, LVRJ). New entries persist and appear in the dropdown for future codes.
+- **Placement column on Dashboard**: sortable column added between Length and Air Date so codes with the same brand/length can be distinguished at a glance.
+- **File Name auto-generated field**: new read-only field under Spot Title that builds live from `[ISCI]_[Client]_[Campaign]_[Spot Title]_[Language]_[Length]_[Aspect Ratio]_[Placement]`. Unfilled segments show as bracketed placeholders; Copy button enables once all segments are complete.
+- **Duplicate-as-cutdown pre-fill**: the "Duplicate as new cutdown" quick action now carries over client, campaign, job number, spot title, description, and all technical/creative fields from the source code. Length and Air Date remain blank; a new ISCI code is auto-generated. Header badge reads "Cutdown" and subtitle shows source code.
+
+#### Fixed
+- **Air date timezone rollback**: `airDate` was stored as a date-only string but rendered via `new Date()`, causing the day to display one earlier in west-of-UTC timezones (e.g. 6/29 → 6/28). Now parsed from the string directly and never routed through timezone conversion. Fixed on Dashboard, Detail summary, and Slate.
+- **Dashboard column overflow**: long Campaign / Job # / Placement values were spilling into adjacent columns. All grid cells now truncate with an ellipsis inside their assigned width.
+- **Reports preview column label**: renamed "Channel" → "Placement" for UI consistency with the form. CSV column header stays "Channel" so existing spreadsheets round-trip cleanly.
+
+---
+
 ## [0.9.1-alpha] - 2026-01-23
 
 ### Database Migration & UX Improvements
