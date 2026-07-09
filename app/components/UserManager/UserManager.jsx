@@ -335,7 +335,7 @@ const UserManager = () => {
                     <td className={styles.email}>{u.email}</td>
                     <td>
                       <span className={`${styles.role} ${u.userType === "admin" ? styles.roleAdmin : ""}`}>
-                        {u.userType === "admin" ? "Admin" : "Editor"}
+                        {u.userType === "admin" ? "Admin" : u.userType === "viewer" ? "Viewer" : "Editor"}
                       </span>
                     </td>
                     <td className={styles.created}>{fmtDate(u.createdAt)}</td>
@@ -464,6 +464,7 @@ const UserManager = () => {
               value={formData.userType || "editor"}
               onChange={handleChange}
             >
+              <option value="viewer">Viewer — read-only access to ISCI codes</option>
               <option value="editor">Editor — can create and edit ISCI codes</option>
               <option value="admin">Admin — full access, manages clients &amp; users</option>
             </select>

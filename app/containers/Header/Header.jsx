@@ -46,10 +46,12 @@ const Header = () => {
     [user]
   );
 
-  const displayRole = useMemo(() =>
-    user ? (user.userType === "admin" ? "Admin" : "Editor") : "Guest",
-    [user]
-  );
+  const displayRole = useMemo(() => {
+    if (!user) return "Guest";
+    if (user.userType === "admin") return "Admin";
+    if (user.userType === "viewer") return "Viewer";
+    return "Editor";
+  }, [user]);
 
   const profileImage = useMemo(() =>
     user?.profileImage || DefaultProfileImage,
@@ -73,13 +75,15 @@ const Header = () => {
           Dashboard
         </Link>
 
-        <Link
-          to="/reports"
-          className={`${styles.navLink} ${isActive("/reports") ? styles.active : ""}`}
-          onClick={(e) => handleNavClick(e, "/reports")}
-        >
-          Reports
-        </Link>
+        {user?.userType !== "viewer" && (
+          <Link
+            to="/reports"
+            className={`${styles.navLink} ${isActive("/reports") ? styles.active : ""}`}
+            onClick={(e) => handleNavClick(e, "/reports")}
+          >
+            Reports
+          </Link>
+        )}
 
         {user?.userType === "admin" && (
           <Link

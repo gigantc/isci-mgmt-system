@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
 import Slate from "@/components/Slate";
-import { isAuthenticated, getUserSession, saveUserSession, isAdmin } from "@/utils/auth";
+import { isAuthenticated, getUserSession, saveUserSession, isAdmin, isViewer, canEdit } from "@/utils/auth";
 import styles from "./EditISCI.module.scss";
 
 /**
@@ -17,7 +17,7 @@ const EditISCI = () => {
   const navigate = useNavigate();
   const { code: isciCode } = useParams();
   const formRef = useRef(null);
-  const userIsAdmin = isAdmin();
+  const userCanEdit = canEdit();
 
   const [code, setCode] = useState(null);
   const [allCodes, setAllCodes] = useState([]);
@@ -59,8 +59,12 @@ const EditISCI = () => {
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login");
+      return;
     }
-  }, [navigate]);
+    if (isViewer() && isciCode) {
+      navigate(`/isci/${isciCode}`, { replace: true });
+    }
+  }, [navigate, isciCode]);
 
   useEffect(() => {
     loadData();
@@ -209,13 +213,13 @@ const EditISCI = () => {
               <span className={styles.sep}>/</span>
               <span>{isciCode}</span>
               <span className={styles.sep}>/</span>
-              <span>{userIsAdmin ? "Edit" : "View"}</span>
+              <span>{userCanEdit ? "Edit" : "View"}</span>
             </div>
             <h1 className={styles.title}>
               <span className={styles.titleCode}>{isciCode}</span>
               {code?.spotTitle && <span>{code.spotTitle}</span>}
-              <span className={`${styles.titleBadge} ${userIsAdmin ? styles.titleBadgeEdit : ""}`}>
-                {userIsAdmin ? "Editing" : "Read-only"}
+              <span className={`${styles.titleBadge} ${userCanEdit ? styles.titleBadgeEdit : ""}`}>
+                {userCanEdit ? "Editing" : "Read-only"}
               </span>
             </h1>
             {code && (
@@ -251,7 +255,7 @@ const EditISCI = () => {
                   hideActions={true}
                   hideTitle={true}
                   formRef={formRef}
-                  viewOnly={!userIsAdmin}
+                  viewOnly={!userCanEdit}
                 />
 
                 {/* 05 — Activity */}
@@ -351,9 +355,9 @@ const EditISCI = () => {
             </div>
             <div className={styles.footerActions}>
               <button type="button" className={styles.footerBtn} onClick={handleCancel}>
-                {userIsAdmin ? "Cancel" : "Back"}
+                {userCanEdit ? "Cancel" : "Back"}
               </button>
-              {userIsAdmin && (
+              {userCanEdit && (
                 <button type="button" className={`${styles.footerBtn} ${styles.footerBtnPrimary}`} onClick={handleSubmitClick}>
                   Update ISCI
                 </button>

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { rankByFuzzy } from "@/utils/fuzzy";
-import { isAuthenticated, isAdmin } from "@/utils/auth";
+import { isAuthenticated, isAdmin, canEdit } from "@/utils/auth";
 import styles from "./CmdK.module.scss";
 
 const RECENT_KEY = "isciz-recent-searches";
@@ -92,17 +92,18 @@ const CmdK = () => {
   const close = () => setOpen(false);
 
   const userIsAdmin = isAdmin();
+  const userCanEdit = canEdit();
 
   const actions = useMemo(() => {
     const all = [
       { id: "dashboard", label: "Dashboard", sub: "Back to all codes", icon: <ListIcon />, run: () => navigate("/") },
-      { id: "new", label: "New ISCI code", sub: "Create a new record", icon: <PlusIcon />, run: () => navigate("/create"), adminOnly: true },
-      { id: "admin", label: "Admin", sub: "Clients, agencies, users", icon: <UsersIcon />, run: () => navigate("/admin"), adminOnly: true },
-      { id: "reports", label: "Reports", sub: "Import & export data", icon: <ListIcon />, run: () => navigate("/reports"), adminOnly: true },
-    ].filter((a) => !a.adminOnly || userIsAdmin);
+      { id: "new", label: "New ISCI code", sub: "Create a new record", icon: <PlusIcon />, run: () => navigate("/create"), show: userCanEdit },
+      { id: "admin", label: "Admin", sub: "Clients, agencies, users", icon: <UsersIcon />, run: () => navigate("/admin"), show: userIsAdmin },
+      { id: "reports", label: "Reports", sub: "Import & export data", icon: <ListIcon />, run: () => navigate("/reports"), show: userCanEdit },
+    ].filter((a) => a.show !== false);
     if (!query.trim()) return all;
     return all.filter((a) => a.label.toLowerCase().includes(query.toLowerCase()));
-  }, [query, navigate, userIsAdmin]);
+  }, [query, navigate, userIsAdmin, userCanEdit]);
 
   const matches = useMemo(() => {
     if (!query.trim()) return codes.slice(0, 6);

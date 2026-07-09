@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
-import { getUserSession, isAuthenticated } from "@/utils/auth";
+import { getUserSession, isAuthenticated, isViewer } from "@/utils/auth";
 import { generateUUID } from "@/utils/uuid";
 import styles from "./CreateISCI.module.scss";
 
@@ -60,6 +60,10 @@ const CreateISCI = () => {
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login");
+      return;
+    }
+    if (isViewer()) {
+      navigate("/");
     }
   }, [navigate]);
 
