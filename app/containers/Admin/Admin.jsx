@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import BrandManager from "@/components/BrandManager";
 import UserManager from "@/components/UserManager";
 import AgencyManager from "@/components/AgencyManager";
+import RolesInfo from "@/components/RolesInfo";
 import { isAuthenticated, isAdmin } from "@/utils/auth";
 import { useFetchData } from "@/hooks";
 import styles from "./Admin.module.scss";
@@ -14,6 +15,8 @@ const SECTIONS = [
   { id: "agencies", label: "Agencies" },
   { id: "users", label: "Users" },
 ];
+
+const SYSTEM_TAB_IDS = ["roles"];
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -35,7 +38,7 @@ const Admin = () => {
     }
     if (typeof window !== "undefined") {
       const stored = window.localStorage.getItem(TAB_KEY);
-      if (stored && SECTIONS.some((s) => s.id === stored)) {
+      if (stored && (SECTIONS.some((s) => s.id === stored) || SYSTEM_TAB_IDS.includes(stored))) {
         setActiveTab(stored);
       }
     }
@@ -72,10 +75,14 @@ const Admin = () => {
 
         <div className={styles.sbGroup}>
           <div className={styles.sbLabel}>System</div>
-          <div className={`${styles.sbItem} ${styles.sbItemDisabled}`} aria-disabled="true">
+          <button
+            type="button"
+            className={`${styles.sbItem} ${activeTab === "roles" ? styles.sbItemOn : ""}`}
+            onClick={() => handleSelect("roles")}
+          >
             <span>Roles</span>
             <span className={styles.sbCount}>3</span>
-          </div>
+          </button>
           <div className={`${styles.sbItem} ${styles.sbItemDisabled}`} aria-disabled="true">
             <span>Audit log</span>
             <span className={`${styles.sbCount} ${styles.sbCountSoon}`}>soon</span>
@@ -88,6 +95,7 @@ const Admin = () => {
           {activeTab === "brands" && <BrandManager />}
           {activeTab === "agencies" && <AgencyManager />}
           {activeTab === "users" && <UserManager />}
+          {activeTab === "roles" && <RolesInfo />}
         </div>
 
         <footer className={styles.footer}>
@@ -95,6 +103,7 @@ const Admin = () => {
             {activeTab === "brands" && `${counts.brands} ${counts.brands === 1 ? "client" : "clients"}`}
             {activeTab === "agencies" && `${counts.agencies} ${counts.agencies === 1 ? "agency" : "agencies"}`}
             {activeTab === "users" && `${counts.users} ${counts.users === 1 ? "user" : "users"}`}
+            {activeTab === "roles" && "3 roles"}
           </div>
           <div>
             Admin ·{" "}
