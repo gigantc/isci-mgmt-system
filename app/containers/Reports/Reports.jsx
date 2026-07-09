@@ -373,7 +373,7 @@ const ExportSection = ({ codes, brands, isLoading }) => {
             </footer>
           </div>
 
-          <div className={styles.card}>
+          <div className={`${styles.card} ${styles.cardGrow}`}>
             <header className={styles.cardHead}>
               <h2 className={styles.cardTitle}>Preview</h2>
               <span className={styles.cardFootHint}>
