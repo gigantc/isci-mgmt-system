@@ -1,9 +1,32 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
 import { getUserSession, isAuthenticated } from "@/utils/auth";
 import { generateUUID } from "@/utils/uuid";
 import styles from "./CreateISCI.module.scss";
+
+/**
+ * Fields carried over when duplicating a code as a new cutdown.
+ * Spot Length and Air Date are intentionally omitted — those differ
+ * per cutdown. The ISCI code itself is auto-regenerated from the brand.
+ */
+const CUTDOWN_TEMPLATE_FIELDS = [
+  "brandId",
+  "brand",
+  "campaignName",
+  "jobNumber",
+  "spotTitle",
+  "description",
+  "language",
+  "closedCaptioning",
+  "audio",
+  "fileFormat",
+  "agency",
+  "market",
+  "aspectRatio",
+  "channel",
+  "musicRights",
+];
 
 /**
  * CreateISCI Container
@@ -13,10 +36,26 @@ import styles from "./CreateISCI.module.scss";
  */
 const CreateISCI = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const formRef = useRef(null);
 
   const [codes, setCodes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const fromCode = searchParams.get("from");
+
+  const template = useMemo(() => {
+    if (!fromCode || codes.length === 0) return null;
+    const source = codes.find((c) => c.code === fromCode);
+    if (!source) return null;
+    const seed = {};
+    for (const field of CUTDOWN_TEMPLATE_FIELDS) {
+      if (source[field] !== undefined && source[field] !== null) {
+        seed[field] = source[field];
+      }
+    }
+    return seed;
+  }, [fromCode, codes]);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -118,9 +157,15 @@ const CreateISCI = () => {
             </div>
             <h1 className={styles.title}>
               Create ISCI Code
-              <span className={`${styles.titleBadge} ${styles.titleBadgeNew}`}>New</span>
+              <span className={`${styles.titleBadge} ${styles.titleBadgeNew}`}>
+                {template ? "Cutdown" : "New"}
+              </span>
             </h1>
-            <p className={styles.subtitle}>Select a client to auto-generate the code.</p>
+            <p className={styles.subtitle}>
+              {template
+                ? `Duplicating from ${fromCode} — adjust length and air date.`
+                : "Select a client to auto-generate the code."}
+            </p>
           </div>
         </div>
 
@@ -132,6 +177,7 @@ const CreateISCI = () => {
               <div className={styles.formColumn}>
                 <ISCIForm
                   code={null}
+                  initialData={template}
                   onSubmit={handleCreateCode}
                   onCancel={handleCancel}
                   allCodes={codes}

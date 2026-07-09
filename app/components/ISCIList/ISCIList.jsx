@@ -54,6 +54,10 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
           aValue = a.spotLength || 0;
           bValue = b.spotLength || 0;
           break;
+        case "channel":
+          aValue = a.channel || "";
+          bValue = b.channel || "";
+          break;
         case "airDate": {
           const toSortableDate = (value) => {
             if (!value || value === "TBD") return 0;
@@ -115,6 +119,9 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
           <span onClick={() => handleSort("length")} className={styles.sortable}>
             Len {getSortIndicator("length")}
           </span>
+          <span onClick={() => handleSort("channel")} className={styles.sortable}>
+            Placement {getSortIndicator("channel")}
+          </span>
           <span onClick={() => handleSort("airDate")} className={styles.sortable}>
             Air Date {getSortIndicator("airDate")}
           </span>
@@ -138,6 +145,7 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
               <span className={styles.mutedCell}>{code.jobNumber || "—"}</span>
               <span className={styles.spotTitleCell}>{code.spotTitle}</span>
               <span className={styles.numCell}>{code.spotLength ? `${code.spotLength}s` : "—"}</span>
+              <span className={styles.mutedCell}>{code.channel || "—"}</span>
               <span className={styles.mutedCell}>{formatDate(code.airDate)}</span>
               <span className={styles.actionsCell}>
                 {userIsAdmin && (

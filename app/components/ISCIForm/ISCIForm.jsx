@@ -35,13 +35,44 @@ const BASE_LANGUAGES = [
   "Arabic",
 ];
 
+// Sanitize a piece of the auto-generated File Name: strip characters that
+// are awkward in filenames, replace spaces with underscores, collapse repeats.
+const sanitizeFileNameSegment = (value) => {
+  if (value === null || value === undefined) return "";
+  return String(value)
+    .trim()
+    .replace(/[^A-Za-z0-9\s\-]/g, "") // drop punctuation, keep letters/digits/space/hyphen
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_");
+};
+
+const FILE_NAME_TEMPLATE = [
+  { key: "code",         label: "ISCI",         get: (d) => d.code },
+  { key: "brand",        label: "Client",       get: (d) => d.brand },
+  { key: "campaignName", label: "Campaign",     get: (d) => d.campaignName },
+  { key: "spotTitle",    label: "Spot Title",   get: (d) => d.spotTitle },
+  { key: "language",     label: "Language",     get: (d) => d.language },
+  { key: "spotLength",   label: "Length",       get: (d) => (d.spotLength ? `${d.spotLength}s` : "") },
+  { key: "aspectRatio",  label: "Aspect Ratio", get: (d) => (d.aspectRatio ? String(d.aspectRatio).replace(":", "-") : "") },
+  { key: "channel",      label: "Placement",    get: (d) => d.channel },
+];
+
+const buildFileName = (data) => {
+  return FILE_NAME_TEMPLATE
+    .map((seg) => {
+      const clean = sanitizeFileNameSegment(seg.get(data));
+      return clean || `[${seg.label}]`;
+    })
+    .join("_");
+};
+
 const capitalizeLanguage = (value) => {
   const trimmed = (value || "").trim();
   if (!trimmed) return "";
   return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
 };
 
-const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef, viewOnly = false }) => {
+const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions = false, hideTitle = false, formRef, viewOnly = false }) => {
   const [isAirDateTbd, setIsAirDateTbd] = useState(false);
   const [aspectRatioChoice, setAspectRatioChoice] = useState("16:9");
   const [customAspectRatio, setCustomAspectRatio] = useState("");
@@ -123,6 +154,34 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
     [dbChannels]
   );
 
+  // Derived read-only File Name shown under Spot Title.
+  const effectiveAspectRatio = aspectRatioChoice === "custom" ? customAspectRatio : aspectRatioChoice;
+  const fileName = useMemo(
+    () => buildFileName({ ...formData, aspectRatio: effectiveAspectRatio }),
+    [formData, effectiveAspectRatio]
+  );
+  const fileNameComplete = !fileName.includes("[");
+  const [fileNameCopied, setFileNameCopied] = useState(false);
+  const handleCopyFileName = async () => {
+    if (!fileName || !fileNameComplete) return;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(fileName);
+      } else {
+        const el = document.createElement("textarea");
+        el.value = fileName;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+      }
+      setFileNameCopied(true);
+      setTimeout(() => setFileNameCopied(false), 1500);
+    } catch (err) {
+      console.error("Copy failed:", err);
+    }
+  };
+
   // Keep the "Other" flags in sync with each merged option list.
   useEffect(() => {
     if (!formData.language) return;
@@ -173,12 +232,52 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
       setIsAirDateTbd(isTbdDate);
       setAspectRatioChoice(isCustomAspectRatio ? "custom" : (code.aspectRatio || "16:9"));
       setCustomAspectRatio(isCustomAspectRatio ? code.aspectRatio : "");
+    } else if (initialData) {
+      // Duplicate-as-cutdown: pre-fill from template, but leave code/length/airDate blank
+      const supportedAspectRatios = ["16:9", "9:16", "4:5", "1:1", "2.39:1"];
+      const templateAspect = initialData.aspectRatio || "16:9";
+      const isCustomAspectRatio = templateAspect && !supportedAspectRatios.includes(templateAspect);
+      setFormData(prev => ({
+        ...prev,
+        code: "",
+        brandId: initialData.brandId || "",
+        brand: initialData.brand || "",
+        campaignName: initialData.campaignName || "",
+        jobNumber: initialData.jobNumber || "",
+        spotTitle: initialData.spotTitle || "",
+        description: initialData.description || "",
+        language: initialData.language || "English",
+        closedCaptioning: initialData.closedCaptioning || "Clean",
+        audio: initialData.audio || "Stereo LR",
+        fileFormat: initialData.fileFormat || "Pro Res",
+        agency: initialData.agency || "",
+        market: normalizeMarketValue(initialData.market),
+        aspectRatio: templateAspect,
+        channel: initialData.channel || "Broadcast",
+        musicRights: initialData.musicRights || "",
+        spotLength: "",
+        airDate: "",
+      }));
+      setIsAirDateTbd(false);
+      setAspectRatioChoice(isCustomAspectRatio ? "custom" : templateAspect);
+      setCustomAspectRatio(isCustomAspectRatio ? templateAspect : "");
     } else {
       setIsAirDateTbd(false);
       setAspectRatioChoice("16:9");
       setCustomAspectRatio("");
     }
-  }, [code]);
+  }, [code, initialData]);
+
+  // When duplicating, generate the new ISCI code once brands and allCodes are available.
+  useEffect(() => {
+    if (code) return;
+    if (!initialData?.brandId) return;
+    if (formData.code) return;
+    if (brands.length === 0 || allCodes.length === 0) return;
+    const sourceBrand = brands.find(b => b.id === initialData.brandId);
+    if (!sourceBrand) return;
+    setFormData(prev => ({ ...prev, code: generateISCICode(sourceBrand.code) }));
+  }, [code, initialData, brands, allCodes, formData.code]);
 
   const generateISCICode = (brandCode) => {
     const currentYear = new Date().getFullYear().toString().slice(-2); // Last 2 digits of year
@@ -464,11 +563,35 @@ const ISCIForm = ({ code, onSubmit, onCancel, allCodes, hideActions = false, hid
               name="spotTitle"
               value={formData.spotTitle}
               onChange={handleChange}
-              placeholder="e.g., LVCVA_New Fab Trailer_30s_Hartbeat_No Disclaimer"
               className={errors.spotTitle ? "error" : ""}
               disabled={viewOnly}
             />
             {errors.spotTitle && <span className={styles.errorMessage}>{errors.spotTitle}</span>}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="fileName">File Name</label>
+            <div className={styles.inputBadgeWrap}>
+              <input
+                type="text"
+                id="fileName"
+                name="fileName"
+                value={fileName}
+                readOnly
+                className={`${styles.readonlyInput} ${styles.fileNameDisplay}`}
+                title="Auto-generated. Fields shown in [brackets] have not been filled in yet."
+              />
+              <button
+                type="button"
+                className={styles.inputBadge}
+                onClick={handleCopyFileName}
+                disabled={!fileNameComplete}
+                title={fileNameComplete ? "Copy file name" : "Fill in the bracketed fields to enable copy"}
+                aria-label="Copy file name"
+              >
+                {fileNameCopied ? "Copied" : "Copy"}
+              </button>
+            </div>
           </div>
 
           <div className={styles.formGroup}>
