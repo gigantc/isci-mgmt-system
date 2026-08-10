@@ -23,26 +23,32 @@ const CSV_HEADERS = [
   "Created At", "Updated At",
 ];
 
+// Template example rows. Values match the dropdown options in ISCIForm so a
+// fresh export/import round-trips cleanly:
+//   Placement:     name (Broadcast, Social, ...) or single letter (B, S, ...)
+//   Audio:         "Stereo LR" | "Broadcast" | "Digital Streaming" | "Cinema 5:1" | "Digital"
+//   Accessibility: "Clean" | "Closed Captions" | "Subtitles"
+//   Market:        two-letter code (US, CA, GB, ...) — see app/utils/markets.js
 const TEMPLATE_EXAMPLES = [
   [
-    "LVCB2599", "Las Vegas Convention and Visitors Authority", "Summer Campaign", "JOB-2025-001",
+    "LVCB2699", "LVCVA", "Summer Campaign", "JOB-2026-001",
     "Vegas Summer Spots 30s", "Summer campaign broadcast spot",
-    "2025-06-01", "GLOBAL", "R&R Partners", "English",
+    "2026-06-01", "US", "R&R Partners", "English",
     "30", "16:9", "Pro Res", "Broadcast", "Stereo LR", "Clean", "Licensed",
     "", "",
   ],
   [
-    "LVCS2598", "Las Vegas Convention and Visitors Authority", "Summer Campaign", "JOB-2025-001",
+    "LVCS2698", "LVCVA", "Summer Campaign", "JOB-2026-001",
     "Vegas Summer Spots 15s Cutdown", "15 second cutdown for social",
-    "2025-06-15", "GLOBAL", "R&R Partners", "English",
-    "15", "9:16", "H.264", "Social", "Stereo LR", "Subtitled", "Licensed",
+    "2026-06-15", "US", "R&R Partners", "English",
+    "15", "9:16", "H.264", "Social", "Stereo LR", "Subtitles", "Licensed",
     "", "",
   ],
   [
-    "LVCR2597", "Las Vegas Convention and Visitors Authority", "Summer Campaign", "JOB-2025-001",
+    "LVCR2697", "LVCVA", "Summer Campaign", "JOB-2026-001",
     "Vegas Summer Radio 30s", "Radio companion spot",
-    "TBD", "LAS VEGAS", "R&R Partners", "Spanish",
-    "30", "", "WAV", "Radio", "Mono", "N/A", "Original",
+    "TBD", "US", "R&R Partners", "Spanish",
+    "30", "", "WAV", "R", "Stereo LR", "Clean", "Original",
     "", "",
   ],
 ];
