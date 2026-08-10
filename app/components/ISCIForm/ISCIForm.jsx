@@ -3,24 +3,6 @@ import { useFetchData } from "@/hooks";
 import { MARKET_OPTIONS, getMarketLabel, normalizeMarketValue } from "@/utils/markets";
 import styles from "./ISCIForm.module.scss";
 
-const BASE_CHANNELS = [
-  "Broadcast",
-  "CTV",
-  "Digital",
-  "Direct TV",
-  "Hulu",
-  "OLV",
-  "OTT",
-  "Pre-Roll",
-  "Radio",
-  "Social",
-  "Sojern",
-  "Streaming Radio",
-  "Terrestrial Radio",
-  "Trade Desk",
-  "YouTube",
-];
-
 const BASE_LANGUAGES = [
   "English",
   "Spanish",
@@ -54,7 +36,7 @@ const FILE_NAME_TEMPLATE = [
   { key: "language",     label: "Language",     get: (d) => d.language },
   { key: "spotLength",   label: "Length",       get: (d) => (d.spotLength ? `${d.spotLength}s` : "") },
   { key: "aspectRatio",  label: "Aspect Ratio", get: (d) => (d.aspectRatio ? String(d.aspectRatio).replace(":", "-") : "") },
-  { key: "channel",      label: "Placement",    get: (d) => d.channel },
+  { key: "placement",    label: "Placement",    get: (d) => d.placementName },
 ];
 
 const buildFileName = (data) => {
@@ -77,11 +59,13 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
   const [aspectRatioChoice, setAspectRatioChoice] = useState("16:9");
   const [customAspectRatio, setCustomAspectRatio] = useState("");
   const [isOtherLanguage, setIsOtherLanguage] = useState(false);
-  const [isOtherChannel, setIsOtherChannel] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
     brandId: "",
     brand: "",
+    placementId: "",
+    placementLetter: "",
+    placementName: "",
     campaignName: "",
     jobNumber: "",
     spotTitle: "",
@@ -95,7 +79,6 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     market: "",
     airDate: "",
     aspectRatio: "16:9",
-    channel: "Broadcast",
     musicRights: "",
   });
 
@@ -111,6 +94,11 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     []
   );
 
+  const activePlacementsFilter = useCallback(
+    (data) => data.filter(p => p.active),
+    []
+  );
+
   // Fetch brands, users, and agencies using useFetchData hook
   const { data: brands } = useFetchData("/api/brands", {
     filter: activeBrandsFilter
@@ -120,20 +108,16 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     filter: activeAgenciesFilter
   });
 
+  const { data: placements } = useFetchData("/api/placements", {
+    filter: activePlacementsFilter
+  });
+
   const languagesTransform = useCallback(
     (data) => (Array.isArray(data?.languages) ? data.languages : []),
     []
   );
   const { data: dbLanguages } = useFetchData("/api/isci/languages", {
     transform: languagesTransform,
-  });
-
-  const channelsTransform = useCallback(
-    (data) => (Array.isArray(data?.channels) ? data.channels : []),
-    []
-  );
-  const { data: dbChannels } = useFetchData("/api/isci/channels", {
-    transform: channelsTransform,
   });
 
   const mergeWithBase = (base, extras) => {
@@ -147,11 +131,6 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
   const mergedLanguages = useMemo(
     () => mergeWithBase(BASE_LANGUAGES, dbLanguages),
     [dbLanguages]
-  );
-
-  const mergedChannels = useMemo(
-    () => mergeWithBase(BASE_CHANNELS, dbChannels),
-    [dbChannels]
   );
 
   // Derived read-only File Name shown under Spot Title.
@@ -182,16 +161,11 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     }
   };
 
-  // Keep the "Other" flags in sync with each merged option list.
+  // Keep the "Other" flag in sync with merged language list.
   useEffect(() => {
     if (!formData.language) return;
     setIsOtherLanguage(!mergedLanguages.includes(formData.language));
   }, [mergedLanguages, formData.language]);
-
-  useEffect(() => {
-    if (!formData.channel) return;
-    setIsOtherChannel(!mergedChannels.includes(formData.channel));
-  }, [mergedChannels, formData.channel]);
 
   // Set default agency when agencies load and we're creating a new code
   useEffect(() => {
@@ -213,6 +187,9 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         code: code.code,
         brandId: code.brandId || "",
         brand: code.brand,
+        placementId: code.placementId || "",
+        placementLetter: code.placement?.letter || "",
+        placementName: code.placement?.name || "",
         campaignName: code.campaignName || "",
         jobNumber: code.jobNumber || "",
         spotTitle: code.spotTitle,
@@ -226,7 +203,6 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         market: normalizeMarketValue(code.market),
         airDate: !code.airDate || isTbdDate ? "" : code.airDate.split('T')[0],
         aspectRatio: code.aspectRatio || "16:9",
-        channel: code.channel || "Broadcast",
         musicRights: code.musicRights || "",
       });
       setIsAirDateTbd(isTbdDate);
@@ -242,6 +218,9 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         code: "",
         brandId: initialData.brandId || "",
         brand: initialData.brand || "",
+        placementId: initialData.placementId || "",
+        placementLetter: initialData.placement?.letter || "",
+        placementName: initialData.placement?.name || "",
         campaignName: initialData.campaignName || "",
         jobNumber: initialData.jobNumber || "",
         spotTitle: initialData.spotTitle || "",
@@ -253,7 +232,6 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         agency: initialData.agency || "",
         market: normalizeMarketValue(initialData.market),
         aspectRatio: templateAspect,
-        channel: initialData.channel || "Broadcast",
         musicRights: initialData.musicRights || "",
         spotLength: "",
         airDate: "",
@@ -268,43 +246,42 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     }
   }, [code, initialData]);
 
-  // When duplicating, generate the new ISCI code once brands and allCodes are available.
+  // When duplicating, generate the new ISCI code once brands, placements, and allCodes are available.
   useEffect(() => {
     if (code) return;
     if (!initialData?.brandId) return;
     if (formData.code) return;
-    if (brands.length === 0 || allCodes.length === 0) return;
+    if (brands.length === 0 || placements.length === 0 || allCodes.length === 0) return;
     const sourceBrand = brands.find(b => b.id === initialData.brandId);
-    if (!sourceBrand) return;
-    setFormData(prev => ({ ...prev, code: generateISCICode(sourceBrand.code) }));
-  }, [code, initialData, brands, allCodes, formData.code]);
+    const sourcePlacement = placements.find(p => p.id === initialData.placementId);
+    if (!sourceBrand || !sourcePlacement) return;
+    setFormData(prev => ({
+      ...prev,
+      code: generateISCICode(sourceBrand.code, sourcePlacement.letter),
+    }));
+  }, [code, initialData, brands, placements, allCodes, formData.code]);
 
-  const generateISCICode = (brandCode) => {
-    const currentYear = new Date().getFullYear().toString().slice(-2); // Last 2 digits of year
+  // Sequence per brand + placement + year. Prefix is 3-letter brand code +
+  // 1-letter placement letter + 2-digit year (e.g. LVCB25).
+  const generateISCICode = (brandCode, placementLetter) => {
+    if (!brandCode || !placementLetter) return "";
+    const currentYear = new Date().getFullYear().toString().slice(-2);
+    const prefix = `${brandCode}${placementLetter}${currentYear}`;
 
-    // Find all codes for this brand in the current year
-    const brandCodes = allCodes.filter(c => {
-      const codeStart = `${brandCode}${currentYear}`;
-      return c.code.startsWith(codeStart);
-    });
-
-    // Extract the numbers and find the highest
     let highestNumber = 0;
-    brandCodes.forEach(c => {
-      const match = c.code.match(new RegExp(`${brandCode}${currentYear}(\\d+)`));
+    allCodes.forEach(c => {
+      if (!c.code || !c.code.startsWith(prefix)) return;
+      const tail = c.code.slice(prefix.length);
+      const match = tail.match(/^(\d+)$/);
       if (match) {
         const num = parseInt(match[1], 10);
-        if (num > highestNumber) {
-          highestNumber = num;
-        }
+        if (num > highestNumber) highestNumber = num;
       }
     });
 
-    // Increment and pad with zeros (2 or 3 digits)
     const nextNumber = highestNumber + 1;
     const paddedNumber = nextNumber < 100 ? nextNumber.toString().padStart(2, '0') : nextNumber.toString();
-
-    return `${brandCode}${currentYear}${paddedNumber}`;
+    return `${prefix}${paddedNumber}`;
   };
 
   const validateForm = () => {
@@ -326,8 +303,8 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
       newErrors.language = "Please enter a language";
     }
 
-    if (isOtherChannel && !formData.channel.trim()) {
-      newErrors.channel = "Please enter a placement";
+    if (!formData.placementId) {
+      newErrors.placement = "Placement is required";
     }
 
     setErrors(newErrors);
@@ -339,7 +316,9 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     const selectedBrand = brands.find(b => b.id === brandId);
 
     if (selectedBrand) {
-      const generatedCode = generateISCICode(selectedBrand.code);
+      const generatedCode = formData.placementLetter
+        ? generateISCICode(selectedBrand.code, formData.placementLetter)
+        : "";
       setFormData(prev => ({
         ...prev,
         brandId: brandId,
@@ -357,6 +336,37 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
 
     if (errors.brand) {
       setErrors(prev => ({ ...prev, brand: "" }));
+    }
+  };
+
+  const handlePlacementChange = (e) => {
+    const placementId = e.target.value;
+    const selectedPlacement = placements.find(p => p.id === placementId);
+
+    if (selectedPlacement) {
+      const selectedBrand = brands.find(b => b.id === formData.brandId);
+      const generatedCode = selectedBrand
+        ? generateISCICode(selectedBrand.code, selectedPlacement.letter)
+        : "";
+      setFormData(prev => ({
+        ...prev,
+        placementId,
+        placementLetter: selectedPlacement.letter,
+        placementName: selectedPlacement.name,
+        code: generatedCode,
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        placementId: "",
+        placementLetter: "",
+        placementName: "",
+        code: "",
+      }));
+    }
+
+    if (errors.placement) {
+      setErrors(prev => ({ ...prev, placement: "" }));
     }
   };
 
@@ -390,7 +400,6 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
       onSubmit({
         ...formData,
         language: isOtherLanguage ? capitalizeLanguage(formData.language) : formData.language,
-        channel: isOtherChannel ? formData.channel.trim() : formData.channel,
         airDate: isAirDateTbd ? "TBD" : formData.airDate,
         aspectRatio: aspectRatioChoice === "custom" ? customAspectRatio.trim() : aspectRatioChoice,
         spotLength: formData.spotLength ? parseInt(formData.spotLength, 10) : null,
@@ -421,7 +430,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
             <span className={styles.sectionNumber}>01</span> Basic Details
           </h3>
 
-          {/* Client and ISCI Code side-by-side */}
+          {/* Client and Placement side-by-side (both drive the ISCI code) */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label htmlFor="brand">Client *</label>
@@ -466,6 +475,51 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
               )}
             </div>
 
+            <div className={styles.formGroup}>
+              <label htmlFor="placement">Placement *</label>
+              {code ? (
+                // When editing, placement is locked (changing it would break the code)
+                <div className={styles.inputBadgeWrap}>
+                  <input
+                    type="text"
+                    value={formData.placementName ? `${formData.placementName} (${formData.placementLetter})` : ""}
+                    disabled
+                    className={styles.disabledInput}
+                    title="Changing the placement would break the code pattern"
+                  />
+                  <span
+                    className={styles.inputBadge}
+                    title="Changing the placement would break the code pattern"
+                    aria-label="Locked"
+                  >
+                    Locked
+                  </span>
+                </div>
+              ) : (
+                <select
+                  id="placement"
+                  name="placement"
+                  value={formData.placementId}
+                  onChange={handlePlacementChange}
+                  className={errors.placement ? "error" : ""}
+                >
+                  <option value="">Select a placement...</option>
+                  {placements.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.letter})
+                    </option>
+                  ))}
+                </select>
+              )}
+              {errors.placement && <span className={styles.errorMessage}>{errors.placement}</span>}
+              {!code && placements.length === 0 && (
+                <span className={styles.helpText}>No placements available. <a href="/admin">Add placements in Admin Panel</a></span>
+              )}
+            </div>
+          </div>
+
+          {/* ISCI Code (auto-generated once Client and Placement are chosen) */}
+          <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label htmlFor="code">ISCI Code *</label>
               {code ? (
@@ -802,64 +856,6 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="channel">Placement</label>
-              <select
-                id="channel"
-                name="channel"
-                value={isOtherChannel ? "Other" : formData.channel}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  if (value === "Other") {
-                    setIsOtherChannel(true);
-                    setFormData((prev) => ({ ...prev, channel: "" }));
-                  } else {
-                    setIsOtherChannel(false);
-                    setFormData((prev) => ({ ...prev, channel: value }));
-                    if (errors.channel) {
-                      setErrors((prev) => ({ ...prev, channel: "" }));
-                    }
-                  }
-                }}
-                disabled={viewOnly}
-              >
-                {mergedChannels.map((ch) => (
-                  <option key={ch} value={ch}>{ch}</option>
-                ))}
-                <option value="Other">Other…</option>
-              </select>
-              {isOtherChannel && (
-                <>
-                  <input
-                    type="text"
-                    name="channel"
-                    value={formData.channel}
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      setFormData((prev) => ({ ...prev, channel: value }));
-                      if (errors.channel) {
-                        setErrors((prev) => ({ ...prev, channel: "" }));
-                      }
-                    }}
-                    onBlur={(e) => {
-                      const trimmed = e.target.value.trim();
-                      if (trimmed !== e.target.value) {
-                        setFormData((prev) => ({ ...prev, channel: trimmed }));
-                      }
-                    }}
-                    placeholder="Enter placement (e.g., Reddit, Next Door, LVRJ)"
-                    disabled={viewOnly}
-                    className={errors.channel ? "error" : ""}
-                  />
-                  {errors.channel && (
-                    <span className={styles.errorMessage}>{errors.channel}</span>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
               <label htmlFor="audio">Audio</label>
               <select
                 id="audio"
@@ -876,6 +872,9 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
               </select>
             </div>
 
+          </div>
+
+          <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label htmlFor="closedCaptioning">Accessibility</label>
               <select
@@ -890,22 +889,22 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
                 <option value="Clean">Clean</option>
               </select>
             </div>
-          </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="musicRights">Music Rights</label>
-            <select
-              id="musicRights"
-              name="musicRights"
-              value={formData.musicRights}
-              onChange={handleChange}
-              disabled={viewOnly}
-            >
-              <option value="">Not specified</option>
-              <option value="Licensed">Licensed</option>
-              <option value="Original">Original</option>
-              <option value="None">None</option>
-            </select>
+            <div className={styles.formGroup}>
+              <label htmlFor="musicRights">Music Rights</label>
+              <select
+                id="musicRights"
+                name="musicRights"
+                value={formData.musicRights}
+                onChange={handleChange}
+                disabled={viewOnly}
+              >
+                <option value="">Not specified</option>
+                <option value="Licensed">Licensed</option>
+                <option value="Original">Original</option>
+                <option value="None">None</option>
+              </select>
+            </div>
           </div>
         </div>
 

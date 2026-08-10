@@ -151,7 +151,7 @@ const CutdownFamilies = () => {
                       type="button"
                       className={styles.member}
                       onClick={() => navigate(`/isci/${code.code}`)}
-                      title={`${code.code} · ${code.channel || ""}`}
+                      title={`${code.code} · ${code.placement?.name || ""}`}
                     >
                       <span className={styles.memberLength}>
                         {code.spotLength ? `${code.spotLength}s` : "—"}

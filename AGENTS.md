@@ -1,6 +1,6 @@
-# CLAUDE.md - ISCI Management System
+# AGENTS.md - ISCI Management System
 
-This document provides context for AI assistants (like Claude) working on this project.
+This document provides context for AI assistants (like Codex) working on this project.
 
 **Version**: 1.2.0
 **Last Updated**: August 10, 2026

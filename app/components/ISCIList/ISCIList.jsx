@@ -56,8 +56,8 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
           bValue = b.spotLength || 0;
           break;
         case "channel":
-          aValue = a.channel || "";
-          bValue = b.channel || "";
+          aValue = a.placement?.name || "";
+          bValue = b.placement?.name || "";
           break;
         case "airDate": {
           const toSortableDate = (value) => {
@@ -146,7 +146,7 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
               <span className={styles.mutedCell}>{code.jobNumber || "—"}</span>
               <span className={styles.spotTitleCell}>{code.spotTitle}</span>
               <span className={styles.numCell}>{code.spotLength ? `${code.spotLength}s` : "—"}</span>
-              <span className={styles.mutedCell}>{code.channel || "—"}</span>
+              <span className={styles.mutedCell}>{code.placement?.name || "—"}</span>
               <span className={styles.mutedCell}>{formatDate(code.airDate)}</span>
               <span className={styles.actionsCell}>
                 {userCanEdit && (

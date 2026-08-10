@@ -2,7 +2,7 @@
  * Deterministic color palette for client/brand swatches.
  *
  * Brands don't yet have a `color` column in the schema, so we derive a stable
- * color from the 4-letter code. When the schema gains a `color` field, callers
+ * color from the 3-letter code. When the schema gains a `color` field, callers
  * can fall back to this helper only when the stored value is absent.
  */
 const PALETTE = [

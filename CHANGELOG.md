@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-08-10
+
+### Placement‑Aware ISCI Codes (Breaking)
+
+ISCI codes now embed a **placement letter** as the 4th character. The pattern moves from `[BRAND(4)][YEAR][NUM]` to `[BRAND(3)][PLACEMENT(1)][YEAR][NUM]` — e.g. `LVCB2501` = Las Vegas, Broadcast, 2025, seq 01. Codes are sequenced per brand + placement + year.
+
+#### Added
+- **Placement as a first‑class managed resource**: new `Placement` table with unique `name` and unique single‑letter `letter`. Admin can create, edit, deactivate, delete placements from a new **Placements** tab in `/admin`.
+- **`/api/placements`** CRUD endpoint.
+- **Placement selector on the ISCI form**: sits next to Client at the top so the code visibly regenerates when either changes. Locked once the code is created (like Client).
+- **Default placements seeded**: Broadcast (B), Social (S), Digital (D), Radio (R), Print (P), OOH (O), Cinema (C), Other (X). Edit or rename any of them in Admin.
+- **CSV import Placement preflight**: unknown placement values are collected and reported in one error so admins can fix all of them in one pass.
+
+#### Changed
+- **Brand code shrunk to 3 letters** (was 4). Regex is now `/^[A-Z]{3}$/`.
+- **ISCI code format regex** now expects `[A-Z]{4}\d{4,5}` where the first 3 letters are the brand code and the 4th is the placement letter.
+- **`ISCICode.channel` (free‑text) replaced by `placementId` FK**. All consumers (Dashboard, ISCIList, Reports, PlacementMix, CutdownFamilies, CmdK) now read `code.placement.name`.
+- **CSV import requires a Placement column**. Legacy header `Channel` still resolves for backward compatibility with older exports. Values may be the placement name (`Broadcast`) or its letter (`B`).
+- **CSV template** updated with new format (LVCB / LVCS / LVCR examples) and includes the Placement column.
+
+#### Removed
+- `BASE_CHANNELS` seed list and `/api/isci/channels` endpoint. Placements now come from the DB.
+- `ISCICode.channel` column.
+
+#### Migration
+This is a destructive data reset (all existing ISCI codes were placeholder). Steps:
+1. `node scripts/wipeCodesForPlacementMigration.js` — deletes all ISCICode rows.
+2. `npx prisma migrate dev --name add_placements` (or `npx prisma db push` if the migration history is broken locally).
+3. `node scripts/seedPlacements.js` — seeds default placements.
+4. In Admin → Clients, shorten each brand's `code` from 4 letters to 3.
+
+Note: schema provider mismatch (`postgresql` declared but SQLite locally) predates this release; provider was flipped to `sqlite` to unblock migration. Prod postgres deployment needs reconciliation before this ships.
+
+---
+
 ## [1.1.0] - 2026-07-09
 
 ### Client Feedback Round

@@ -16,7 +16,7 @@ const buildMatrix = (codes) => {
 
   for (const code of codes) {
     const client = code.brand || "—";
-    const placement = code.channel || "—";
+    const placement = code.placement?.name || "—";
     placementSet.add(placement);
     if (!clientMap.has(client)) {
       clientMap.set(client, {

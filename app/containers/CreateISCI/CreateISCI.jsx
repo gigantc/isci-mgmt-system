@@ -13,6 +13,8 @@ import styles from "./CreateISCI.module.scss";
 const CUTDOWN_TEMPLATE_FIELDS = [
   "brandId",
   "brand",
+  "placementId",
+  "placement",
   "campaignName",
   "jobNumber",
   "spotTitle",
@@ -24,7 +26,6 @@ const CUTDOWN_TEMPLATE_FIELDS = [
   "agency",
   "market",
   "aspectRatio",
-  "channel",
   "musicRights",
 ];
 
