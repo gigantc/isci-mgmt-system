@@ -568,7 +568,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
                     </span>
                   </div>
                   {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
-                  <span className={styles.helpText}>Auto-generated: [CLIENT][YEAR][NUMBER]</span>
+                  <span className={styles.helpText}>Auto-generated: [CLIENT][PLACEMENT][YEAR][NUMBER]</span>
                 </>
               )}
             </div>
