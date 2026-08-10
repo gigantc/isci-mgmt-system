@@ -48,11 +48,24 @@ model Agency {
   updatedAt DateTime
 }
 
+model Placement {
+  id        String   @id
+  name      String   @unique
+  letter    String   @unique // single uppercase A–Z
+  active    Boolean  @default(true)
+  createdAt DateTime
+  updatedAt DateTime
+
+  isciCodes ISCICode[]
+}
+
 model ISCICode {
   id               String    @id
   code             String    @unique
   brandId          String
   brand            Brand     @relation(fields: [brandId], references: [id])
+  placementId      String
+  placement        Placement @relation(fields: [placementId], references: [id])
   campaignName     String?
   jobNumber        String?
   spotTitle        String
@@ -64,7 +77,6 @@ model ISCICode {
   fileFormat       String    @default("Pro Res")
   airDate          String?   // Stored as ISO string for SQLite compatibility
   aspectRatio      String    @default("16:9")
-  channel          String    @default("Broadcast")
   musicRights      String?   // "Licensed" | "Original" | "None"
   agency           String?
   market           String?
@@ -76,4 +88,5 @@ model ISCICode {
   completedAt      DateTime?
 
   @@index([brandId])
+  @@index([placementId])
 }

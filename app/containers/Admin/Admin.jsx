@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import BrandManager from "@/components/BrandManager";
+import PlacementManager from "@/components/PlacementManager";
 import UserManager from "@/components/UserManager";
 import AgencyManager from "@/components/AgencyManager";
 import RolesInfo from "@/components/RolesInfo";
@@ -12,6 +13,7 @@ const TAB_KEY = "isciz-admin-tab";
 
 const SECTIONS = [
   { id: "brands", label: "Clients" },
+  { id: "placements", label: "Placements" },
   { id: "agencies", label: "Agencies" },
   { id: "users", label: "Users" },
 ];
@@ -24,6 +26,7 @@ const Admin = () => {
 
   // Load counts for the sidebar
   const { data: brands } = useFetchData("/api/brands");
+  const { data: placements } = useFetchData("/api/placements");
   const { data: agencies } = useFetchData("/api/agencies");
   const { data: users } = useFetchData("/api/users");
 
@@ -51,6 +54,7 @@ const Admin = () => {
 
   const counts = {
     brands: brands.length,
+    placements: placements.length,
     agencies: agencies.length,
     users: users.length,
   };
@@ -93,6 +97,7 @@ const Admin = () => {
       <main className={styles.main}>
         <div className={`${styles.scrollableContent} ${styles.scrollableContentFlush}`}>
           {activeTab === "brands" && <BrandManager />}
+          {activeTab === "placements" && <PlacementManager />}
           {activeTab === "agencies" && <AgencyManager />}
           {activeTab === "users" && <UserManager />}
           {activeTab === "roles" && <RolesInfo />}
@@ -101,6 +106,7 @@ const Admin = () => {
         <footer className={styles.footer}>
           <div>
             {activeTab === "brands" && `${counts.brands} ${counts.brands === 1 ? "client" : "clients"}`}
+            {activeTab === "placements" && `${counts.placements} ${counts.placements === 1 ? "placement" : "placements"}`}
             {activeTab === "agencies" && `${counts.agencies} ${counts.agencies === 1 ? "agency" : "agencies"}`}
             {activeTab === "users" && `${counts.users} ${counts.users === 1 ? "user" : "users"}`}
             {activeTab === "roles" && "3 roles"}

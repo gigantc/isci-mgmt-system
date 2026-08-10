@@ -45,7 +45,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
  *   validate: (data, brands) => {
  *     const errors = {};
  *     if (!data.name) errors.name = "Name is required";
- *     if (!data.code.match(/^[A-Z]{4}$/)) errors.code = "Invalid code";
+ *     if (!data.code.match(/^[A-Z]{3}$/)) errors.code = "Invalid code";
  *     return errors;
  *   },
  *   hasActiveToggle: true

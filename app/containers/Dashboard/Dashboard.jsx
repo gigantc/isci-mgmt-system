@@ -92,7 +92,7 @@ const Dashboard = () => {
     for (const c of codes) {
       if (!bc.has(c.brand)) bc.set(c.brand, { count: 0, color: c.brandColor || null, codeKey: c.brandCode || c.brand });
       bc.get(c.brand).count += 1;
-      if (c.channel) bp.set(c.channel, (bp.get(c.channel) || 0) + 1);
+      if (c.placement?.name) bp.set(c.placement.name, (bp.get(c.placement.name) || 0) + 1);
     }
     return {
       byClient: [...bc.entries()].sort((a, b) => b[1].count - a[1].count),
@@ -106,7 +106,7 @@ const Dashboard = () => {
       list = list.filter((c) => c.createdBy === currentUserName || c.updatedBy === currentUserName);
     }
     if (clientFilter) list = list.filter((c) => c.brand === clientFilter);
-    if (placementFilter) list = list.filter((c) => c.channel === placementFilter);
+    if (placementFilter) list = list.filter((c) => c.placement?.name === placementFilter);
     return list;
   }, [codes, view, clientFilter, placementFilter, currentUserName]);
 

@@ -212,7 +212,7 @@ const CmdK = () => {
                     <span className={styles.sub}>
                       {r.brand}
                       {r.spotLength ? ` · ${r.spotLength}s` : ""}
-                      {r.channel ? ` · ${r.channel}` : ""}
+                      {r.placement?.name ? ` · ${r.placement.name}` : ""}
                     </span>
                   </button>
                 );

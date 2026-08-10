@@ -28,16 +28,20 @@ const parseEditHistory = (value) => {
 export async function loader() {
   try {
     const codes = await prisma.iSCICode.findMany({
-      include: { brand: true },
+      include: { brand: true, placement: true },
       orderBy: { createdAt: "desc" },
     });
 
-    // Denormalize brand name + color + code for frontend compatibility
+    // Denormalize brand + placement for frontend compatibility.
+    // `placement` is kept as an object so consumers can read name/letter directly.
     const codesWithBrandName = codes.map((code) => ({
       ...code,
       brand: code.brand.name,
       brandCode: code.brand.code,
       brandColor: code.brand.color || null,
+      placement: code.placement
+        ? { id: code.placement.id, name: code.placement.name, letter: code.placement.letter }
+        : null,
       editHistory: parseEditHistory(code.editHistory),
     }));
 
@@ -94,11 +98,29 @@ export async function action({ request }) {
         );
       }
 
+      // Verify placement exists
+      if (!data.placementId) {
+        return Response.json(
+          { success: false, error: "Placement is required" },
+          { status: 400 }
+        );
+      }
+      const placement = await prisma.placement.findUnique({
+        where: { id: data.placementId },
+      });
+      if (!placement) {
+        return Response.json(
+          { success: false, error: "Placement not found" },
+          { status: 400 }
+        );
+      }
+
       const isciCode = await prisma.iSCICode.create({
         data: {
           id: data.id,
           code: data.code,
           brandId: data.brandId,
+          placementId: data.placementId,
           campaignName: data.campaignName || null,
           jobNumber: data.jobNumber || null,
           spotTitle: data.spotTitle,
@@ -110,7 +132,6 @@ export async function action({ request }) {
           fileFormat: data.fileFormat || "Pro Res",
           airDate: data.airDate || null,
           aspectRatio: data.aspectRatio || "16:9",
-          channel: data.channel || "Broadcast",
           musicRights: data.musicRights || null,
           agency: data.agency || null,
           market: data.market || null,
@@ -121,13 +142,17 @@ export async function action({ request }) {
           updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
           completedAt: data.completedAt ? new Date(data.completedAt) : null,
         },
-        include: { brand: true },
+        include: { brand: true, placement: true },
       });
 
-      // Return with denormalized brand name
       const result = {
         ...isciCode,
         brand: isciCode.brand.name,
+        placement: {
+          id: isciCode.placement.id,
+          name: isciCode.placement.name,
+          letter: isciCode.placement.letter,
+        },
       };
 
       console.log("✅ Created ISCI code:", isciCode.code);
@@ -172,7 +197,7 @@ export async function action({ request }) {
       if (data.fileFormat !== undefined) updateData.fileFormat = data.fileFormat;
       if (data.airDate !== undefined) updateData.airDate = data.airDate || null;
       if (data.aspectRatio !== undefined) updateData.aspectRatio = data.aspectRatio;
-      if (data.channel !== undefined) updateData.channel = data.channel;
+      if (data.placementId !== undefined) updateData.placementId = data.placementId;
       if (data.musicRights !== undefined) updateData.musicRights = data.musicRights || null;
       if (data.agency !== undefined) updateData.agency = data.agency || null;
       if (data.market !== undefined) updateData.market = data.market || null;
@@ -205,13 +230,15 @@ export async function action({ request }) {
       const isciCode = await prisma.iSCICode.update({
         where: { id: data.id },
         data: updateData,
-        include: { brand: true },
+        include: { brand: true, placement: true },
       });
 
-      // Return with denormalized brand name
       const result = {
         ...isciCode,
         brand: isciCode.brand.name,
+        placement: isciCode.placement
+          ? { id: isciCode.placement.id, name: isciCode.placement.name, letter: isciCode.placement.letter }
+          : null,
         editHistory: parseEditHistory(isciCode.editHistory),
       };
 

@@ -2,8 +2,7 @@ import { useRef, useState, useMemo } from "react";
 import { useResourceManager, useConfirmDialog, useFetchData } from "@/hooks";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Drawer from "@/components/Drawer";
-import { colorForCode } from "@/utils/palette";
-import styles from "./BrandManager.module.scss";
+import styles from "./PlacementManager.module.scss";
 
 const IconSearch = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -37,7 +36,7 @@ const fmtDate = (d) => {
   return `${String(dt.getMonth() + 1).padStart(2, "0")}/${String(dt.getDate()).padStart(2, "0")}/${String(dt.getFullYear()).slice(2)}`;
 };
 
-const BrandManager = () => {
+const PlacementManager = () => {
   const { dialogProps, confirm } = useConfirmDialog();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -45,18 +44,18 @@ const BrandManager = () => {
 
   const { data: isciCodes } = useFetchData("/api/isci");
 
-  const countByBrandId = useMemo(
-    () => isciCodes.reduce((acc, c) => { acc[c.brandId] = (acc[c.brandId] || 0) + 1; return acc; }, {}),
+  const countByPlacementId = useMemo(
+    () => isciCodes.reduce((acc, c) => { acc[c.placementId] = (acc[c.placementId] || 0) + 1; return acc; }, {}),
     [isciCodes]
   );
 
   const {
-    items: brands,
+    items: placements,
     formData,
     errors,
     isLoading,
     showForm,
-    editingItem: editingBrand,
+    editingItem: editingPlacement,
     handleChange,
     handleSubmit,
     handleEdit,
@@ -64,46 +63,46 @@ const BrandManager = () => {
     handleToggleActive,
     handleNew,
     resetForm,
-  } = useResourceManager("/api/brands", {
-    initialFormData: { name: "", code: "", color: "" },
+  } = useResourceManager("/api/placements", {
+    initialFormData: { name: "", letter: "" },
     validate: (data, list, editing) => {
       const e = {};
-      if (!data.name.trim()) e.name = "Client name is required";
-      if (!data.code.trim()) {
-        e.code = "Client code is required";
-      } else if (!/^[A-Z]{3}$/.test(data.code)) {
-        e.code = "Must be 3 uppercase letters (e.g., LVC)";
+      if (!data.name.trim()) e.name = "Placement name is required";
+      const letter = String(data.letter || "").toUpperCase();
+      if (!letter) {
+        e.letter = "Letter is required";
+      } else if (!/^[A-Z]$/.test(letter)) {
+        e.letter = "Must be a single uppercase letter (A–Z)";
       } else {
-        const dup = list.some((b) => b.code === data.code && b.id !== editing?.id);
-        if (dup) e.code = "This client code is already in use";
+        const dup = list.some((p) => p.letter === letter && p.id !== editing?.id);
+        if (dup) e.letter = "This letter is already in use";
       }
       return e;
     },
     createItem: (data, now) => ({
       id: Date.now().toString(),
-      name: data.name,
-      code: data.code.toUpperCase(),
-      color: data.color || null,
+      name: data.name.trim(),
+      letter: String(data.letter).toUpperCase(),
       active: true,
       createdAt: now,
       updatedAt: now,
     }),
     hasActiveToggle: true,
     confirmDelete: async () => {
-      const brand = pendingDeleteRef.current;
-      const count = countByBrandId[brand?.id] || 0;
+      const p = pendingDeleteRef.current;
+      const count = countByPlacementId[p?.id] || 0;
       if (count > 0) {
         await confirm({
-          title: "Cannot Delete Client",
-          message: `${brand?.name} (${brand?.code}) has ${count} ISCI code${count !== 1 ? "s" : ""} referencing it and cannot be deleted. Deactivate it to hide it from new ISCI creation.`,
+          title: "Cannot Delete Placement",
+          message: `${p?.name} (${p?.letter}) has ${count} ISCI code${count !== 1 ? "s" : ""} referencing it and cannot be deleted. Deactivate it to hide it from new ISCI creation.`,
           confirmText: "Got it",
           isDangerous: false,
         });
         return false;
       }
       return confirm({
-        title: "Delete Client",
-        message: `Delete ${brand?.name} (${brand?.code})? This can't be undone. Existing ISCI codes are unaffected.`,
+        title: "Delete Placement",
+        message: `Delete ${p?.name} (${p?.letter})? This can't be undone.`,
         confirmText: "Delete",
         cancelText: "Cancel",
         isDangerous: true,
@@ -111,42 +110,42 @@ const BrandManager = () => {
     },
   });
 
-  const doDelete = (brand) => {
+  const doDelete = (placement) => {
     if (showForm) resetForm();
-    pendingDeleteRef.current = brand;
-    handleDelete(brand);
+    pendingDeleteRef.current = placement;
+    handleDelete(placement);
   };
 
-  const codeLocked = !!editingBrand && (countByBrandId[editingBrand.id] || 0) > 0;
-  const activeCount = brands.filter((b) => b.active).length;
-  const inactiveCount = brands.length - activeCount;
+  const letterLocked = !!editingPlacement && (countByPlacementId[editingPlacement.id] || 0) > 0;
+  const activeCount = placements.filter((p) => p.active).length;
+  const inactiveCount = placements.length - activeCount;
 
-  const filteredBrands = useMemo(() => {
-    let list = brands;
-    if (filter === "active") list = list.filter((b) => b.active);
-    if (filter === "inactive") list = list.filter((b) => !b.active);
+  const filteredPlacements = useMemo(() => {
+    let list = placements;
+    if (filter === "active") list = list.filter((p) => p.active);
+    if (filter === "inactive") list = list.filter((p) => !p.active);
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter((b) =>
-        b.name.toLowerCase().includes(q) || (b.code || "").toLowerCase().includes(q)
+      list = list.filter((p) =>
+        p.name.toLowerCase().includes(q) || (p.letter || "").toLowerCase().includes(q)
       );
     }
     return list;
-  }, [brands, filter, search]);
+  }, [placements, filter, search]);
 
   return (
     <div className={styles.brandManager}>
       <header className={styles.pgHead}>
         <div>
-          <h1 className={styles.pgTitle}>Clients</h1>
+          <h1 className={styles.pgTitle}>Placements</h1>
           <p className={styles.pgSub}>
-            <strong>{filteredBrands.length}</strong> of {brands.length}
+            <strong>{filteredPlacements.length}</strong> of {placements.length}
             {" · "}
             <strong>{activeCount}</strong> active
           </p>
         </div>
         <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
-          + New Client
+          + New Placement
         </button>
       </header>
 
@@ -155,14 +154,14 @@ const BrandManager = () => {
           <IconSearch />
           <input
             type="text"
-            placeholder="Search client name or code…"
+            placeholder="Search placement name or letter…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <div className={styles.filterChips}>
           {[
-            { id: "all", label: "All", count: brands.length },
+            { id: "all", label: "All", count: placements.length },
             { id: "active", label: "Active", count: activeCount },
             { id: "inactive", label: "Inactive", count: inactiveCount },
           ].map(({ id, label, count }) => (
@@ -181,63 +180,60 @@ const BrandManager = () => {
 
       <div className={styles.scroll}>
         {isLoading ? (
-          <div className={styles.emptyState}><p>Loading clients…</p></div>
-        ) : filteredBrands.length === 0 ? (
+          <div className={styles.emptyState}><p>Loading placements…</p></div>
+        ) : filteredPlacements.length === 0 ? (
           <div className={styles.emptyState}>
-            <h3>No clients {search || filter !== "all" ? "match" : "yet"}</h3>
+            <h3>No placements {search || filter !== "all" ? "match" : "yet"}</h3>
             <p>
               {search || filter !== "all"
                 ? "Try a different search or filter."
-                : "Create your first client to start generating ISCI codes."}
+                : "Create your first placement to start generating ISCI codes."}
             </p>
             {!search && filter === "all" && (
               <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
-                + New Client
+                + New Placement
               </button>
             )}
           </div>
         ) : (
           <div className={styles.cards}>
-            {filteredBrands.map((brand) => {
-              const count = countByBrandId[brand.id] || 0;
-              const color = brand.color || colorForCode(brand.code);
+            {filteredPlacements.map((placement) => {
+              const count = countByPlacementId[placement.id] || 0;
               return (
                 <article
-                  key={brand.id}
-                  className={`${styles.card} ${!brand.active ? styles.cardInactive : ""}`}
+                  key={placement.id}
+                  className={`${styles.card} ${!placement.active ? styles.cardInactive : ""}`}
                 >
                   <div className={styles.cardTop}>
-                    <div className={styles.dot} style={{ background: color }}>
-                      {(brand.code || "??").slice(0, 2)}
-                    </div>
+                    <div className={styles.dot}>{placement.letter}</div>
                     <div className={styles.cardInfo}>
-                      <h3>{brand.name}</h3>
+                      <h3>{placement.name}</h3>
                       <div className={styles.cardSub}>
-                        <span className={styles.codeTag}>{brand.code}</span>
+                        <span className={styles.codeTag}>{placement.letter}</span>
                         {count > 0 && (
                           <>
                             <span className={styles.sep}>·</span>
                             <span className={styles.codeCount}>{count} code{count !== 1 ? "s" : ""}</span>
-                            <span className={styles.lockIcon} title="Code locked — ISCI codes reference this client">
+                            <span className={styles.lockIcon} title="Letter locked, ISCI codes reference this placement">
                               <IconLock />
                             </span>
                           </>
                         )}
                       </div>
                     </div>
-                    <span className={`${styles.statusBadge} ${brand.active ? styles.statusActive : styles.statusInactive}`}>
+                    <span className={`${styles.statusBadge} ${placement.active ? styles.statusActive : styles.statusInactive}`}>
                       <span className={styles.statusDot} />
-                      {brand.active ? "Active" : "Inactive"}
+                      {placement.active ? "Active" : "Inactive"}
                     </span>
                   </div>
                   <div className={styles.cardMeta}>
-                    <span className={styles.createdDate}>Created {fmtDate(brand.createdAt)}</span>
+                    <span className={styles.createdDate}>Created {fmtDate(placement.createdAt)}</span>
                     <div className={styles.rowActions}>
                       <button
                         type="button"
                         title="Edit"
                         className={styles.actionBtn}
-                        onClick={() => handleEdit(brand)}
+                        onClick={() => handleEdit(placement)}
                       >
                         <IconEdit />
                       </button>
@@ -245,7 +241,7 @@ const BrandManager = () => {
                         type="button"
                         title="Delete"
                         className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
-                        onClick={() => doDelete(brand)}
+                        onClick={() => doDelete(placement)}
                       >
                         <IconTrash />
                       </button>
@@ -261,17 +257,17 @@ const BrandManager = () => {
       <Drawer
         open={showForm}
         onClose={resetForm}
-        title={editingBrand ? "Edit Client" : "New Client"}
+        title={editingPlacement ? "Edit Placement" : "New Placement"}
         subtitle={
-          editingBrand
-            ? `${editingBrand.code} · ${countByBrandId[editingBrand.id] || 0} ISCI code${(countByBrandId[editingBrand.id] || 0) !== 1 ? "s" : ""}`
-            : "Add a new client organization"
+          editingPlacement
+            ? `${editingPlacement.letter} · ${countByPlacementId[editingPlacement.id] || 0} ISCI code${(countByPlacementId[editingPlacement.id] || 0) !== 1 ? "s" : ""}`
+            : "Add a new placement category"
         }
         footer={
           <>
             <div>
-              {editingBrand && (
-                <button type="button" className={styles.btnDanger} onClick={() => doDelete(editingBrand)}>
+              {editingPlacement && (
+                <button type="button" className={styles.btnDanger} onClick={() => doDelete(editingPlacement)}>
                   <IconTrash /> Delete
                 </button>
               )}
@@ -281,7 +277,7 @@ const BrandManager = () => {
                 Cancel
               </button>
               <button type="button" className={styles.btnPrimary} onClick={handleSubmit}>
-                {editingBrand ? "Save Changes" : "Create Client"}
+                {editingPlacement ? "Save Changes" : "Create Placement"}
               </button>
             </div>
           </>
@@ -289,14 +285,14 @@ const BrandManager = () => {
       >
         <form onSubmit={handleSubmit} className={styles.drawerForm}>
           <div className={styles.field}>
-            <label htmlFor="bm-name">Client Name <span className={styles.req}>*</span></label>
+            <label htmlFor="pm-name">Placement Name <span className={styles.req}>*</span></label>
             <input
               type="text"
-              id="bm-name"
+              id="pm-name"
               name="name"
               value={formData.name || ""}
               onChange={handleChange}
-              placeholder="e.g. Las Vegas Convention and Visitors Authority"
+              placeholder="e.g. Broadcast"
               className={errors.name ? styles.inputError : ""}
               autoFocus
             />
@@ -304,9 +300,9 @@ const BrandManager = () => {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="bm-code">
-              3-Letter Code <span className={styles.req}>*</span>
-              {codeLocked && (
+            <label htmlFor="pm-letter">
+              Letter <span className={styles.req}>*</span>
+              {letterLocked && (
                 <span className={styles.lockedLabel}>
                   <IconLock /> LOCKED
                 </span>
@@ -315,87 +311,54 @@ const BrandManager = () => {
             <div className={styles.autoField}>
               <input
                 type="text"
-                id="bm-code"
-                name="code"
-                value={formData.code || ""}
+                id="pm-letter"
+                name="letter"
+                value={formData.letter || ""}
                 onChange={handleChange}
-                placeholder="ADI"
-                maxLength={3}
-                readOnly={codeLocked}
+                placeholder="B"
+                maxLength={1}
+                readOnly={letterLocked}
                 style={{ textTransform: "uppercase" }}
-                className={`${errors.code ? styles.inputError : ""} ${codeLocked ? styles.inputLocked : ""}`}
+                className={`${errors.letter ? styles.inputError : ""} ${letterLocked ? styles.inputLocked : ""}`}
               />
-              {codeLocked && <span className={styles.autoBadge}>LOCKED</span>}
+              {letterLocked && <span className={styles.autoBadge}>LOCKED</span>}
             </div>
-            {errors.code && <span className={styles.fieldError}>{errors.code}</span>}
-            {!errors.code && (
+            {errors.letter && <span className={styles.fieldError}>{errors.letter}</span>}
+            {!errors.letter && (
               <span className={styles.fieldHint}>
-                {codeLocked
-                  ? `Locked: ${countByBrandId[editingBrand?.id] || 0} ISCI code${(countByBrandId[editingBrand?.id] || 0) !== 1 ? "s" : ""} reference this prefix.`
-                  : "Prefix for all ISCI codes. Locks once the first code is created."}
+                {letterLocked
+                  ? `Locked, ${countByPlacementId[editingPlacement?.id] || 0} ISCI code${(countByPlacementId[editingPlacement?.id] || 0) !== 1 ? "s" : ""} reference this letter.`
+                  : "4th character of every ISCI code created against this placement. Locks once the first code is created."}
               </span>
             )}
-            {codeLocked && (
+            {letterLocked && (
               <div className={styles.lockWarn}>
                 <IconWarn />
                 <div>
-                  <strong>Why it&apos;s locked:</strong> changing the code would invalidate{" "}
-                  {countByBrandId[editingBrand?.id] || 0} existing ISCI code
-                  {(countByBrandId[editingBrand?.id] || 0) !== 1 ? "s" : ""} (e.g.{" "}
-                  <span className={styles.lockWarnCode}>{editingBrand?.code}2501</span>).
+                  <strong>Why it&apos;s locked:</strong> changing the letter would invalidate{" "}
+                  {countByPlacementId[editingPlacement?.id] || 0} existing ISCI code
+                  {(countByPlacementId[editingPlacement?.id] || 0) !== 1 ? "s" : ""}.
                   The name and status are still editable.
                 </div>
               </div>
             )}
           </div>
 
-          <div className={styles.field}>
-            <label htmlFor="bm-color">Color</label>
-            <div className={styles.colorRow}>
-              <input
-                type="color"
-                id="bm-color"
-                name="color"
-                value={formData.color || colorForCode(formData.code || "XXX")}
-                onChange={handleChange}
-                className={styles.colorSwatch}
-              />
-              <input
-                type="text"
-                name="color"
-                value={formData.color || ""}
-                onChange={handleChange}
-                placeholder={colorForCode(formData.code || "XXX")}
-                className={`${styles.colorHex} ${errors.color ? styles.inputError : ""}`}
-                maxLength={7}
-              />
-              {formData.color && (
-                <button
-                  type="button"
-                  className={styles.colorReset}
-                  onClick={() => handleChange({ target: { name: "color", value: "" } })}
-                >
-                  Reset
-                </button>
-              )}
-            </div>
-          </div>
-
-          {editingBrand && (
+          {editingPlacement && (
             <div className={styles.rowSwitch}>
               <div>
                 <div className={styles.switchTitle}>Status</div>
                 <div className={styles.switchHint}>
-                  {editingBrand.active
+                  {editingPlacement.active
                     ? "Visible in new ISCI dropdowns"
                     : "Hidden from new ISCI dropdowns. Existing codes unaffected."}
                 </div>
               </div>
               <button
                 type="button"
-                className={`${styles.toggleTrack} ${editingBrand.active ? styles.toggleOn : ""}`}
-                onClick={() => handleToggleActive(editingBrand)}
-                aria-pressed={editingBrand.active}
+                className={`${styles.toggleTrack} ${editingPlacement.active ? styles.toggleOn : ""}`}
+                onClick={() => handleToggleActive(editingPlacement)}
+                aria-pressed={editingPlacement.active}
                 aria-label="Toggle active status"
               />
             </div>
@@ -408,4 +371,4 @@ const BrandManager = () => {
   );
 };
 
-export default BrandManager;
+export default PlacementManager;

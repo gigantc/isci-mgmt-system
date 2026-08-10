@@ -18,21 +18,46 @@ const CSV_HEADERS = [
   // Schedule & People
   "Air Date", "Market", "Agency", "Language",
   // Technical
-  "Spot Length", "Aspect Ratio", "File Format", "Channel", "Audio", "Accessibility", "Music Rights",
+  "Spot Length", "Aspect Ratio", "File Format", "Placement", "Audio", "Accessibility", "Music Rights",
   // System
   "Created At", "Updated At",
 ];
 
-const downloadCSVTemplate = () => {
-  const example = [
-    "LVCI2599", "Las Vegas Convention and Visitors Authority", "Summer Campaign", "JOB-2025-001",
-    "Vegas Summer Spots 30s", "Summer campaign spot",
-    "2025-06-01", "GLOBAL", "R&R Partners", "English",
+// Template example rows. Values match the dropdown options in ISCIForm so a
+// fresh export/import round-trips cleanly:
+//   Placement:     name (Broadcast, Social, ...) or single letter (B, S, ...)
+//   Audio:         "Stereo LR" | "Broadcast" | "Digital Streaming" | "Cinema 5:1" | "Digital"
+//   Accessibility: "Clean" | "Closed Captions" | "Subtitles"
+//   Market:        two-letter code (US, CA, GB, ...) — see app/utils/markets.js
+const TEMPLATE_EXAMPLES = [
+  [
+    "LVCB2699", "LVCVA", "Summer Campaign", "JOB-2026-001",
+    "Vegas Summer Spots 30s", "Summer campaign broadcast spot",
+    "2026-06-01", "US", "R&R Partners", "English",
     "30", "16:9", "Pro Res", "Broadcast", "Stereo LR", "Clean", "Licensed",
     "", "",
-  ];
+  ],
+  [
+    "LVCS2698", "LVCVA", "Summer Campaign", "JOB-2026-001",
+    "Vegas Summer Spots 15s Cutdown", "15 second cutdown for social",
+    "2026-06-15", "US", "R&R Partners", "English",
+    "15", "9:16", "H.264", "Social", "Stereo LR", "Subtitles", "Licensed",
+    "", "",
+  ],
+  [
+    "LVCR2697", "LVCVA", "Summer Campaign", "JOB-2026-001",
+    "Vegas Summer Radio 30s", "Radio companion spot",
+    "TBD", "US", "R&R Partners", "Spanish",
+    "30", "", "WAV", "R", "Stereo LR", "Clean", "Original",
+    "", "",
+  ],
+];
+
+const downloadCSVTemplate = () => {
   const esc = (v) => { const s = String(v ?? ""); return (s.includes(",") || s.includes('"')) ? `"${s.replace(/"/g, '""')}"` : `"${s}"`; };
-  const csv = [CSV_HEADERS.join(","), example.map(esc).join(",")].join("\n");
+  const rows = [CSV_HEADERS.join(",")];
+  TEMPLATE_EXAMPLES.forEach(row => rows.push(row.map(esc).join(",")));
+  const csv = rows.join("\n");
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
   link.download = "isci-import-template.csv";
@@ -73,6 +98,7 @@ const Reports = () => {
 
   const { data: codes, loading: codesLoading, refetch: loadData } = useFetchData("/api/isci");
   const { data: brands, loading: brandsLoading } = useFetchData("/api/brands");
+  const { data: placements } = useFetchData("/api/placements");
   const isLoading = codesLoading || brandsLoading;
 
   useEffect(() => {
@@ -170,6 +196,7 @@ const Reports = () => {
             <ExportSection
               codes={codes}
               brands={brands}
+              placements={placements}
               isLoading={isLoading}
             />
           )}
@@ -207,7 +234,7 @@ const Reports = () => {
 // Export section
 // ────────────────────────────────────────────────────────────────────────────
 
-const ExportSection = ({ codes, brands, isLoading }) => {
+const ExportSection = ({ codes, brands, placements, isLoading }) => {
   const {
     filters,
     filteredData,
@@ -239,7 +266,7 @@ const ExportSection = ({ codes, brands, isLoading }) => {
           if (codeDate < start || codeDate > end) return false;
         }
         if (f.brand !== "all" && code.brand !== f.brand) return false;
-        if (f.channel !== "all" && code.channel !== f.channel) return false;
+        if (f.channel !== "all" && code.placement?.name !== f.channel) return false;
         if (f.spotLength !== "all" && code.spotLength?.toString() !== f.spotLength) return false;
         return true;
       }),
@@ -252,7 +279,7 @@ const ExportSection = ({ codes, brands, isLoading }) => {
       // Schedule & People
       c.airDate || "", c.market || "", c.agency || "", c.language || "",
       // Technical
-      c.spotLength || "", c.aspectRatio || "", c.fileFormat || "", c.channel || "", c.audio || "", c.closedCaptioning || "", c.musicRights || "",
+      c.spotLength || "", c.aspectRatio || "", c.fileFormat || "", c.placement?.name || "", c.audio || "", c.closedCaptioning || "", c.musicRights || "",
       // System
       c.createdAt, c.updatedAt,
     ],
@@ -340,15 +367,12 @@ const ExportSection = ({ codes, brands, isLoading }) => {
               </div>
 
               <div className={styles.field}>
-                <label htmlFor="rep-channel">Channel</label>
+                <label htmlFor="rep-channel">Placement</label>
                 <select id="rep-channel" name="channel" value={filters.channel} onChange={handleFilterChange}>
-                  <option value="all">All channels</option>
-                  <option value="Broadcast">Broadcast</option>
-                  <option value="CTV">CTV</option>
-                  <option value="Digital">Digital</option>
-                  <option value="Social">Social</option>
-                  <option value="OLV">OLV</option>
-                  <option value="Radio">Radio</option>
+                  <option value="all">All placements</option>
+                  {placements.filter((p) => p.active).map((p) => (
+                    <option key={p.id} value={p.name}>{p.name}</option>
+                  ))}
                 </select>
               </div>
 
@@ -413,7 +437,7 @@ const ExportSection = ({ codes, brands, isLoading }) => {
                         <td className={styles.previewMuted}>{code.campaignName || "—"}</td>
                         <td className={styles.previewTitle}>{code.spotTitle}</td>
                         <td className={styles.previewNum}>{code.spotLength ? `${code.spotLength}s` : "—"}</td>
-                        <td className={styles.previewMuted}>{code.channel || "—"}</td>
+                        <td className={styles.previewMuted}>{code.placement?.name || "—"}</td>
                         <td className={styles.previewMuted}>{fmtDate(code.airDate)}</td>
                       </tr>
                     ))}
