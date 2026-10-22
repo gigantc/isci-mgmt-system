@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
-import { getUserSession, isAuthenticated, isViewer } from "@/utils/auth";
+import CodeLayout, { AsideSection } from "@/components/CodeLayout";
+import { getUserSession } from "@/utils/auth";
+import { useSession } from "@/hooks";
 import { generateUUID } from "@/utils/uuid";
 import styles from "./CreateISCI.module.scss";
 
@@ -58,15 +60,18 @@ const CreateISCI = () => {
     return seed;
   }, [fromCode, codes]);
 
+  const { user: sessionUser, ready, isViewer } = useSession();
+
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!ready) return;
+    if (!sessionUser) {
       navigate("/login");
       return;
     }
-    if (isViewer()) {
+    if (isViewer) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [navigate, ready, sessionUser, isViewer]);
 
   useEffect(() => {
     loadCodes();
@@ -151,91 +156,58 @@ const CreateISCI = () => {
   };
 
   return (
-    <div className={styles.createISCI}>
-      <div className={styles.pageContent}>
-        <div className={styles.stickyHeader}>
-          <div className={styles.headerContent}>
-            <div className={styles.crumbs}>
-              <button type="button" onClick={() => navigate("/")}>Dashboard</button>
-              <span className={styles.sep}>/</span>
-              <span>New ISCI Code</span>
-            </div>
-            <h1 className={styles.title}>
-              Create ISCI Code
-              <span className={`${styles.titleBadge} ${styles.titleBadgeNew}`}>
-                {template ? "Cutdown" : "New"}
-              </span>
-            </h1>
-            <p className={styles.subtitle}>
-              {template
-                ? `Duplicating from ${fromCode} — adjust length and air date.`
-                : "Select a client to auto-generate the code."}
+    <CodeLayout
+      crumbs={[
+        { label: "Dashboard", to: "/" },
+        { label: "New ISCI code" },
+      ]}
+      title="Create ISCI code"
+      badge={{ label: template ? "Cutdown" : "New", tone: template ? "accent" : "ok" }}
+      subtitle={
+        template
+          ? `Duplicating from ${fromCode}. Adjust length and air date.`
+          : "Select a client to auto-generate the code."
+      }
+      loading={isLoading}
+      aside={
+        <>
+          <AsideSection label="Slate preview">
+            <p className={styles.slateHint}>
+              The slate becomes available once the ISCI is saved.
             </p>
-          </div>
-        </div>
-
-        <div className={styles.scrollableContent}>
-          {isLoading ? (
-            <div className={styles.loadingState}>Loading…</div>
-          ) : (
-            <div className={styles.editGrid}>
-              <div className={styles.formColumn}>
-                <ISCIForm
-                  code={null}
-                  initialData={template}
-                  onSubmit={handleCreateCode}
-                  onCancel={handleCancel}
-                  allCodes={codes}
-                  hideActions={true}
-                  hideTitle={true}
-                  formRef={formRef}
-                />
-              </div>
-              <aside className={styles.aside}>
-                <div className={styles.slatePlaceholder}>
-                  <div className={styles.slateLabel}>Slate Preview</div>
-                  <div className={styles.slateBody}>
-                    <div className={styles.slateHint}>
-                      The slate becomes available once the ISCI is saved.
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.tipCard}>
-                  <div className={styles.tipLabel}>Tips</div>
-                  <ul className={styles.tipList}>
-                    <li>Select a <strong>Client</strong> to auto-generate the code.</li>
-                    <li><strong>Spot Title</strong> is required.</li>
-                    <li>Leave the <strong>Air / Start Date</strong> blank and check TBD if unknown.</li>
-                  </ul>
-                </div>
-              </aside>
-            </div>
-          )}
-        </div>
-
-        {!isLoading && (
-          <footer className={styles.footer}>
-            <div className={styles.footerStatus}>
-              <span className={styles.footerDot} aria-hidden="true" />
-              Draft · not saved
-            </div>
-            <div className={styles.footerActions}>
-              <button type="button" className={styles.footerBtn} onClick={handleCancel}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className={`${styles.footerBtn} ${styles.footerBtnPrimary}`}
-                onClick={handleSubmitClick}
-              >
-                Create ISCI
-              </button>
-            </div>
-          </footer>
-        )}
-      </div>
-    </div>
+          </AsideSection>
+          <AsideSection label="Tips">
+            <ul className={styles.tipList}>
+              <li>Select a <strong>Client</strong> to auto-generate the code.</li>
+              <li><strong>Spot title</strong> is required.</li>
+              <li>Leave the <strong>Air / start date</strong> blank and check TBD if unknown.</li>
+            </ul>
+          </AsideSection>
+        </>
+      }
+      footerStatus={{ tone: "draft", text: "Draft · not saved" }}
+      footerActions={
+        <>
+          <button type="button" className="btn-secondary" onClick={handleCancel}>
+            Cancel
+          </button>
+          <button type="button" className="btn-primary" onClick={handleSubmitClick}>
+            Create ISCI
+          </button>
+        </>
+      }
+    >
+      <ISCIForm
+        code={null}
+        initialData={template}
+        onSubmit={handleCreateCode}
+        onCancel={handleCancel}
+        allCodes={codes}
+        hideActions={true}
+        hideTitle={true}
+        formRef={formRef}
+      />
+    </CodeLayout>
   );
 };
 

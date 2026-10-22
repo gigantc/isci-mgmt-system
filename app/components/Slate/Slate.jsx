@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { getMarketLabel } from "@/utils/markets";
 import { formatAirDateSlateShort } from "@/utils/dates";
+import { AsideSection } from "@/components/CodeLayout";
+import { IconDownload } from "@/components/Icons";
 import styles from "./Slate.module.scss";
 
 const Slate = ({ code }) => {
@@ -155,21 +157,15 @@ const Slate = ({ code }) => {
   }
 
   return (
+    <AsideSection label="Slate preview">
     <div className={styles.slateContainer}>
-      <div className={styles.slateHeader}>
-        <h3>Slate Preview</h3>
-        <button className={styles.btnExport} onClick={handleExport}>
-          Export as JPG
-        </button>
-      </div>
-
       <div className={styles.slatePreview} onClick={handlePreviewClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handlePreviewClick()}>
         <canvas ref={canvasRef} className={styles.canvas} />
         <div className={styles.previewHint}>Click to enlarge</div>
       </div>
 
       <p className={styles.slateNote}>
-        Slate dimensions: 1920x1080 (16:9) — Click "Export as JPG" to download
+        1920x1080 (16:9). Export as JPG to download.
       </p>
 
       {modalOpen && (
@@ -181,6 +177,14 @@ const Slate = ({ code }) => {
         </div>
       )}
     </div>
+    <button
+      type="button"
+      className={`btn-secondary ${styles.exportButton}`}
+      onClick={handleExport}
+    >
+      <IconDownload /> Export as JPG
+    </button>
+    </AsideSection>
   );
 };
 

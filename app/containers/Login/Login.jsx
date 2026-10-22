@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { saveUserSession } from "@/utils/auth";
-import { ReactComponent as Logo } from "@/assets/Logo.svg";
+import AppLogo from "@/components/AppLogo";
 import styles from "./Login.module.scss";
 
 const Login = () => {
@@ -55,7 +55,7 @@ const Login = () => {
     <div className={styles.loginPage}>
       <div className={styles.loginContainer}>
         <div className={styles.loginHeader}>
-          <Logo className={styles.logo} />
+          <AppLogo size="md" />
           <h1>ISCIz</h1>
           <p>Sign in to your account</p>
         </div>
@@ -97,18 +97,18 @@ const Login = () => {
 
           <button
             type="submit"
-            className={styles.loginButton}
+            className={`btn-primary ${styles.loginButton}`}
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign In"}
+            {isLoading ? "Signing in..." : "Sign in"}
           </button>
         </form>
 
         <div className={styles.loginFooter}>
           <p className={styles.demoNote}>
-            <strong>Demo Credentials:</strong><br />
-            Admin: steve@isciz.com / admin123<br />
-            Editor: sarah.johnson@isciz.com / editor123
+            <strong>Demo credentials:</strong><br />
+            Admin: <span>steve@isciz.com / admin123</span><br />
+            Editor: <span>sarah.johnson@isciz.com / editor123</span>
           </p>
         </div>
       </div>

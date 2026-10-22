@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { clearUserSession } from "@/utils/auth";
+import Modal from "@/components/Modal";
+import AppLogo from "@/components/AppLogo";
+import { IconClose } from "@/components/Icons";
+import { APP_VERSION } from "@/config";
 import styles from "./ProfileMenu.module.scss";
-import LogoUrl from "@/assets/Logo.svg?url";
 
 const ProfileMenu = ({ profileImage }) => {
   const navigate = useNavigate();
@@ -67,7 +70,7 @@ const ProfileMenu = ({ profileImage }) => {
       {isOpen && (
         <div className={styles.dropdown}>
           <button onClick={handleEditProfile} className={styles.menuItem}>
-            Edit Profile
+            Edit profile
           </button>
           <button onClick={handleAbout} className={styles.menuItem}>
             About
@@ -78,32 +81,29 @@ const ProfileMenu = ({ profileImage }) => {
         </div>
       )}
 
-      {showAbout && (
-        <div className={styles.modalOverlay} onClick={handleCloseAbout}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button
-              className={styles.closeButton}
-              onClick={handleCloseAbout}
-              aria-label="Close about dialog"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M18 6L6 18M6 6l12 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+      <Modal open={showAbout} onClose={handleCloseAbout} label="About ISCIz">
+        <button
+          type="button"
+          className={`btn-icon ${styles.closeButton}`}
+          onClick={handleCloseAbout}
+          aria-label="Close about dialog"
+        >
+          <IconClose />
+        </button>
 
-            <div className={styles.aboutHeader}>
-              <img src={LogoUrl} alt="ISCIz Logo" className={styles.logo} />
-              <h2>ISCIz</h2>
-            </div>
+        <div className={styles.about}>
+          <div className={styles.aboutHeader}>
+            <AppLogo size="lg" />
+            <h2>ISCIz</h2>
+          </div>
 
-            <div className={styles.aboutBody}>
-              <p className={styles.version}>Version 1.2.0</p>
-              <p className={styles.copyright}>© {currentYear} R&R partners. All Rights Reserved.</p>
-              <p className={styles.credit}>Built with ❤️ by Dan Freeman</p>
-            </div>
+          <div className={styles.aboutBody}>
+            <p className={styles.version}>Version {APP_VERSION}</p>
+            <p className={styles.copyright}>© {currentYear} R&R partners. All Rights Reserved.</p>
+            <p className={styles.credit}>Built with ❤️ by Dan Freeman</p>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };

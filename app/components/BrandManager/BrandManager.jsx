@@ -2,34 +2,9 @@ import { useRef, useState, useMemo } from "react";
 import { useResourceManager, useConfirmDialog, useFetchData } from "@/hooks";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Drawer from "@/components/Drawer";
+import { IconSearch, IconLock, IconEdit, IconTrash, IconWarn } from "@/components/Icons";
 import { colorForCode } from "@/utils/palette";
 import styles from "./BrandManager.module.scss";
-
-const IconSearch = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/>
-  </svg>
-);
-const IconLock = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-  </svg>
-);
-const IconEdit = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-  </svg>
-);
-const IconTrash = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/>
-  </svg>
-);
-const IconWarn = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M12 9v4M12 17h.01M10.3 3.7 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.7a2 2 0 0 0-3.4 0z"/>
-  </svg>
-);
 
 const fmtDate = (d) => {
   if (!d) return "—";
@@ -145,7 +120,7 @@ const BrandManager = () => {
             <strong>{activeCount}</strong> active
           </p>
         </div>
-        <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
+        <button type="button" className="btn-primary" onClick={() => handleNew()}>
           + New Client
         </button>
       </header>
@@ -191,7 +166,7 @@ const BrandManager = () => {
                 : "Create your first client to start generating ISCI codes."}
             </p>
             {!search && filter === "all" && (
-              <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
+              <button type="button" className="btn-primary" onClick={() => handleNew()}>
                 + New Client
               </button>
             )}
@@ -236,7 +211,7 @@ const BrandManager = () => {
                       <button
                         type="button"
                         title="Edit"
-                        className={styles.actionBtn}
+                        className="btn-icon"
                         onClick={() => handleEdit(brand)}
                       >
                         <IconEdit />
@@ -244,7 +219,7 @@ const BrandManager = () => {
                       <button
                         type="button"
                         title="Delete"
-                        className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                        className="btn-icon btn-icon-danger"
                         onClick={() => doDelete(brand)}
                       >
                         <IconTrash />
@@ -271,16 +246,16 @@ const BrandManager = () => {
           <>
             <div>
               {editingBrand && (
-                <button type="button" className={styles.btnDanger} onClick={() => doDelete(editingBrand)}>
+                <button type="button" className="btn-danger" onClick={() => doDelete(editingBrand)}>
                   <IconTrash /> Delete
                 </button>
               )}
             </div>
             <div className={styles.footerRight}>
-              <button type="button" className={styles.btnSecondary} onClick={resetForm}>
+              <button type="button" className="btn-secondary" onClick={resetForm}>
                 Cancel
               </button>
-              <button type="button" className={styles.btnPrimary} onClick={handleSubmit}>
+              <button type="button" className="btn-primary" onClick={handleSubmit}>
                 {editingBrand ? "Save Changes" : "Create Client"}
               </button>
             </div>
@@ -289,7 +264,7 @@ const BrandManager = () => {
       >
         <form onSubmit={handleSubmit} className={styles.drawerForm}>
           <div className={styles.field}>
-            <label htmlFor="bm-name">Client Name <span className={styles.req}>*</span></label>
+            <label htmlFor="bm-name">Client name <span className={styles.req}>*</span></label>
             <input
               type="text"
               id="bm-name"
@@ -305,10 +280,10 @@ const BrandManager = () => {
 
           <div className={styles.field}>
             <label htmlFor="bm-code">
-              3-Letter Code <span className={styles.req}>*</span>
+              3-letter code <span className={styles.req}>*</span>
               {codeLocked && (
                 <span className={styles.lockedLabel}>
-                  <IconLock /> LOCKED
+                  <IconLock /> Locked
                 </span>
               )}
             </label>
@@ -325,7 +300,7 @@ const BrandManager = () => {
                 style={{ textTransform: "uppercase" }}
                 className={`${errors.code ? styles.inputError : ""} ${codeLocked ? styles.inputLocked : ""}`}
               />
-              {codeLocked && <span className={styles.autoBadge}>LOCKED</span>}
+              {codeLocked && <span className={styles.autoBadge}>Locked</span>}
             </div>
             {errors.code && <span className={styles.fieldError}>{errors.code}</span>}
             {!errors.code && (
@@ -372,7 +347,7 @@ const BrandManager = () => {
               {formData.color && (
                 <button
                   type="button"
-                  className={styles.colorReset}
+                  className="btn-secondary"
                   onClick={() => handleChange({ target: { name: "color", value: "" } })}
                 >
                   Reset

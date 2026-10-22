@@ -22,7 +22,7 @@ export const links = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:wght@400;500;600&display=swap",
   },
 ];
 
@@ -32,7 +32,9 @@ const themeBootstrap = `(function(){try{var t=localStorage.getItem('isciz-theme'
 
 export function Layout({ children }) {
   return (
-    <html lang="en">
+    // The inline themeBootstrap adds the theme class before hydration, so the
+    // server HTML never has it.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
         <meta charSet="utf-8" />

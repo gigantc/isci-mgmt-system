@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { isAuthenticated, isAdmin, canEdit, getUserSession } from "@/utils/auth";
-import { useFetchData, useConfirmDialog } from "@/hooks";
+import { canEdit } from "@/utils/auth";
+import { useFetchData, useConfirmDialog, useSession } from "@/hooks";
 import { rankByFuzzy } from "@/utils/fuzzy";
 import { colorForCode } from "@/utils/palette";
 import styles from "./Dashboard.module.scss";
@@ -15,6 +15,7 @@ const Dashboard = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [density, setDensity] = useState("comfy");
+  const [densityReady, setDensityReady] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [view, setView] = useState("all"); // "all" | "mine"
   const [clientFilter, setClientFilter] = useState(null);
@@ -24,14 +25,20 @@ const Dashboard = () => {
   const { data: codes, loading: isLoading, refetch: loadCodes } = useFetchData("/api/isci");
   const { dialogProps, confirm } = useConfirmDialog();
 
+  const { user: sessionUser, ready, canEdit: userCanEdit } = useSession();
+
   useEffect(() => {
-    if (!isAuthenticated()) navigate("/login");
-  }, [navigate]);
+    if (ready && !sessionUser) navigate("/login");
+  }, [navigate, ready, sessionUser]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const stored = window.localStorage.getItem(DENSITY_KEY);
     if (stored === "comfy" || stored === "compact") setDensity(stored);
+    // Enable the thumb transition only after the stored value is painted, so
+    // the thumb doesn't slide on page load.
+    const raf = requestAnimationFrame(() => setDensityReady(true));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const updateDensity = (next) => {
@@ -78,12 +85,7 @@ const Dashboard = () => {
     }
   };
 
-  const [currentUserName, setCurrentUserName] = useState(null);
-
-  useEffect(() => {
-    const u = getUserSession();
-    setCurrentUserName(u ? `${u.firstName} ${u.lastName}` : null);
-  }, []);
+  const currentUserName = sessionUser ? `${sessionUser.firstName} ${sessionUser.lastName}` : null;
 
   // Group counts for sidebar (based on unfiltered codes so counts don't collapse)
   const { byClient, byPlacement } = useMemo(() => {
@@ -251,11 +253,11 @@ const Dashboard = () => {
             {searchTerm ? ` · ${filteredCodes.length} matching` : ""}
           </p>
         </div>
-        {!isLoading && canEdit() && (
+        {!isLoading && userCanEdit && (
           <div className={styles.pgActions}>
             <button
               type="button"
-              className={styles.btnPrimary}
+              className="btn-primary"
               onClick={() => navigate("/create")}
             >
               + New ISCI Code
@@ -280,7 +282,11 @@ const Dashboard = () => {
             />
           </label>
 
-          <div className={styles.density} role="group" aria-label="Row density">
+          <div
+            className={`${styles.density} ${density === "compact" ? styles.densityCompact : ""} ${densityReady ? styles.densityReady : ""}`}
+            role="group"
+            aria-label="Row density"
+          >
             <button
               type="button"
               className={density === "comfy" ? styles.densityOn : ""}
@@ -334,7 +340,7 @@ const Dashboard = () => {
           <div className={styles.footerShortcuts}>
             <kbd>↑↓</kbd> navigate
             <kbd>⏎</kbd> view
-            {canEdit() && (<><kbd>E</kbd> edit <kbd>N</kbd> new</>)}
+            {userCanEdit && (<><kbd>E</kbd> edit <kbd>N</kbd> new</>)}
             <kbd>⌘K</kbd> palette
           </div>
         </footer>

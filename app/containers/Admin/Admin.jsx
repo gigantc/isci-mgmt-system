@@ -5,8 +5,7 @@ import PlacementManager from "@/components/PlacementManager";
 import UserManager from "@/components/UserManager";
 import AgencyManager from "@/components/AgencyManager";
 import RolesInfo from "@/components/RolesInfo";
-import { isAuthenticated, isAdmin } from "@/utils/auth";
-import { useFetchData } from "@/hooks";
+import { useFetchData, useSession } from "@/hooks";
 import styles from "./Admin.module.scss";
 
 const TAB_KEY = "isciz-admin-tab";
@@ -30,12 +29,15 @@ const Admin = () => {
   const { data: agencies } = useFetchData("/api/agencies");
   const { data: users } = useFetchData("/api/users");
 
+  const { user, ready, isAdmin } = useSession();
+
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!ready) return;
+    if (!user) {
       navigate("/login");
       return;
     }
-    if (!isAdmin()) {
+    if (!isAdmin) {
       navigate("/");
       return;
     }
@@ -45,7 +47,7 @@ const Admin = () => {
         setActiveTab(stored);
       }
     }
-  }, [navigate]);
+  }, [navigate, ready, user, isAdmin]);
 
   const handleSelect = (id) => {
     setActiveTab(id);

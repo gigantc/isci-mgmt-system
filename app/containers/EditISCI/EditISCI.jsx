@@ -2,8 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
 import Slate from "@/components/Slate";
-import { isAuthenticated, getUserSession, saveUserSession, isAdmin, isViewer, canEdit } from "@/utils/auth";
-import styles from "./EditISCI.module.scss";
+import CodeLayout from "@/components/CodeLayout";
+import QuickActions from "@/components/QuickActions";
+import ActivityFeed from "@/components/ActivityFeed";
+import { getUserSession, saveUserSession } from "@/utils/auth";
+import { useSession } from "@/hooks";
+import { formatClockTime } from "@/utils/dates";
 
 /**
  * EditISCI Container
@@ -17,54 +21,23 @@ const EditISCI = () => {
   const navigate = useNavigate();
   const { code: isciCode } = useParams();
   const formRef = useRef(null);
-  const userCanEdit = canEdit();
+  const { user: sessionUser, ready, isViewer, canEdit: userCanEdit } = useSession();
 
   const [code, setCode] = useState(null);
   const [allCodes, setAllCodes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return "N/A";
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${month}.${day}.${year}`;
-  };
-
-  const formatTime = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return "";
-    let hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const ampm = hours >= 12 ? "pm" : "am";
-    hours = hours % 12 || 12;
-    return `${hours}:${minutes} ${ampm}`;
-  };
-
-  const getEditHistory = () => {
-    if (!code || !code.editHistory) return [];
-    if (Array.isArray(code.editHistory)) return code.editHistory;
-    try {
-      const parsed = JSON.parse(code.editHistory);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  };
-
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!ready) return;
+    if (!sessionUser) {
       navigate("/login");
       return;
     }
-    if (isViewer() && isciCode) {
+    if (isViewer && isciCode) {
       navigate(`/isci/${isciCode}`, { replace: true });
     }
-  }, [navigate, isciCode]);
+  }, [navigate, isciCode, ready, sessionUser, isViewer]);
 
   useEffect(() => {
     loadData();
@@ -197,176 +170,74 @@ const EditISCI = () => {
     }
   };
 
-  // Render page
+  const subtitle = code
+    ? `${code.brand}${code.campaignName ? ` · ${code.campaignName}` : ""}${code.spotLength ? ` · ${code.spotLength}s` : ""}`
+    : null;
+
   return (
-    <div className={styles.editISCI}>
-
-      <div className={styles.pageContent}>
-        <div className={styles.stickyHeader}>
-          <div className={styles.headerContent}>
-            <div className={styles.crumbs}>
-              <button type="button" onClick={() => navigate("/")}>Dashboard</button>
-              <span className={styles.sep}>/</span>
-              <button type="button" onClick={() => navigate(`/isci/${isciCode}`)}>
-                {code?.brand || "ISCI"}
-              </button>
-              <span className={styles.sep}>/</span>
-              <span>{isciCode}</span>
-              <span className={styles.sep}>/</span>
-              <span>{userCanEdit ? "Edit" : "View"}</span>
-            </div>
-            <h1 className={styles.title}>
-              <span className={styles.titleCode}>{isciCode}</span>
-              {code?.spotTitle && <span>{code.spotTitle}</span>}
-              <span className={`${styles.titleBadge} ${userCanEdit ? styles.titleBadgeEdit : ""}`}>
-                {userCanEdit ? "Editing" : "Read-only"}
-              </span>
-            </h1>
-            {code && (
-              <p className={styles.subtitle}>
-                {code.brand}
-                {code.campaignName ? ` · ${code.campaignName}` : ""}
-                {code.spotLength ? ` · ${code.spotLength}s` : ""}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Scrollable content area */}
-        <div className={styles.scrollableContent}>
-          {isLoading ? (
-            <div className={styles.loadingState}>Loading ISCI code...</div>
-          ) : error ? (
-            <div className={styles.errorState}>
-              <h3>Error</h3>
-              <p>{error}</p>
-              <button className="btn-primary" onClick={() => navigate("/")}>
-                Back to Dashboard
-              </button>
-            </div>
-          ) : (
-            <div className={styles.editGrid}>
-              <div className={styles.formColumn}>
-                <ISCIForm
-                  code={code}
-                  onSubmit={handleUpdateCode}
-                  onCancel={handleCancel}
-                  allCodes={allCodes}
-                  hideActions={true}
-                  hideTitle={true}
-                  formRef={formRef}
-                  viewOnly={!userCanEdit}
-                />
-
-                {/* 05 — Activity */}
-                <div className={styles.activitySection}>
-                  <h3 className={styles.activityTitle}>
-                    <span className={styles.activityNumber}>05</span> Activity
-                  </h3>
-                  <div className={styles.activityFeed}>
-                    <div className={styles.activityRow}>
-                      <span className={`${styles.activityDot} ${styles.activityDotNew}`} aria-hidden="true" />
-                      <div className={styles.activityBody}>
-                        <div className={styles.activityHead}>
-                          <strong>{code.createdBy || "Unknown"}</strong>
-                          <span className={styles.activityMeta}>
-                            · {formatDate(code.createdAt)} · {formatTime(code.createdAt)}
-                          </span>
-                        </div>
-                        <div className={styles.activityText}>Created ISCI {code.code}</div>
-                      </div>
-                    </div>
-
-                    {getEditHistory()
-                      .slice()
-                      .reverse()
-                      .map((entry, index) => (
-                        <div key={`${entry.timestamp}-${index}`} className={styles.activityRow}>
-                          <span className={styles.activityDot} aria-hidden="true" />
-                          <div className={styles.activityBody}>
-                            <div className={styles.activityHead}>
-                              <strong>{entry.user || "Unknown"}</strong>
-                              <span className={styles.activityMeta}>
-                                · {formatDate(entry.timestamp)} · {formatTime(entry.timestamp)}
-                              </span>
-                            </div>
-                            <div className={styles.activityText}>
-                              {entry.description || "Edited record"}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-              <aside className={styles.aside}>
-                <Slate code={code} />
-                <div className={styles.quickActions}>
-                  <div className={styles.quickActionsLabel}>Quick Actions</div>
-                  <button
-                    type="button"
-                    className={styles.qaButton}
-                    onClick={() => {
-                      if (navigator.clipboard) navigator.clipboard.writeText(code.code);
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="9" y="9" width="13" height="13" rx="2" />
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                    </svg>
-                    Copy ISCI code
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.qaButton}
-                    onClick={() => navigate(`/create?from=${encodeURIComponent(code.code)}`)}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="9" y="9" width="13" height="13" rx="2" />
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                    </svg>
-                    Duplicate as new cutdown
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.qaButton}
-                    onClick={() => {
-                      if (navigator.clipboard) navigator.clipboard.writeText(window.location.href);
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
-                      <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
-                    </svg>
-                    Copy share link
-                  </button>
-                </div>
-              </aside>
-            </div>
+    <CodeLayout
+      crumbs={[
+        { label: "Dashboard", to: "/" },
+        { label: code?.brand || "ISCI", to: `/isci/${isciCode}` },
+        { label: isciCode },
+        { label: userCanEdit ? "Edit" : "View" },
+      ]}
+      title={
+        <>
+          <code>{isciCode}</code>
+          {code?.spotTitle && <span>{code.spotTitle}</span>}
+        </>
+      }
+      badge={{
+        label: userCanEdit ? "Editing" : "Read-only",
+        tone: userCanEdit ? "accent" : "neutral",
+      }}
+      subtitle={subtitle}
+      loading={isLoading || !ready}
+      loadingText="Loading ISCI code…"
+      error={error}
+      aside={
+        code && (
+          <>
+            <Slate code={code} />
+            <QuickActions code={code} />
+            <ActivityFeed code={code} />
+          </>
+        )
+      }
+      footerStatus={{
+        tone: "saved",
+        text: (
+          <>
+            All changes saved
+            {code?.updatedAt && <> · {formatClockTime(code.updatedAt)}</>}
+          </>
+        ),
+      }}
+      footerActions={
+        <>
+          <button type="button" className="btn-secondary" onClick={handleCancel}>
+            {userCanEdit ? "Cancel" : "Back"}
+          </button>
+          {userCanEdit && (
+            <button type="button" className="btn-primary" onClick={handleSubmitClick}>
+              Update ISCI
+            </button>
           )}
-        </div>
-
-        {!isLoading && !error && (
-          <footer className={styles.footer}>
-            <div className={styles.footerStatus}>
-              <span className={styles.footerDot} aria-hidden="true" />
-              All changes saved
-              {code?.updatedAt && <> · {formatTime(code.updatedAt)}</>}
-            </div>
-            <div className={styles.footerActions}>
-              <button type="button" className={styles.footerBtn} onClick={handleCancel}>
-                {userCanEdit ? "Cancel" : "Back"}
-              </button>
-              {userCanEdit && (
-                <button type="button" className={`${styles.footerBtn} ${styles.footerBtnPrimary}`} onClick={handleSubmitClick}>
-                  Update ISCI
-                </button>
-              )}
-            </div>
-          </footer>
-        )}
-      </div>
-    </div>
+        </>
+      }
+    >
+      <ISCIForm
+        code={code}
+        onSubmit={handleUpdateCode}
+        onCancel={handleCancel}
+        allCodes={allCodes}
+        hideActions={true}
+        hideTitle={true}
+        formRef={formRef}
+        viewOnly={!userCanEdit}
+      />
+    </CodeLayout>
   );
 };
 

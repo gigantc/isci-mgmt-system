@@ -8,7 +8,7 @@ import styles from "./Drawer.module.scss";
  *   open        — controls visibility (renders nothing when false).
  *   onClose     — called when the scrim is clicked or Escape is pressed.
  *   title       — header title text.
- *   subtitle    — optional monospace subtitle rendered under the title.
+ *   subtitle    — optional subtitle rendered under the title.
  *   footer      — ReactNode rendered in the drawer footer (typically action buttons).
  *   children    — main body content.
  */
@@ -33,7 +33,7 @@ const Drawer = ({ open, onClose, title, subtitle, footer, children }) => {
             <h2>{title}</h2>
             {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
           </div>
-          <button type="button" className={styles.close} onClick={onClose} aria-label="Close">
+          <button type="button" className="btn-icon" onClick={onClose} aria-label="Close">
             ×
           </button>
         </header>

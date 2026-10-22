@@ -43,7 +43,7 @@ const ThemeToggle = () => {
     <div className={styles.group} role="group" aria-label="Theme">
       <button
         type="button"
-        className={`${styles.option} ${theme === "light" ? styles.optionActive : ""}`}
+        className={styles.option}
         onClick={() => setThemeTo("light")}
         aria-label="Use light theme"
         aria-pressed={theme === "light"}
@@ -52,7 +52,7 @@ const ThemeToggle = () => {
       </button>
       <button
         type="button"
-        className={`${styles.option} ${theme === "dark" ? styles.optionActive : ""}`}
+        className={styles.option}
         onClick={() => setThemeTo("dark")}
         aria-label="Use dark theme"
         aria-pressed={theme === "dark"}

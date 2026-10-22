@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { isAdmin, canEdit } from "@/utils/auth";
+import { useSession } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
+import { IconEdit, IconTrash } from "@/components/Icons";
 import { formatAirDateSlash } from "@/utils/dates";
 import styles from "./ISCIList.module.scss";
 
 const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) => {
   const navigate = useNavigate();
-  const userIsAdmin = isAdmin();
-  const userCanEdit = canEdit();
+  const { isAdmin: userIsAdmin, canEdit: userCanEdit } = useSession();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const formatDate = formatAirDateSlash;
@@ -38,14 +38,6 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
         case "brand":
           aValue = a.brand;
           bValue = b.brand;
-          break;
-        case "campaign":
-          aValue = a.campaignName || "";
-          bValue = b.campaignName || "";
-          break;
-        case "jobNumber":
-          aValue = a.jobNumber || "";
-          bValue = b.jobNumber || "";
           break;
         case "spotTitle":
           aValue = a.spotTitle;
@@ -103,28 +95,22 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
         {/* Header Row */}
         <div className={styles.gridHeader}>
           <span onClick={() => handleSort("code")} className={styles.sortable}>
-            ISCI Code {getSortIndicator("code")}
+            ISCI code {getSortIndicator("code")}
           </span>
           <span onClick={() => handleSort("brand")} className={styles.sortable}>
             Client {getSortIndicator("brand")}
           </span>
-          <span onClick={() => handleSort("campaign")} className={styles.sortable}>
-            Campaign {getSortIndicator("campaign")}
-          </span>
-          <span onClick={() => handleSort("jobNumber")} className={styles.sortable}>
-            Job # {getSortIndicator("jobNumber")}
-          </span>
           <span onClick={() => handleSort("spotTitle")} className={styles.sortable}>
-            Spot Title {getSortIndicator("spotTitle")}
+            Spot title {getSortIndicator("spotTitle")}
           </span>
-          <span onClick={() => handleSort("length")} className={styles.sortable}>
-            Len {getSortIndicator("length")}
+          <span onClick={() => handleSort("length")} className={`${styles.sortable} ${styles.numHeader}`}>
+            Length {getSortIndicator("length")}
           </span>
           <span onClick={() => handleSort("channel")} className={styles.sortable}>
             Placement {getSortIndicator("channel")}
           </span>
           <span onClick={() => handleSort("airDate")} className={styles.sortable}>
-            Air Date {getSortIndicator("airDate")}
+            Air date {getSortIndicator("airDate")}
           </span>
           <span />
         </div>
@@ -137,36 +123,44 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
             onClick={() => navigate(`/isci/${code.code}`)}
           >
             <div className={styles.gridItems}>
-              <span className={styles.codeCell}>{code.code}</span>
+              <span className={`${styles.twoLine} ${styles.codeCell}`}>
+                {code.code}
+                {code.jobNumber && <small>{code.jobNumber}</small>}
+              </span>
               <span className={styles.clientCell}>
                 <span className={styles.clientDot} style={{ background: code.brandColor || colorForCode(code.brandCode || code.brand) }} />
                 {code.brand}
               </span>
-              <span className={styles.mutedCell}>{code.campaignName || "—"}</span>
-              <span className={styles.mutedCell}>{code.jobNumber || "—"}</span>
-              <span className={styles.spotTitleCell}>{code.spotTitle}</span>
+              <span className={`${styles.twoLine} ${styles.spotTitleCell}`}>
+                {code.spotTitle}
+                {code.campaignName && <small>{code.campaignName}</small>}
+              </span>
               <span className={styles.numCell}>{code.spotLength ? `${code.spotLength}s` : "—"}</span>
-              <span className={styles.mutedCell}>{code.placement?.name || "—"}</span>
-              <span className={styles.mutedCell}>{formatDate(code.airDate)}</span>
+              <span>
+                {code.placement?.name ? <span className={styles.pill}>{code.placement.name}</span> : "—"}
+              </span>
+              <span>{formatDate(code.airDate)}</span>
               <span className={styles.actionsCell}>
                 {userCanEdit && (
                   <button
                     type="button"
-                    className={styles.rowAction}
+                    className={`btn-icon ${styles.rowAction}`}
                     onClick={(e) => { e.stopPropagation(); navigate(`/edit/${code.code}`); }}
                     title="Edit"
+                    aria-label="Edit"
                   >
-                    ✎
+                    <IconEdit />
                   </button>
                 )}
                 {userIsAdmin && (
                   <button
                     type="button"
-                    className={`${styles.rowAction} ${styles.rowActionDanger}`}
+                    className={`btn-icon btn-icon-danger ${styles.rowAction}`}
                     onClick={(e) => { e.stopPropagation(); onDelete(code.id); }}
                     title="Delete"
+                    aria-label="Delete"
                   >
-                    ×
+                    <IconTrash />
                   </button>
                 )}
               </span>

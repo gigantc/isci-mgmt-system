@@ -1,26 +1,4 @@
 
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: oklch(0.15 0.02 255 / 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  backdrop-filter: blur(2px);
-  animation: fadeIn 0.15s ease-out;
-}
-
-.dialog {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  max-width: 420px;
-  width: 90%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-  animation: slideUp 0.15s ease-out;
-}
-
 .header {
   padding: 1.25rem 1.25rem 0.75rem;
   border-bottom: 1px solid var(--line);
@@ -28,7 +6,7 @@
   h3 {
     margin: 0;
     color: var(--ink);
-    font-size: 1rem;
+    font-size: var(--text-lg);
     font-weight: 600;
     letter-spacing: -0.01em;
   }
@@ -40,7 +18,7 @@
   p {
     margin: 0;
     color: var(--ink-1);
-    font-size: 0.8125rem;
+    font-size: var(--text-md);
     line-height: 1.55;
   }
 }
@@ -50,14 +28,4 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
 }

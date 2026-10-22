@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { isAuthenticated, getUserSession } from "@/utils/auth";
-import { useFetchData, useExportData, useImportData, useConfirmDialog } from "@/hooks";
+import { useFetchData, useExportData, useImportData, useConfirmDialog, useSession } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { IconDownload } from "@/components/Icons";
 import DataQualityAlerts from "@/components/DataQualityAlerts";
 import PlacementMix from "@/components/PlacementMix";
 import CutdownFamilies from "@/components/CutdownFamilies";
@@ -79,11 +79,6 @@ const IconUpload = () => (
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
   </svg>
 );
-const IconDownload = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-  </svg>
-);
 const IconFile = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -93,7 +88,7 @@ const IconFile = () => (
 
 const Reports = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, ready, isViewer, isAdmin: isUserAdmin } = useSession();
   const [activeTab, setActiveTab] = useState("export");
 
   const { data: codes, loading: codesLoading, refetch: loadData } = useFetchData("/api/isci");
@@ -102,19 +97,18 @@ const Reports = () => {
   const isLoading = codesLoading || brandsLoading;
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!ready) return;
+    if (!user) {
       navigate("/login");
       return;
     }
-    const currentUser = getUserSession();
-    if (currentUser?.userType === "viewer") {
+    if (isViewer) {
       navigate("/");
       return;
     }
-    setUser(currentUser);
     if (typeof window !== "undefined") {
       const stored = window.localStorage.getItem(TAB_KEY);
-      const isAdmin = currentUser?.userType === "admin";
+      const isAdmin = isUserAdmin;
       if (
         stored === "export" ||
         stored === "insights-quality" ||
@@ -126,9 +120,7 @@ const Reports = () => {
         setActiveTab(stored);
       }
     }
-  }, [navigate]);
-
-  const isUserAdmin = user?.userType === "admin";
+  }, [navigate, ready, user, isViewer, isUserAdmin]);
 
   const handleSelect = (id) => {
     setActiveTab(id);
@@ -290,7 +282,7 @@ const ExportSection = ({ codes, brands, placements, isLoading }) => {
     <section className={styles.section}>
       <header className={styles.pgHead}>
         <div>
-          <h1 className={styles.pgTitle}>Export Data</h1>
+          <h1>Export data</h1>
           <p className={styles.pgSub}>
             <strong>{filteredCount}</strong> of {codes.length}
             {" · "}
@@ -299,7 +291,7 @@ const ExportSection = ({ codes, brands, placements, isLoading }) => {
         </div>
         <button
           type="button"
-          className={styles.btnPrimary}
+          className="btn-primary"
           onClick={() => exportToCSV()}
           disabled={filteredCount === 0 || isLoading}
         >
@@ -315,14 +307,14 @@ const ExportSection = ({ codes, brands, placements, isLoading }) => {
           <div className={styles.card}>
             <header className={styles.cardHead}>
               <h2 className={styles.cardTitle}>Filters</h2>
-              <button type="button" className={styles.btnText} onClick={resetFilters}>
+              <button type="button" className="btn-text" onClick={resetFilters}>
                 Reset
               </button>
             </header>
 
             <div className={styles.filterGrid}>
               <div className={styles.field}>
-                <label htmlFor="rep-dateType">Date Filter</label>
+                <label htmlFor="rep-dateType">Date filter</label>
                 <select id="rep-dateType" name="dateType" value={filters.dateType} onChange={handleFilterChange}>
                   <option value="all">All dates</option>
                   <option value="created">Created date</option>
@@ -412,13 +404,13 @@ const ExportSection = ({ codes, brands, placements, isLoading }) => {
                 <table className={styles.previewTable}>
                   <thead>
                     <tr>
-                      <th>ISCI Code</th>
+                      <th>ISCI code</th>
                       <th>Client</th>
                       <th>Campaign</th>
-                      <th>Spot Title</th>
-                      <th>Len</th>
+                      <th>Spot title</th>
+                      <th className={styles.numHeader}>Length</th>
                       <th>Placement</th>
-                      <th>Air Date</th>
+                      <th>Air date</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -535,14 +527,14 @@ const ImportSection = ({ onImported }) => {
     <section className={styles.section}>
       <header className={styles.pgHead}>
         <div>
-          <h1 className={styles.pgTitle}>Import Data</h1>
+          <h1>Import data</h1>
           <p className={styles.pgSub}>
             Upload a CSV to add, update, or replace ISCI codes
           </p>
         </div>
         <button
           type="button"
-          className={styles.btnPrimary}
+          className="btn-primary"
           onClick={handleImportWithConfirm}
           disabled={!importFile || isImporting}
         >
@@ -583,7 +575,7 @@ const ImportSection = ({ onImported }) => {
         <div className={styles.card}>
           <header className={styles.cardHead}>
             <h2 className={styles.cardTitle}>File</h2>
-            <button type="button" className={styles.btnSecondary} onClick={downloadCSVTemplate}>
+            <button type="button" className="btn-secondary" onClick={downloadCSVTemplate}>
               <IconDownload /> Download template
             </button>
           </header>
@@ -626,7 +618,7 @@ const ImportSection = ({ onImported }) => {
                 <span className={styles.previewLabel}>Rows</span>
                 <span className={styles.previewValue}>{importPreview.rowCount}</span>
               </div>
-              <button type="button" className={styles.btnText} onClick={clearFile}>
+              <button type="button" className="btn-text" onClick={clearFile}>
                 Clear
               </button>
             </div>

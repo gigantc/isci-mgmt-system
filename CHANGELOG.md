@@ -7,6 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.1] - 2026-10-22
+
+### Design Polish
+
+Follow-up pass on the 1.3.0 design system. UI only; no data, API or schema changes.
+
+#### Added
+- **`AppLogo` component**: the amber logo tile in three sizes, shared by the header, Login and the About dialog.
+- **Field tokens** (`--field`, `--field-border`) for editable inputs, selects, textareas and search boxes.
+- **`--select-chevron` and `--date-icon` tokens**: Lucide chevron and calendar icons for selects and date inputs.
+- **Shared `IconDownload`** in `Icons` (Reports now uses it too).
+
+#### Changed
+- **Dark mode form fields** are lighter than their cards with a stronger border, so they no longer blend in. Dark `--ink-3` raised slightly to keep placeholders AA.
+- **Select arrow and calendar icon**: custom Lucide icons in `--ink-2`, aligned to the same position at the right edge of the field.
+- **Icon buttons** are always square (28×28) and hover with an amber outline on a muted amber fill; delete buttons hover red.
+- **Placement and Agency tiles** in Admin sit on a muted amber background.
+- **Code pages**: the right sidebar stays in view while the form scrolls; "Export as JPG" moved under the slate preview.
+
+#### Fixed
+- **About dialog logo** was invisible in dark mode; it now uses the amber tile.
+- **Dashboard row action buttons** were squeezed to 22px wide.
+
+---
+
+## [1.3.0] - 2026-10-22
+
+### Soft, Readable Design System
+
+A UI-wide redesign in response to feedback that the interface was hard to read. Larger type, AA-passing contrast, rounder shapes, and a softer amber accent across every screen. No data, API, or schema changes. The rules are documented in [docs/design-system.md](docs/design-system.md).
+
+#### Added
+- **Design system doc** (`docs/design-system.md`): type roles, mono usage, radii, controls, status badges, tables and page shell.
+- **Type scale and radius tokens** (`--text-xs` … `--text-2xl`, `--radius-sm` … `--radius-pill`), plus `--accent-ink`, `--ok-ink` / `--warn-ink` / `--danger-ink`, `--on-color`, `--frame`, `--card`, `--shadow-card`, `--shadow-drawer`.
+- **Shared Sass partials**: `_shell.scss` (sidebar, floating main card, page head, footer) used by Dashboard, Admin and Reports; `_manager.scss` used by the four Admin managers.
+- **Shared components**: `CodeLayout` + `AsideSection` (Create / Edit / Detail / Profile page frame), `QuickActions`, `ActivityFeed`, `Modal` (ConfirmDialog and About), and `Icons` (edit, trash, search, lock, warn, copy, link, duplicate, close).
+- **`app/config.js`**: app-wide constants; `APP_VERSION` is read from `package.json`, so the About dialog no longer hardcodes the version.
+- **`useSession()` hook**: single source for the current user and role flags during render.
+- **Global `.btn-icon` button** and a visible `:focus-visible` ring on every global button.
+- **Sliding thumb animation** on the theme and density toggles (respects `prefers-reduced-motion`).
+
+#### Changed
+- **Font**: Figtree replaces Inter; JetBrains Mono is now used only for ISCI codes, client codes, placement letters, hex values, generated file names and `kbd`.
+- **Readability**: minimum text size 12px, UI and tables at 14px, muted text (`--ink-3`, dark `--ink-2`) raised to pass WCAG AA; sentence case replaces uppercase labels throughout.
+- **Accent**: soft amber with dark text on fills; orange text uses `--accent-ink` so ISCI codes and links pass AA.
+- **Layout**: warm gradient frame behind floating rounded cards; the top bar and the code-page footer float as rounded bars.
+- **Dashboard table**: two-line cells (code over job number, spot title over campaign), sentence-case headers, soft placement pills, line icons for row actions.
+- **Admin, Reports, Create, Edit and Detail** restyled on the shared shell; form sections on the code pages are separate floating cards.
+- **Login, Profile and About**: Login is a floating card on the frame; Profile uses `CodeLayout` (section cards, account info in the right aside); About and the profile menu match the dialog surface. About now closes on Escape.
+- **Header**: "Beta" and the role label are sans, sentence case.
+- **Disabled buttons** use a neutral style instead of 50% opacity.
+- **Creation trend chart** text renders at its token size at any width.
+- **Dark mode**: lighter warm frame with darker surfaces so cards stand out.
+- **All buttons** use the global button classes; local copies removed.
+
+#### Fixed
+- **Dark mode lost on the Edit page**: a hydration mismatch (role read from session during render) rebuilt the page and dropped the theme class. Role-based rendering now waits for the session, and the app hydrates without mismatches.
+- **Buttons rendering in the system font** instead of Figtree (global form-control font reset).
+- **Admin Roles view** clipped on short viewports; it now scrolls.
+- **Users table sort arrows** rendered as emoji in Chrome; replaced with an SVG chevron.
+- **Theme toggle** no longer animates on page load.
+- **Edit and Detail page heights** used a 50px header offset instead of 48px.
+
+---
+
 ## [1.2.0] - 2026-08-10
 
 ### Placement‑Aware ISCI Codes (Breaking)

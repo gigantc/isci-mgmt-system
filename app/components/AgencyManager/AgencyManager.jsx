@@ -2,26 +2,12 @@ import { useRef, useState, useMemo } from "react";
 import { useResourceManager, useConfirmDialog } from "@/hooks";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Drawer from "@/components/Drawer";
+import { IconSearch, IconEdit, IconTrash } from "@/components/Icons";
 import styles from "./AgencyManager.module.scss";
 
-const IconSearch = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/>
-  </svg>
-);
 const IconBuild = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
     <path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"/>
-  </svg>
-);
-const IconEdit = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-  </svg>
-);
-const IconTrash = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/>
   </svg>
 );
 
@@ -202,7 +188,7 @@ const AgencyManager = () => {
             )}
           </p>
         </div>
-        <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
+        <button type="button" className="btn-primary" onClick={() => handleNew()}>
           + New Agency
         </button>
       </header>
@@ -248,7 +234,7 @@ const AgencyManager = () => {
                 : "Add an agency so it can be selected when creating ISCI codes."}
             </p>
             {!search && filter === "all" && (
-              <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
+              <button type="button" className="btn-primary" onClick={() => handleNew()}>
                 + New Agency
               </button>
             )}
@@ -268,7 +254,7 @@ const AgencyManager = () => {
                   </span>
                 )}
                 <div className={styles.cardTop}>
-                  <div className={styles.agencyIcon}>
+                  <div className={`${styles.dot} ${styles.tileAccent}`}>
                     <IconBuild />
                   </div>
                   <div className={styles.cardInfo}>
@@ -291,7 +277,7 @@ const AgencyManager = () => {
                     <button
                       type="button"
                       title="Edit"
-                      className={styles.actionBtn}
+                      className="btn-icon"
                       onClick={() => handleEdit(agency)}
                     >
                       <IconEdit />
@@ -299,7 +285,7 @@ const AgencyManager = () => {
                     <button
                       type="button"
                       title="Delete"
-                      className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                      className="btn-icon btn-icon-danger"
                       onClick={() => doDelete(agency)}
                     >
                       <IconTrash />
@@ -325,16 +311,16 @@ const AgencyManager = () => {
           <>
             <div>
               {editingAgency && (
-                <button type="button" className={styles.btnDanger} onClick={() => doDelete(editingAgency)}>
+                <button type="button" className="btn-danger" onClick={() => doDelete(editingAgency)}>
                   <IconTrash /> Delete
                 </button>
               )}
             </div>
             <div className={styles.footerRight}>
-              <button type="button" className={styles.btnSecondary} onClick={resetForm}>
+              <button type="button" className="btn-secondary" onClick={resetForm}>
                 Cancel
               </button>
-              <button type="button" className={styles.btnPrimary} onClick={handleSubmit}>
+              <button type="button" className="btn-primary" onClick={handleSubmit}>
                 {editingAgency ? "Save Changes" : "Create Agency"}
               </button>
             </div>
@@ -343,7 +329,7 @@ const AgencyManager = () => {
       >
         <form onSubmit={handleSubmit} className={styles.drawerForm}>
           <div className={styles.field}>
-            <label htmlFor="am-name">Agency Name <span className={styles.req}>*</span></label>
+            <label htmlFor="am-name">Agency name <span className={styles.req}>*</span></label>
             <input
               type="text"
               id="am-name"
