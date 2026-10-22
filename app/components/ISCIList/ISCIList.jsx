@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { isAdmin, canEdit } from "@/utils/auth";
 import { colorForCode } from "@/utils/palette";
+import { IconEdit, IconTrash } from "@/components/Icons";
 import { formatAirDateSlash } from "@/utils/dates";
 import styles from "./ISCIList.module.scss";
 
@@ -144,21 +145,23 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
                 {userCanEdit && (
                   <button
                     type="button"
-                    className={styles.rowAction}
+                    className={`btn-icon ${styles.rowAction}`}
                     onClick={(e) => { e.stopPropagation(); navigate(`/edit/${code.code}`); }}
                     title="Edit"
+                    aria-label="Edit"
                   >
-                    ✎
+                    <IconEdit />
                   </button>
                 )}
                 {userIsAdmin && (
                   <button
                     type="button"
-                    className={`${styles.rowAction} ${styles.rowActionDanger}`}
+                    className={`btn-icon btn-icon-danger ${styles.rowAction}`}
                     onClick={(e) => { e.stopPropagation(); onDelete(code.id); }}
                     title="Delete"
+                    aria-label="Delete"
                   >
-                    ×
+                    <IconTrash />
                   </button>
                 )}
               </span>

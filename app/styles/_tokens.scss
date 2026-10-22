@@ -19,7 +19,7 @@
   --line: oklch(0.88 0.006 85);
   --line-strong: oklch(0.78 0.008 85);
 
-  // Accent (warm orange)
+  // Accent (soft amber)
   --accent: oklch(0.8 0.14 72);
   --accent-hover: oklch(0.75 0.15 68);
   --accent-text: oklch(0.28 0.05 55);
@@ -34,6 +34,9 @@
   --ok-soft: oklch(0.94 0.05 155);
   --warn-soft: oklch(0.96 0.07 80);
   --danger-soft: oklch(0.95 0.04 25);
+  --ok-ink: oklch(0.45 0.11 155);
+  --warn-ink: oklch(0.5 0.12 70);
+  --danger-ink: oklch(0.5 0.17 25);
 
   // Derived soft / ring tokens used for faint hovers and focus rings.
   --accent-ring: var(--accent-soft);
@@ -48,6 +51,8 @@
   --frame: linear-gradient(160deg, oklch(0.965 0.02 75) 0%, oklch(0.955 0.012 85) 55%, oklch(0.95 0.008 255) 100%);
   --card: var(--paper);
   --shadow-card: 0 1px 2px oklch(0 0 0 / 0.04), 0 8px 24px oklch(0 0 0 / 0.06);
+  --on-color: oklch(1 0 0); // text on arbitrary per-entity colors
+  --shadow-drawer: 0 4px 12px oklch(0 0 0 / 0.08), 0 24px 48px oklch(0 0 0 / 0.16);
 
   color-scheme: light;
 
@@ -97,6 +102,9 @@ html.theme-dark {
   --ok-soft: oklch(0.3 0.06 155);
   --warn-soft: oklch(0.32 0.08 80);
   --danger-soft: oklch(0.3 0.06 25);
+  --ok-ink: oklch(0.78 0.12 155);
+  --warn-ink: oklch(0.82 0.12 80);
+  --danger-ink: oklch(0.75 0.14 25);
 
   --accent-ring: var(--accent-soft);
   --accent-subtle: oklch(0.3 0.045 70);
@@ -109,6 +117,8 @@ html.theme-dark {
   --frame: linear-gradient(160deg, oklch(0.2 0.025 70) 0%, oklch(0.16 0.01 255) 60%);
   --card: var(--paper-1);
   --shadow-card: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px oklch(0 0 0 / 0.35);
+  --on-color: oklch(1 0 0);
+  --shadow-drawer: 0 4px 12px oklch(0 0 0 / 0.4), 0 24px 48px oklch(0 0 0 / 0.5);
 
   color-scheme: dark;
 }

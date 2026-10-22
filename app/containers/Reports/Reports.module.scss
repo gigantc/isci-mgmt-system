@@ -1,135 +1,23 @@
+@use "@/styles/shell";
 
-// ── Page shell (mirrors Admin) ────────────────────────────────────────────────
+// ── Page shell (shared with Admin) ────────────────────────────────────────────
 
 .reportsPage {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  height: calc(100vh - 48px);
-  background: var(--paper);
-  min-height: 0;
+  @include shell.page;
 }
 
-.sidebar {
-  border-right: 1px solid var(--line);
-  padding: 1rem 0.75rem;
-  overflow-y: auto;
-}
-
-.sbGroup {
-  margin-bottom: 1rem;
-}
-
-.sbLabel {
-  font-size: 0.625rem;
-  color: var(--ink-3);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 0.25rem 0.5rem;
-  font-weight: 500;
-}
-
-.sbItem {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.375rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.8125rem;
-  color: var(--ink-1);
-  cursor: pointer;
-  gap: 0.5rem;
-  background: transparent;
-  border: 0;
-  text-align: left;
-  position: relative;
-  transition: background 0.12s, color 0.12s;
-  font-family: inherit;
-
-  &:hover {
-    background: var(--paper-2);
-    color: var(--ink);
-  }
-}
-
-.sbItemOn {
-  background: var(--paper-2);
-  color: var(--ink);
-  font-weight: 500;
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: -0.75rem;
-    top: 0.25rem;
-    bottom: 0.25rem;
-    width: 2px;
-    background: var(--accent);
-    border-radius: 2px;
-  }
-}
-
-.sbItemDisabled {
-  color: var(--ink-3);
-  cursor: default;
-
-  &:hover {
-    background: transparent;
-    color: var(--ink-3);
-  }
-}
-
-.sbCount {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  color: var(--ink-3);
-  flex-shrink: 0;
-}
-
-.sbCountSoon {
-  font-size: 0.625rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-}
+@include shell.sidebar;
+@include shell.sidebar-disabled;
+@include shell.main;
+@include shell.head;
+@include shell.footer;
+@include shell.footer-link;
 
 .scrollableContent {
   flex: 1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-}
-
-.footer {
-  border-top: 1px solid var(--line);
-  padding: 0.5rem 1.25rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.75rem;
-  color: var(--ink-1);
-  font-family: var(--font-mono);
-  gap: 1rem;
-}
-
-.footerLink {
-  background: none;
-  border: 0;
-  padding: 0;
-  font: inherit;
-  color: var(--accent-ink);
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 // ── Section frame (each tab) ──────────────────────────────────────────────────
@@ -142,38 +30,14 @@
   overflow: hidden;
 }
 
-.pgHead {
-  padding: 1.375rem 1.25rem 0.875rem;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
-}
-
-.pgTitle {
-  font-size: 1.375rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.125rem;
-  color: var(--ink);
-}
-
-.pgSub {
-  font-size: 0.75rem;
-  color: var(--ink-2);
-  font-family: var(--font-mono);
-  margin: 0;
-
-  strong { color: var(--ink); font-weight: 500; }
-}
+// The section is a flex column, so the head must not shrink.
+.pgHead { flex-shrink: 0; }
 
 .scroll {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  padding: 1.25rem;
+  padding: 0.25rem 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -190,16 +54,16 @@
   text-align: center;
   color: var(--ink-1);
 
-  p { font-size: 0.8125rem; margin: 0; }
+  p { font-size: var(--text-md); margin: 0; }
 }
 
 // ── Card ──────────────────────────────────────────────────────────────────────
 
 .card {
-  background: var(--paper);
+  background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 1rem 1.125rem 1.125rem;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
@@ -215,11 +79,9 @@
 }
 
 .cardTitle {
-  font-size: 0.6875rem;
+  font-size: var(--text-lg);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-2);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -229,13 +91,13 @@
   justify-content: space-between;
   gap: 0.75rem;
   padding-top: 0.625rem;
-  border-top: 1px dashed var(--line);
+  border-top: 1px solid var(--line);
 }
 
 .cardFootHint {
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   color: var(--ink-2);
-  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 
   strong { color: var(--ink); font-weight: 500; }
 }
@@ -254,29 +116,27 @@
   gap: 0.375rem;
 
   label {
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--ink-2);
+    font-size: var(--text-sm);
+    color: var(--ink-1);
     font-weight: 500;
   }
 
   input,
   select {
     width: 100%;
-    height: 32px;
-    padding: 0 0.625rem;
-    background: var(--paper);
+    height: 38px;
+    padding: 0 0.75rem;
+    background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     color: var(--ink);
-    font-size: 0.8125rem;
+    font-size: var(--text-md);
     font-family: inherit;
     outline: none;
 
     &:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
+      box-shadow: 0 0 0 3px var(--accent-ring);
     }
   }
 }
@@ -288,21 +148,20 @@
   flex: 1;
   min-height: 0;
   margin: -0.125rem -0.125rem -0.125rem;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .previewEmpty {
   padding: 2.5rem 1rem;
   text-align: center;
-  font-size: 0.8125rem;
+  font-size: var(--text-md);
   color: var(--ink-2);
-  font-family: var(--font-mono);
 }
 
 .previewTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.8125rem;
+  font-size: var(--text-md);
   min-width: 720px;
 
   thead th {
@@ -311,17 +170,17 @@
     z-index: 1;
     background: var(--paper-1);
     text-align: left;
-    font-size: 0.6875rem;
+    font-size: var(--text-sm);
     font-weight: 500;
     color: var(--ink-2);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 7px 0.75rem;
+    padding: 0.625rem 0.75rem;
     border-bottom: 1px solid var(--line);
     white-space: nowrap;
 
     &:first-child { padding-left: 1rem; }
   }
+
+  thead th.numHeader { text-align: right; }
 
   tbody tr {
     border-bottom: 1px solid var(--line);
@@ -331,7 +190,7 @@
   }
 
   tbody td {
-    padding: 0.5rem 0.75rem;
+    padding: 0.75rem 0.75rem;
     color: var(--ink-1);
     white-space: nowrap;
 
@@ -343,7 +202,6 @@
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--accent-ink) !important;
-  font-size: 0.75rem;
   letter-spacing: 0.02em;
 }
 
@@ -356,31 +214,27 @@
 }
 
 .clientDot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .previewTitle {
   color: var(--ink);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-weight: 500;
   max-width: 280px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .previewMuted {
-  color: var(--ink-2);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  color: var(--ink-1);
 }
 
 .previewNum {
-  color: var(--ink-2);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  color: var(--ink-1);
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
@@ -396,44 +250,48 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  padding: 0.75rem 0.875rem;
-  background: var(--paper);
+  padding: 0.75rem 1rem;
+  background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: border-color 0.12s, background 0.12s;
+  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
 
   &:hover {
     border-color: var(--line-strong);
     background: var(--paper-1);
   }
+
+  &:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-ring); }
 }
 
+// Selected state: accent border plus ring, no border-width change.
 .modeCardOn {
   border-color: var(--accent);
-  background: var(--accent-soft);
+  background: var(--accent-subtle);
+  box-shadow: 0 0 0 3px var(--accent-ring);
 
   .modeRadioDot { opacity: 1; }
   .modeRadio { border-color: var(--accent); }
-  .modeLabel { color: var(--accent-ink); }
 }
 
 .modeCardDanger {
   &.modeCardOn {
     border-color: var(--danger);
     background: var(--danger-soft);
+    box-shadow: 0 0 0 3px var(--danger-soft);
 
     .modeRadio { border-color: var(--danger); }
     .modeRadioDot { background: var(--danger); }
-    .modeLabel { color: var(--danger); }
+    .modeLabel { color: var(--danger-ink); }
   }
 }
 
 .modeRadio {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   border: 1px solid var(--line-strong);
   display: grid;
@@ -443,8 +301,8 @@
 }
 
 .modeRadioDot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--accent);
   opacity: 0;
@@ -459,15 +317,14 @@
 }
 
 .modeLabel {
-  font-size: 0.8125rem;
+  font-size: var(--text-md);
   font-weight: 500;
   color: var(--ink);
 }
 
 .modeDesc {
-  font-size: 0.6875rem;
+  font-size: var(--text-sm);
   color: var(--ink-2);
-  font-family: var(--font-mono);
   line-height: 1.5;
 }
 
@@ -492,11 +349,11 @@
   gap: 0.5rem;
   padding: 2rem 1rem;
   border: 1.5px dashed var(--line-strong);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   background: var(--paper-1);
   cursor: pointer;
   text-align: center;
-  transition: border-color 0.12s, background 0.12s;
+  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
 
   svg {
     width: 28px;
@@ -506,7 +363,7 @@
 
   &:hover {
     border-color: var(--accent);
-    background: var(--accent-soft);
+    background: var(--accent-subtle);
 
     svg { color: var(--accent-ink); }
   }
@@ -515,31 +372,31 @@
 .dropzoneFilled {
   border-style: solid;
   border-color: var(--accent);
-  background: var(--accent-soft);
+  background: var(--accent-subtle);
 
   svg { color: var(--accent-ink); }
 }
 
+// Drag-over is shown with a ring so the border width never changes.
 .dropzoneDragOver {
   border-color: var(--accent);
-  border-width: 2px;
-  background: var(--accent-soft);
+  background: var(--accent-subtle);
+  box-shadow: 0 0 0 3px var(--accent-ring);
   cursor: copy;
 
   svg { color: var(--accent-ink); }
 }
 
 .dropzoneText {
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   font-weight: 500;
   color: var(--ink);
   word-break: break-all;
 }
 
 .dropzoneHint {
-  font-size: 0.6875rem;
+  font-size: var(--text-sm);
   color: var(--ink-2);
-  font-family: var(--font-mono);
 }
 
 // ── Import: preview row ───────────────────────────────────────────────────────
@@ -548,9 +405,9 @@
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  padding: 0.625rem 0.875rem;
+  padding: 0.625rem 1rem;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   background: var(--paper-1);
   flex-wrap: wrap;
 }
@@ -563,17 +420,15 @@
 }
 
 .previewLabel {
-  font-size: 0.625rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ink-3);
+  font-size: var(--text-xs);
+  color: var(--ink-2);
   font-weight: 500;
 }
 
 .previewValue {
-  font-size: 0.8125rem;
+  font-size: var(--text-md);
   color: var(--ink);
-  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -591,7 +446,7 @@
   background: var(--ok-soft);
 
   .cardHead { border-bottom-color: var(--ok); }
-  .cardTitle { color: var(--ok); }
+  .cardTitle { color: var(--ok-ink); }
 }
 
 .resultError {
@@ -599,20 +454,19 @@
   background: var(--danger-soft);
 
   .cardHead { border-bottom-color: var(--danger); }
-  .cardTitle { color: var(--danger); }
+  .cardTitle { color: var(--danger-ink); }
 }
 
 .resultMessage {
   margin: 0;
-  font-size: 0.8125rem;
+  font-size: var(--text-md);
   color: var(--ink);
   line-height: 1.5;
 }
 
 .errorList {
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   color: var(--ink-1);
-  font-family: var(--font-mono);
   line-height: 1.6;
 
   ul {
@@ -629,66 +483,5 @@
 
 .errorListMore {
   margin: 0.25rem 0 0;
-  color: var(--ink-3);
-}
-
-// ── Buttons ───────────────────────────────────────────────────────────────────
-
-.btnPrimary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  height: 30px;
-  padding: 0 0.75rem;
-  background: var(--accent);
-  color: var(--accent-text);
-  border: 1px solid var(--accent);
-  border-radius: 4px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.12s, border-color 0.12s;
-
-  svg { width: 13px; height: 13px; }
-
-  &:hover:not(:disabled) {
-    background: var(--accent-hover);
-    border-color: var(--accent-hover);
-  }
-
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
-}
-
-.btnSecondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  height: 30px;
-  padding: 0 0.75rem;
-  background: var(--paper);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-
-  svg { width: 13px; height: 13px; }
-
-  &:hover { background: var(--paper-1); border-color: var(--line-strong); }
-}
-
-.btnText {
-  background: none;
-  border: 0;
-  padding: 0;
-  font: inherit;
-  font-size: 0.75rem;
   color: var(--ink-2);
-  cursor: pointer;
-  font-family: inherit;
-
-  &:hover { color: var(--accent-ink); }
 }

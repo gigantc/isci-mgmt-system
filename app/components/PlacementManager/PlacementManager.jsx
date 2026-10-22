@@ -2,33 +2,8 @@ import { useRef, useState, useMemo } from "react";
 import { useResourceManager, useConfirmDialog, useFetchData } from "@/hooks";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Drawer from "@/components/Drawer";
+import { IconSearch, IconLock, IconEdit, IconTrash, IconWarn } from "@/components/Icons";
 import styles from "./PlacementManager.module.scss";
-
-const IconSearch = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/>
-  </svg>
-);
-const IconLock = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-  </svg>
-);
-const IconEdit = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-  </svg>
-);
-const IconTrash = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/>
-  </svg>
-);
-const IconWarn = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M12 9v4M12 17h.01M10.3 3.7 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.7a2 2 0 0 0-3.4 0z"/>
-  </svg>
-);
 
 const fmtDate = (d) => {
   if (!d) return "—";
@@ -144,7 +119,7 @@ const PlacementManager = () => {
             <strong>{activeCount}</strong> active
           </p>
         </div>
-        <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
+        <button type="button" className="btn-primary" onClick={() => handleNew()}>
           + New Placement
         </button>
       </header>
@@ -190,7 +165,7 @@ const PlacementManager = () => {
                 : "Create your first placement to start generating ISCI codes."}
             </p>
             {!search && filter === "all" && (
-              <button type="button" className={styles.btnPrimary} onClick={() => handleNew()}>
+              <button type="button" className="btn-primary" onClick={() => handleNew()}>
                 + New Placement
               </button>
             )}
@@ -232,7 +207,7 @@ const PlacementManager = () => {
                       <button
                         type="button"
                         title="Edit"
-                        className={styles.actionBtn}
+                        className="btn-icon"
                         onClick={() => handleEdit(placement)}
                       >
                         <IconEdit />
@@ -240,7 +215,7 @@ const PlacementManager = () => {
                       <button
                         type="button"
                         title="Delete"
-                        className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                        className="btn-icon btn-icon-danger"
                         onClick={() => doDelete(placement)}
                       >
                         <IconTrash />
@@ -267,16 +242,16 @@ const PlacementManager = () => {
           <>
             <div>
               {editingPlacement && (
-                <button type="button" className={styles.btnDanger} onClick={() => doDelete(editingPlacement)}>
+                <button type="button" className="btn-danger" onClick={() => doDelete(editingPlacement)}>
                   <IconTrash /> Delete
                 </button>
               )}
             </div>
             <div className={styles.footerRight}>
-              <button type="button" className={styles.btnSecondary} onClick={resetForm}>
+              <button type="button" className="btn-secondary" onClick={resetForm}>
                 Cancel
               </button>
-              <button type="button" className={styles.btnPrimary} onClick={handleSubmit}>
+              <button type="button" className="btn-primary" onClick={handleSubmit}>
                 {editingPlacement ? "Save Changes" : "Create Placement"}
               </button>
             </div>
@@ -285,7 +260,7 @@ const PlacementManager = () => {
       >
         <form onSubmit={handleSubmit} className={styles.drawerForm}>
           <div className={styles.field}>
-            <label htmlFor="pm-name">Placement Name <span className={styles.req}>*</span></label>
+            <label htmlFor="pm-name">Placement name <span className={styles.req}>*</span></label>
             <input
               type="text"
               id="pm-name"
@@ -304,7 +279,7 @@ const PlacementManager = () => {
               Letter <span className={styles.req}>*</span>
               {letterLocked && (
                 <span className={styles.lockedLabel}>
-                  <IconLock /> LOCKED
+                  <IconLock /> Locked
                 </span>
               )}
             </label>
@@ -321,7 +296,7 @@ const PlacementManager = () => {
                 style={{ textTransform: "uppercase" }}
                 className={`${errors.letter ? styles.inputError : ""} ${letterLocked ? styles.inputLocked : ""}`}
               />
-              {letterLocked && <span className={styles.autoBadge}>LOCKED</span>}
+              {letterLocked && <span className={styles.autoBadge}>Locked</span>}
             </div>
             {errors.letter && <span className={styles.fieldError}>{errors.letter}</span>}
             {!errors.letter && (

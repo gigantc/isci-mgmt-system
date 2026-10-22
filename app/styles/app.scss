@@ -4,6 +4,15 @@
   box-sizing: border-box;
 }
 
+// Browsers default form controls to the system font; family only, so UA font
+// sizes stay as they are.
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 html,
 body {
   margin: 0;
@@ -130,5 +139,54 @@ body {
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+}
+
+.btn-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: var(--card);
+  color: var(--ink-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
+
+  &:hover:not(:disabled) {
+    color: var(--ink);
+    border-color: var(--line-strong);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-icon-danger:hover:not(:disabled) {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+// Icons inside buttons are plain <svg> with a viewBox and no size attributes.
+.btn-primary,
+.btn-secondary,
+.btn-text,
+.btn-danger,
+.btn-icon {
+  svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--accent-ink);
   }
 }

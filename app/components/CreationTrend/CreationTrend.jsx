@@ -154,9 +154,7 @@ const CreationTrend = () => {
                     x={paddingLeft - 8}
                     y={y + 4}
                     textAnchor="end"
-                    fontSize="10"
-                    fill="var(--ink-1)"
-                    fontFamily="var(--font-mono, monospace)"
+                    className={styles.axisText}
                   >
                     {t}
                   </text>
@@ -188,9 +186,7 @@ const CreationTrend = () => {
                       x={x + barW / 2}
                       y={y - 4}
                       textAnchor="middle"
-                      fontSize="10"
-                      fill="var(--ink)"
-                      fontFamily="var(--font-mono, monospace)"
+                      className={styles.barValue}
                     >
                       {b.count}
                     </text>
@@ -199,10 +195,7 @@ const CreationTrend = () => {
                     x={x + barW / 2}
                     y={paddingTop + chartH + 16}
                     textAnchor="middle"
-                    fontSize="10"
-                    fill={isCurrent ? "var(--ink)" : "var(--ink-1)"}
-                    fontFamily="var(--font-mono, monospace)"
-                    fontWeight={isCurrent ? 600 : 400}
+                    className={`${styles.monthLabel} ${isCurrent ? styles.monthLabelCurrent : ""}`}
                   >
                     {b.label}
                   </text>
@@ -212,9 +205,7 @@ const CreationTrend = () => {
                       x={x + barW / 2}
                       y={paddingTop + chartH + 28}
                       textAnchor="middle"
-                      fontSize="9"
-                      fill="var(--ink-2)"
-                      fontFamily="var(--font-mono, monospace)"
+                      className={styles.yearLabel}
                     >
                       {b.year}
                     </text>

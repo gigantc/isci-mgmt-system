@@ -7,6 +7,7 @@ This document provides context for AI assistants (like Claude) working on this p
 
 For detailed version history, see [CHANGELOG.md](CHANGELOG.md)
 For deployment instructions, see [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md)
+For UI styling rules (type, shape, controls, tables, page shell), see [docs/design-system.md](docs/design-system.md). Follow it for all UI work.
 
 ---
 

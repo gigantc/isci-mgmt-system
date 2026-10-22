@@ -290,7 +290,7 @@ const ExportSection = ({ codes, brands, placements, isLoading }) => {
     <section className={styles.section}>
       <header className={styles.pgHead}>
         <div>
-          <h1 className={styles.pgTitle}>Export Data</h1>
+          <h1>Export data</h1>
           <p className={styles.pgSub}>
             <strong>{filteredCount}</strong> of {codes.length}
             {" · "}
@@ -299,7 +299,7 @@ const ExportSection = ({ codes, brands, placements, isLoading }) => {
         </div>
         <button
           type="button"
-          className={styles.btnPrimary}
+          className="btn-primary"
           onClick={() => exportToCSV()}
           disabled={filteredCount === 0 || isLoading}
         >
@@ -315,14 +315,14 @@ const ExportSection = ({ codes, brands, placements, isLoading }) => {
           <div className={styles.card}>
             <header className={styles.cardHead}>
               <h2 className={styles.cardTitle}>Filters</h2>
-              <button type="button" className={styles.btnText} onClick={resetFilters}>
+              <button type="button" className="btn-text" onClick={resetFilters}>
                 Reset
               </button>
             </header>
 
             <div className={styles.filterGrid}>
               <div className={styles.field}>
-                <label htmlFor="rep-dateType">Date Filter</label>
+                <label htmlFor="rep-dateType">Date filter</label>
                 <select id="rep-dateType" name="dateType" value={filters.dateType} onChange={handleFilterChange}>
                   <option value="all">All dates</option>
                   <option value="created">Created date</option>
@@ -412,13 +412,13 @@ const ExportSection = ({ codes, brands, placements, isLoading }) => {
                 <table className={styles.previewTable}>
                   <thead>
                     <tr>
-                      <th>ISCI Code</th>
+                      <th>ISCI code</th>
                       <th>Client</th>
                       <th>Campaign</th>
-                      <th>Spot Title</th>
-                      <th>Len</th>
+                      <th>Spot title</th>
+                      <th className={styles.numHeader}>Length</th>
                       <th>Placement</th>
-                      <th>Air Date</th>
+                      <th>Air date</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -535,14 +535,14 @@ const ImportSection = ({ onImported }) => {
     <section className={styles.section}>
       <header className={styles.pgHead}>
         <div>
-          <h1 className={styles.pgTitle}>Import Data</h1>
+          <h1>Import data</h1>
           <p className={styles.pgSub}>
             Upload a CSV to add, update, or replace ISCI codes
           </p>
         </div>
         <button
           type="button"
-          className={styles.btnPrimary}
+          className="btn-primary"
           onClick={handleImportWithConfirm}
           disabled={!importFile || isImporting}
         >
@@ -583,7 +583,7 @@ const ImportSection = ({ onImported }) => {
         <div className={styles.card}>
           <header className={styles.cardHead}>
             <h2 className={styles.cardTitle}>File</h2>
-            <button type="button" className={styles.btnSecondary} onClick={downloadCSVTemplate}>
+            <button type="button" className="btn-secondary" onClick={downloadCSVTemplate}>
               <IconDownload /> Download template
             </button>
           </header>
@@ -626,7 +626,7 @@ const ImportSection = ({ onImported }) => {
                 <span className={styles.previewLabel}>Rows</span>
                 <span className={styles.previewValue}>{importPreview.rowCount}</span>
               </div>
-              <button type="button" className={styles.btnText} onClick={clearFile}>
+              <button type="button" className="btn-text" onClick={clearFile}>
                 Clear
               </button>
             </div>
