@@ -107,10 +107,10 @@
   overflow-x: auto;
 }
 
+// Sized by the width/height attributes (1 unit = 1px); the wrapper scrolls below 640px.
 .chart {
-  width: 100%;
-  min-width: 640px;
-  height: auto;
+  display: block;
+  max-width: none;
 }
 
 // Chart text: sans, 12px floor, tabular numbers. Classes replace the SVG

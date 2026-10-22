@@ -7,4 +7,5 @@ export {
   IconCopy,
   IconLink,
   IconDuplicate,
+  IconClose,
 } from "./Icons";

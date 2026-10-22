@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFetchData } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
 import styles from "./CreationTrend.module.scss";
@@ -10,6 +10,12 @@ import styles from "./CreationTrend.module.scss";
  * month over the last 12 months, with an optional client filter.
  * SVG is hand-rolled — no charting library dependency.
  */
+
+// Chart width in px. The SVG coordinate space is 1 unit = 1px, so chart text
+// renders at its real token size. DEFAULT_WIDTH is used on the server and on the
+// first client render (hydration must match); the real width is measured after mount.
+const DEFAULT_WIDTH = 720;
+const MIN_WIDTH = 640;
 
 const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -46,6 +52,18 @@ const buildMonthBuckets = (codes, clientFilter) => {
 const CreationTrend = () => {
   const { data: codes, loading } = useFetchData("/api/isci");
   const [clientFilter, setClientFilter] = useState("all");
+  const wrapRef = useRef(null);
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return undefined;
+    const measure = () => setWidth(Math.max(MIN_WIDTH, Math.floor(el.clientWidth)));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loading]);
 
   const clients = useMemo(() => {
     const set = new Set();
@@ -63,7 +81,6 @@ const CreationTrend = () => {
   }
 
   // Chart geometry
-  const width = 720;
   const height = 260;
   const paddingLeft = 40;
   const paddingRight = 12;
@@ -129,11 +146,12 @@ const CreationTrend = () => {
       </div>
 
       <section className={styles.card}>
-        <div className={styles.chartWrap}>
+        <div className={styles.chartWrap} ref={wrapRef}>
           <svg
             className={styles.chart}
+            width={width}
+            height={height}
             viewBox={`0 0 ${width} ${height}`}
-            preserveAspectRatio="xMidYMid meet"
             role="img"
             aria-label="Bar chart of codes created per month"
           >

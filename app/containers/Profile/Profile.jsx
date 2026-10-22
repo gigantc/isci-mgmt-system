@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { saveUserSession } from "@/utils/auth";
 import { useSession } from "@/hooks";
+import CodeLayout, { AsideSection } from "@/components/CodeLayout";
 import DefaultProfileImage from "@/assets/default_profile_image.jpg";
 import styles from "./Profile.module.scss";
 
@@ -23,7 +24,7 @@ const Profile = () => {
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { user: sessionUser, ready } = useSession();
+  const { user: sessionUser, ready, roleLabel } = useSession();
 
   useEffect(() => {
     if (!ready) return;
@@ -164,176 +165,179 @@ const Profile = () => {
   };
 
   return (
-    <div className={styles.profilePage}>
-      <div className={styles.pageContent}>
-        <div className={styles.stickyHeader}>
-          <div className={styles.headerContent}>
-            <div className={styles.crumbs}>
-              <button type="button" onClick={() => navigate("/")}>Dashboard</button>
-              <span className={styles.sep}>/</span>
-              <span>Profile</span>
+    <CodeLayout
+      crumbs={[
+        { label: "Dashboard", to: "/" },
+        { label: "Profile" },
+      ]}
+      title="Edit profile"
+      subtitle={
+        currentUser
+          ? `${currentUser.email}${currentUser.userType ? ` · ${roleLabel}` : ""}`
+          : null
+      }
+      loading={!ready}
+      aside={
+        <AsideSection label="Account">
+          <dl className={styles.accountList}>
+            <div>
+              <dt>User type</dt>
+              <dd>{roleLabel}</dd>
             </div>
-            <h1 className={styles.title}>Edit Profile</h1>
-            {currentUser && (
-              <p className={styles.subtitle}>
-                {currentUser.email}
-                {currentUser.userType ? ` · ${currentUser.userType === "admin" ? "Admin" : currentUser.userType === "viewer" ? "Viewer" : "Editor"}` : ""}
-              </p>
-            )}
+            <div>
+              <dt>Account created</dt>
+              <dd>{formatDate(currentUser?.createdAt)}</dd>
+            </div>
+            <div>
+              <dt>Last profile update</dt>
+              <dd>{formatDate(currentUser?.profileUpdatedAt)}</dd>
+            </div>
+          </dl>
+        </AsideSection>
+      }
+      headerActions={
+        <>
+          <button type="button" className="btn-secondary" onClick={handleCancel}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? "Saving…" : "Save changes"}
+          </button>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className={styles.profileForm}>
+        {error && (
+          <div className={styles.errorMessage}>
+            {error}
           </div>
-          <div className={styles.headerActions}>
-            <button type="button" className="btn-text" onClick={handleCancel}>
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={handleSubmit}
-              disabled={isLoading}
-            >
-              {isLoading ? "Saving…" : "Save Changes"}
-            </button>
+        )}
+
+        {success && (
+          <div className={styles.successMessage}>
+            {success}
           </div>
-        </div>
+        )}
 
-        <div className={styles.scrollableContent}>
-          <div className={styles.profileContainer}>
-            <form onSubmit={handleSubmit} className={styles.profileForm}>
-              {error && (
-                <div className={styles.errorMessage}>
-                  {error}
-                </div>
-              )}
+        {/* Personal information and profile image, side by side */}
+        <div className={styles.formSectionsRow}>
+          <div className={styles.formSection}>
+            <h3>Personal information</h3>
 
-              {success && (
-                <div className={styles.successMessage}>
-                  {success}
-                </div>
-              )}
-
-              {/* Personal Information and Profile Image - Side by Side */}
-              <div className={styles.formSectionsRow}>
-                <div className={styles.formSection}>
-                  <h3>Personal Information</h3>
-
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label htmlFor="firstName">First Name</label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label htmlFor="lastName">Last Name</label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label htmlFor="email">Email</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.formSection}>
-                  <h3>Profile Image</h3>
-                  <p className={styles.sectionNote}>JPEG, PNG, GIF, or WebP (max 5MB)</p>
-
-                  <div className={styles.imageUploadSection}>
-                    <div className={styles.currentImage}>
-                      <img
-                        src={profileImagePreview || currentUser?.profileImage || DefaultProfileImage}
-                        alt="Profile"
-                      />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label htmlFor="profileImage">Upload New Image</label>
-                      <input
-                        type="file"
-                        id="profileImage"
-                        name="profileImage"
-                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                        onChange={handleImageChange}
-                      />
-                    </div>
-                  </div>
-                </div>
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor="firstName">First name</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
-              <div className={styles.formSection}>
-                <h3>Change Password</h3>
-                <p className={styles.sectionNote}>Leave blank to keep current password</p>
+              <div className={styles.formGroup}>
+                <label htmlFor="lastName">Last name</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="currentPassword">Current Password</label>
-                  <input
-                    type="password"
-                    id="currentPassword"
-                    name="currentPassword"
-                    value={formData.currentPassword}
-                    onChange={handleChange}
-                    placeholder="Required to change password"
-                  />
-                </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
 
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="newPassword">New Password</label>
-                    <input
-                      type="password"
-                      id="newPassword"
-                      name="newPassword"
-                      value={formData.newPassword}
-                      onChange={handleChange}
-                      placeholder="At least 6 characters"
-                    />
-                  </div>
+          <div className={styles.formSection}>
+            <h3>Profile image</h3>
+            <p className={styles.sectionNote}>JPEG, PNG, GIF, or WebP (max 5MB)</p>
 
-                  <div className={styles.formGroup}>
-                    <label htmlFor="confirmPassword">Confirm New Password</label>
-                    <input
-                      type="password"
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      placeholder="Confirm new password"
-                    />
-                  </div>
-                </div>
+            <div className={styles.imageUploadSection}>
+              <div className={styles.currentImage}>
+                <img
+                  src={profileImagePreview || currentUser?.profileImage || DefaultProfileImage}
+                  alt="Profile"
+                />
               </div>
 
-              <div className={styles.profileMeta}>
-                <p><strong>User Type:</strong> {currentUser?.userType === "admin" ? "Admin" : currentUser?.userType === "viewer" ? "Viewer" : "Editor"}</p>
-                <p><strong>Account Created:</strong> {formatDate(currentUser?.createdAt)}</p>
-                <p><strong>Last Profile Update:</strong> {formatDate(currentUser?.profileUpdatedAt)}</p>
+              <div className={styles.formGroup}>
+                <label htmlFor="profileImage">Upload new image</label>
+                <input
+                  type="file"
+                  id="profileImage"
+                  name="profileImage"
+                  accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                  onChange={handleImageChange}
+                />
               </div>
-            </form>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+
+        <div className={styles.formSection}>
+          <h3>Change password</h3>
+          <p className={styles.sectionNote}>Leave blank to keep current password</p>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="currentPassword">Current password</label>
+            <input
+              type="password"
+              id="currentPassword"
+              name="currentPassword"
+              value={formData.currentPassword}
+              onChange={handleChange}
+              placeholder="Required to change password"
+            />
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label htmlFor="newPassword">New password</label>
+              <input
+                type="password"
+                id="newPassword"
+                name="newPassword"
+                value={formData.newPassword}
+                onChange={handleChange}
+                placeholder="At least 6 characters"
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="confirmPassword">Confirm new password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm new password"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </CodeLayout>
   );
 };
 

@@ -25,7 +25,8 @@ const DOT_TONES = {
  *   badge          { label, tone: "ok" | "accent" | "neutral" }.
  *   subtitle       node.
  *   headerActions  node rendered at the right of the header.
- *   aside          node rendered in the right column.
+ *   aside          node rendered in the right column; when omitted the track stays
+ *                  empty so the form keeps the same width as the code pages.
  *   footerStatus   { tone: "saved" | "draft", text }.
  *   footerActions  node rendered at the right of the footer bar.
  *   loading        boolean; shows loadingText instead of the form.

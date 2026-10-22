@@ -69,8 +69,11 @@ body {
     border-color: var(--accent-hover);
   }
 
+  // Disabled reads as a flat inactive pill, not a faded amber/red one.
   &:disabled {
-    opacity: 0.5;
+    background: var(--paper-2);
+    border-color: var(--line);
+    color: var(--ink-3);
     cursor: not-allowed;
   }
 }
@@ -91,9 +94,15 @@ body {
   font-family: inherit;
   text-decoration: none;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: var(--paper-1);
     border-color: var(--line-strong);
+  }
+
+  &:disabled {
+    border-color: var(--line);
+    color: var(--ink-3);
+    cursor: not-allowed;
   }
 }
 
@@ -111,8 +120,13 @@ body {
   font-family: inherit;
   text-decoration: none;
 
-  &:hover {
+  &:hover:not(:disabled) {
     color: var(--ink);
+  }
+
+  &:disabled {
+    color: var(--ink-3);
+    cursor: not-allowed;
   }
 }
 
@@ -136,8 +150,11 @@ body {
     border-color: var(--danger);
   }
 
+  // Disabled reads as a flat inactive pill, not a faded amber/red one.
   &:disabled {
-    opacity: 0.5;
+    background: var(--paper-2);
+    border-color: var(--line);
+    color: var(--ink-3);
     cursor: not-allowed;
   }
 }
@@ -163,7 +180,8 @@ body {
   }
 
   &:disabled {
-    opacity: 0.5;
+    border-color: var(--line);
+    color: var(--ink-3);
     cursor: not-allowed;
   }
 }

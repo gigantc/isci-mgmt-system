@@ -97,18 +97,18 @@ const Login = () => {
 
           <button
             type="submit"
-            className={styles.loginButton}
+            className={`btn-primary ${styles.loginButton}`}
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign In"}
+            {isLoading ? "Signing in..." : "Sign in"}
           </button>
         </form>
 
         <div className={styles.loginFooter}>
           <p className={styles.demoNote}>
-            <strong>Demo Credentials:</strong><br />
-            Admin: steve@isciz.com / admin123<br />
-            Editor: sarah.johnson@isciz.com / editor123
+            <strong>Demo credentials:</strong><br />
+            Admin: <span>steve@isciz.com / admin123</span><br />
+            Editor: <span>sarah.johnson@isciz.com / editor123</span>
           </p>
         </div>
       </div>

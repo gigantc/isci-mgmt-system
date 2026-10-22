@@ -43,7 +43,7 @@ const Header = () => {
 
       <div className={styles.title}>
         <Logo className={styles.logo} aria-hidden="true" focusable="false" />
-        <h1>ISCIz <span>beta</span></h1>
+        <h1>ISCIz <span>Beta</span></h1>
       </div>
 
       <div className={styles.headerActions}>
