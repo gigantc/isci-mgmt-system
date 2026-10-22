@@ -31,9 +31,9 @@
   gap: 0.5rem;
   height: 38px;
   padding: 0 0.875rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--field-border);
   border-radius: var(--radius-pill);
-  background: var(--paper);
+  background: var(--field);
   transition: border-color 0.12s, box-shadow 0.12s;
 
   &:focus-within {

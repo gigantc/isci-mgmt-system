@@ -13,6 +13,31 @@ textarea {
   font-family: inherit;
 }
 
+// Custom chevron, positioned where the date input's calendar icon sits (16px box,
+// 12px from the right edge). Local select rules must use background-color and keep
+// padding-right at 36px.
+select {
+  appearance: none;
+  background-image: var(--select-chevron);
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+// Chromium/Safari calendar icon, drawn in the same style as the select chevron. The
+// 16px box stays 12px from the input edge so it lines up with the chevron.
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: var(--date-icon) no-repeat center / 16px 16px;
+  color: transparent;
+  opacity: 1;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
 html,
 body {
   margin: 0;
@@ -164,6 +189,8 @@ body {
   place-items: center;
   width: 28px;
   height: 28px;
+  aspect-ratio: 1;
+  flex-shrink: 0;
   padding: 0;
   background: var(--card);
   color: var(--ink-1);
@@ -175,8 +202,9 @@ body {
   transition: color 0.12s, background 0.12s, border-color 0.12s;
 
   &:hover:not(:disabled) {
-    color: var(--ink);
-    border-color: var(--line-strong);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+    background: var(--accent-subtle);
   }
 
   &:disabled {
@@ -187,8 +215,9 @@ body {
 }
 
 .btn-icon-danger:hover:not(:disabled) {
-  color: var(--danger);
+  color: var(--danger-ink);
   border-color: var(--danger);
+  background: var(--danger-soft);
 }
 
 // Icons inside buttons are plain <svg> with a viewBox and no size attributes.

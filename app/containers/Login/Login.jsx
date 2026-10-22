@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { saveUserSession } from "@/utils/auth";
-import { ReactComponent as Logo } from "@/assets/Logo.svg";
+import AppLogo from "@/components/AppLogo";
 import styles from "./Login.module.scss";
 
 const Login = () => {
@@ -55,7 +55,7 @@ const Login = () => {
     <div className={styles.loginPage}>
       <div className={styles.loginContainer}>
         <div className={styles.loginHeader}>
-          <Logo className={styles.logo} />
+          <AppLogo size="md" />
           <h1>ISCIz</h1>
           <p>Sign in to your account</p>
         </div>

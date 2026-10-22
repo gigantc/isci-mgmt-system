@@ -19,19 +19,6 @@
     align-items: center;
     gap: 0.625rem;
     margin-right: 0.5rem;
-
-    .logo {
-      width: 22px;
-      height: 22px;
-      display: inline-block;
-      background: var(--accent);
-      border-radius: var(--radius-sm);
-      padding: 4px;
-
-      path {
-        fill: var(--accent-text);
-      }
-    }
   }
 
   h1 {

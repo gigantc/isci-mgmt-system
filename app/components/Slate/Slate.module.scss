@@ -54,6 +54,12 @@
   }
 }
 
+// Layout only; the look comes from the global btn-secondary.
+.exportButton {
+  width: 100%;
+  justify-content: center;
+}
+
 .modalOverlay {
   position: fixed;
   inset: 0;

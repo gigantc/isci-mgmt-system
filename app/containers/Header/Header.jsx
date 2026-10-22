@@ -4,7 +4,7 @@ import { useSession } from "@/hooks";
 import ProfileMenu from "@/components/ProfileMenu";
 import ThemeToggle from "@/components/ThemeToggle";
 import styles from "./Header.module.scss";
-import { ReactComponent as Logo } from "@/assets/Logo.svg";
+import AppLogo from "@/components/AppLogo";
 import DefaultProfileImage from "@/assets/default_profile_image.jpg";
 
 const Header = () => {
@@ -42,7 +42,7 @@ const Header = () => {
     <header className={styles.header}>
 
       <div className={styles.title}>
-        <Logo className={styles.logo} aria-hidden="true" focusable="false" />
+        <AppLogo size="sm" />
         <h1>ISCIz <span>Beta</span></h1>
       </div>
 

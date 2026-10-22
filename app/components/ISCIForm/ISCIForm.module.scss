@@ -155,18 +155,18 @@ button.inputBadge {
       color: var(--ink-1);
     }
 
-    // Inputs use --paper so they stay distinct from the --card section in dark mode.
+    // Fields use --field so they stay distinct from the --card section in dark mode.
     input,
     textarea,
     select {
       padding: 0 0.75rem;
       height: 38px;
       font-size: var(--text-md);
-      border: 1px solid var(--line);
+      border: 1px solid var(--field-border);
       border-radius: var(--radius-md);
       transition: border-color 0.12s, box-shadow 0.12s;
       font-family: inherit;
-      background-color: var(--paper);
+      background-color: var(--field);
       color: var(--ink);
 
       &:focus {
@@ -206,6 +206,7 @@ button.inputBadge {
 
     select {
       cursor: pointer;
+      padding-right: 36px;
 
       option {
         background-color: var(--paper);

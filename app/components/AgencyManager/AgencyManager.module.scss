@@ -23,19 +23,6 @@
   svg { width: 14px; height: 14px; }
 }
 
-.agencyIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  flex-shrink: 0;
-  background: var(--paper-2);
-  display: grid;
-  place-items: center;
-  color: var(--ink-2);
-
-  svg { width: 14px; height: 14px; }
-}
-
 .cardSub {
   margin-top: 0.125rem;
   font-size: var(--text-sm);

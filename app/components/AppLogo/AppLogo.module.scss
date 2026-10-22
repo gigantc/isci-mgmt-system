@@ -1,0 +1,28 @@
+
+.logo {
+  display: inline-block;
+  flex-shrink: 0;
+  background: var(--accent);
+  border-radius: var(--radius-sm);
+
+  path { fill: var(--accent-text); }
+}
+
+.sm {
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+}
+
+.md {
+  width: 40px;
+  height: 40px;
+  padding: 7px;
+}
+
+.lg {
+  width: 64px;
+  height: 64px;
+  padding: 11px;
+  border-radius: var(--radius-md);
+}

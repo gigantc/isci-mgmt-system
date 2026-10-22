@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { getMarketLabel } from "@/utils/markets";
 import { formatAirDateSlateShort } from "@/utils/dates";
 import { AsideSection } from "@/components/CodeLayout";
+import { IconDownload } from "@/components/Icons";
 import styles from "./Slate.module.scss";
 
 const Slate = ({ code }) => {
@@ -156,14 +157,7 @@ const Slate = ({ code }) => {
   }
 
   return (
-    <AsideSection
-      label="Slate preview"
-      action={
-        <button type="button" className="btn-secondary" onClick={handleExport}>
-          Export as JPG
-        </button>
-      }
-    >
+    <AsideSection label="Slate preview">
     <div className={styles.slateContainer}>
       <div className={styles.slatePreview} onClick={handlePreviewClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && handlePreviewClick()}>
         <canvas ref={canvasRef} className={styles.canvas} />
@@ -183,6 +177,13 @@ const Slate = ({ code }) => {
         </div>
       )}
     </div>
+    <button
+      type="button"
+      className={`btn-secondary ${styles.exportButton}`}
+      onClick={handleExport}
+    >
+      <IconDownload /> Export as JPG
+    </button>
     </AsideSection>
   );
 };

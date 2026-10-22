@@ -180,7 +180,7 @@ const PlacementManager = () => {
                   className={`${styles.card} ${!placement.active ? styles.cardInactive : ""}`}
                 >
                   <div className={styles.cardTop}>
-                    <div className={styles.dot}>{placement.letter}</div>
+                    <div className={`${styles.dot} ${styles.tileAccent}`}>{placement.letter}</div>
                     <div className={styles.cardInfo}>
                       <h3>{placement.name}</h3>
                       <div className={styles.cardSub}>

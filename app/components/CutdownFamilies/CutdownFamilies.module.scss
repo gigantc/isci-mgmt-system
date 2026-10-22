@@ -55,10 +55,10 @@
 
 .select {
   height: 38px;
-  padding: 0 0.75rem;
-  border: 1px solid var(--line);
+  padding: 0 36px 0 0.75rem;
+  border: 1px solid var(--field-border);
   border-radius: var(--radius-md);
-  background: var(--card);
+  background-color: var(--field);
   color: var(--ink);
   font-size: var(--text-md);
   font-family: inherit;

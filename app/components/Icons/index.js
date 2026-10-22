@@ -8,4 +8,5 @@ export {
   IconLink,
   IconDuplicate,
   IconClose,
+  IconDownload,
 } from "./Icons";

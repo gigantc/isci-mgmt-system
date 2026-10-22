@@ -254,7 +254,7 @@ const AgencyManager = () => {
                   </span>
                 )}
                 <div className={styles.cardTop}>
-                  <div className={styles.agencyIcon}>
+                  <div className={`${styles.dot} ${styles.tileAccent}`}>
                     <IconBuild />
                   </div>
                   <div className={styles.cardInfo}>

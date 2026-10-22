@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { clearUserSession } from "@/utils/auth";
 import Modal from "@/components/Modal";
+import AppLogo from "@/components/AppLogo";
 import { IconClose } from "@/components/Icons";
 import { APP_VERSION } from "@/config";
 import styles from "./ProfileMenu.module.scss";
-import LogoUrl from "@/assets/Logo.svg?url";
 
 const ProfileMenu = ({ profileImage }) => {
   const navigate = useNavigate();
@@ -93,7 +93,7 @@ const ProfileMenu = ({ profileImage }) => {
 
         <div className={styles.about}>
           <div className={styles.aboutHeader}>
-            <img src={LogoUrl} alt="ISCIz Logo" className={styles.logo} />
+            <AppLogo size="lg" />
             <h2>ISCIz</h2>
           </div>
 
