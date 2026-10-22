@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { rankByFuzzy } from "@/utils/fuzzy";
-import { isAuthenticated, isAdmin, canEdit } from "@/utils/auth";
+import { isAuthenticated } from "@/utils/auth";
+import { useSession } from "@/hooks";
 import styles from "./CmdK.module.scss";
 
 const RECENT_KEY = "isciz-recent-searches";
@@ -91,8 +92,7 @@ const CmdK = () => {
 
   const close = () => setOpen(false);
 
-  const userIsAdmin = isAdmin();
-  const userCanEdit = canEdit();
+  const { isAdmin: userIsAdmin, canEdit: userCanEdit } = useSession();
 
   const actions = useMemo(() => {
     const all = [

@@ -419,7 +419,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
   return (
     <div className={styles.isciFormContainer}>
       {!hideTitle && (
-        <h2>{code ? "Edit ISCI Code" : "Create New ISCI Code"}</h2>
+        <h2>{code ? "Edit ISCI code" : "Create new ISCI code"}</h2>
       )}
 
       <form onSubmit={handleSubmit} className={styles.isciForm} ref={formRef}>
@@ -427,13 +427,13 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         {/* 01 — Basic Details */}
         <div className={`${styles.formSection} ${styles.formSectionFull}`}>
           <h3 className={styles.sectionTitle}>
-            <span className={styles.sectionNumber}>01</span> Basic Details
+            <span className={styles.sectionNumber}>01</span> Basic details
           </h3>
 
           {/* Client and Placement side-by-side (both drive the ISCI code) */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="brand">Client *</label>
+              <label htmlFor="brand">Client <span className={styles.req}>*</span></label>
               {code ? (
                 // When editing, show brand as text (can't change brand)
                 <div className={styles.inputBadgeWrap}>
@@ -476,7 +476,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="placement">Placement *</label>
+              <label htmlFor="placement">Placement <span className={styles.req}>*</span></label>
               {code ? (
                 // When editing, placement is locked (changing it would break the code)
                 <div className={styles.inputBadgeWrap}>
@@ -521,7 +521,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
           {/* ISCI Code (auto-generated once Client and Placement are chosen) */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="code">ISCI Code *</label>
+              <label htmlFor="code">ISCI code <span className={styles.req}>*</span></label>
               {code ? (
                 // When editing, show ISCI code as text (can't change code)
                 <>
@@ -577,26 +577,26 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
           {/* Campaign Name + Job Number */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="campaignName">Campaign Name</label>
+              <label htmlFor="campaignName">Campaign name</label>
               <input
                 type="text"
                 id="campaignName"
                 name="campaignName"
                 value={formData.campaignName}
                 onChange={handleChange}
-                placeholder="Campaign Name"
+                placeholder="Campaign name"
                 disabled={viewOnly}
               />
             </div>
             <div className={styles.formGroup}>
-              <label htmlFor="jobNumber">Job Number</label>
+              <label htmlFor="jobNumber">Job number</label>
               <input
                 type="text"
                 id="jobNumber"
                 name="jobNumber"
                 value={formData.jobNumber}
                 onChange={handleChange}
-                placeholder="Job Number"
+                placeholder="Job number"
                 disabled={viewOnly}
               />
             </div>
@@ -606,11 +606,11 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         {/* 02 — Spot Details */}
         <div className={`${styles.formSection} ${styles.formSectionFull}`}>
           <h3 className={styles.sectionTitle}>
-            <span className={styles.sectionNumber}>02</span> Spot Details
+            <span className={styles.sectionNumber}>02</span> Spot details
           </h3>
 
           <div className={styles.formGroup}>
-            <label htmlFor="spotTitle">Spot Title *</label>
+            <label htmlFor="spotTitle">Spot title <span className={styles.req}>*</span></label>
             <input
               type="text"
               id="spotTitle"
@@ -624,7 +624,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="fileName">File Name</label>
+            <label htmlFor="fileName">File name</label>
             <div className={styles.inputBadgeWrap}>
               <input
                 type="text"
@@ -649,7 +649,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="description">Description / Notes</label>
+            <label htmlFor="description">Description / notes</label>
             <textarea
               id="description"
               name="description"
@@ -665,12 +665,12 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         {/* 03 — Schedule & People */}
         <div className={`${styles.formSection} ${styles.formSectionFull}`}>
           <h3 className={styles.sectionTitle}>
-            <span className={styles.sectionNumber}>03</span> Schedule &amp; People
+            <span className={styles.sectionNumber}>03</span> Schedule &amp; people
           </h3>
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="airDate">Air / Start Date</label>
+              <label htmlFor="airDate">Air / start date</label>
               <input
                 type="date"
                 id="airDate"
@@ -700,7 +700,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
                 onChange={handleChange}
                 disabled={viewOnly}
               >
-                <option value="">Select Market</option>
+                <option value="">Select market</option>
                 {MARKET_OPTIONS.map(option => (
                   <option key={option.code} value={option.code}>
                     {getMarketLabel(option.code)}
@@ -720,7 +720,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
                 onChange={handleChange}
                 disabled={viewOnly}
               >
-                <option value="">Select Agency</option>
+                <option value="">Select agency</option>
                 {agencies.map(agency => (
                   <option key={agency.id} value={agency.name}>
                     {agency.name}{agency.isDefault ? ' (Default)' : ''}
@@ -808,7 +808,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="aspectRatio">Aspect Ratio</label>
+              <label htmlFor="aspectRatio">Aspect ratio</label>
               <select
                 id="aspectRatio"
                 name="aspectRatio"
@@ -838,7 +838,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="fileFormat">File Format</label>
+              <label htmlFor="fileFormat">File format</label>
               <select
                 id="fileFormat"
                 name="fileFormat"
@@ -891,7 +891,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="musicRights">Music Rights</label>
+              <label htmlFor="musicRights">Music rights</label>
               <select
                 id="musicRights"
                 name="musicRights"
@@ -911,11 +911,11 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         {/* Action Buttons */}
         {!hideActions && (
           <div className={styles.formActions}>
-            <button type="button" className={styles.btnCancel} onClick={onCancel}>
+            <button type="button" className="btn-secondary" onClick={onCancel}>
               Cancel
             </button>
-            <button type="submit" className={styles.btnSubmit}>
-              {code ? "Update" : "Create"} ISCI Code
+            <button type="submit" className="btn-primary">
+              {code ? "Update" : "Create"} ISCI code
             </button>
           </div>
         )}

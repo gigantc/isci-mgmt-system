@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { isAuthenticated, getUserSession } from "@/utils/auth";
-import { useFetchData, useExportData, useImportData, useConfirmDialog } from "@/hooks";
+import { useFetchData, useExportData, useImportData, useConfirmDialog, useSession } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import DataQualityAlerts from "@/components/DataQualityAlerts";
@@ -93,7 +92,7 @@ const IconFile = () => (
 
 const Reports = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, ready, isViewer, isAdmin: isUserAdmin } = useSession();
   const [activeTab, setActiveTab] = useState("export");
 
   const { data: codes, loading: codesLoading, refetch: loadData } = useFetchData("/api/isci");
@@ -102,19 +101,18 @@ const Reports = () => {
   const isLoading = codesLoading || brandsLoading;
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!ready) return;
+    if (!user) {
       navigate("/login");
       return;
     }
-    const currentUser = getUserSession();
-    if (currentUser?.userType === "viewer") {
+    if (isViewer) {
       navigate("/");
       return;
     }
-    setUser(currentUser);
     if (typeof window !== "undefined") {
       const stored = window.localStorage.getItem(TAB_KEY);
-      const isAdmin = currentUser?.userType === "admin";
+      const isAdmin = isUserAdmin;
       if (
         stored === "export" ||
         stored === "insights-quality" ||
@@ -126,9 +124,7 @@ const Reports = () => {
         setActiveTab(stored);
       }
     }
-  }, [navigate]);
-
-  const isUserAdmin = user?.userType === "admin";
+  }, [navigate, ready, user, isViewer, isUserAdmin]);
 
   const handleSelect = (id) => {
     setActiveTab(id);

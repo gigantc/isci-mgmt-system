@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { getUserSession, saveUserSession, isAuthenticated } from "@/utils/auth";
+import { saveUserSession } from "@/utils/auth";
+import { useSession } from "@/hooks";
 import DefaultProfileImage from "@/assets/default_profile_image.jpg";
 import styles from "./Profile.module.scss";
 
@@ -22,24 +23,24 @@ const Profile = () => {
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const { user: sessionUser, ready } = useSession();
+
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!ready) return;
+    if (!sessionUser) {
       navigate("/login");
     } else {
-      const user = getUserSession();
-      setCurrentUser(user);
-      if (user) {
-        setFormData({
-          firstName: user.firstName || "",
-          lastName: user.lastName || "",
-          email: user.email || "",
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: ""
-        });
-      }
+      setCurrentUser(sessionUser);
+      setFormData({
+        firstName: sessionUser.firstName || "",
+        lastName: sessionUser.lastName || "",
+        email: sessionUser.email || "",
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
     }
-  }, [navigate]);
+  }, [navigate, ready, sessionUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

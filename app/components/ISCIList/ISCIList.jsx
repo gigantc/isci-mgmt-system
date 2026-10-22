@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { isAdmin, canEdit } from "@/utils/auth";
+import { useSession } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
 import { IconEdit, IconTrash } from "@/components/Icons";
 import { formatAirDateSlash } from "@/utils/dates";
@@ -8,8 +8,7 @@ import styles from "./ISCIList.module.scss";
 
 const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) => {
   const navigate = useNavigate();
-  const userIsAdmin = isAdmin();
-  const userCanEdit = canEdit();
+  const { isAdmin: userIsAdmin, canEdit: userCanEdit } = useSession();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const formatDate = formatAirDateSlash;

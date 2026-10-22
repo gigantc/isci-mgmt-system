@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import ISCIList from "@/components/ISCIList";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { isAuthenticated, isAdmin, canEdit, getUserSession } from "@/utils/auth";
-import { useFetchData, useConfirmDialog } from "@/hooks";
+import { canEdit } from "@/utils/auth";
+import { useFetchData, useConfirmDialog, useSession } from "@/hooks";
 import { rankByFuzzy } from "@/utils/fuzzy";
 import { colorForCode } from "@/utils/palette";
 import styles from "./Dashboard.module.scss";
@@ -25,9 +25,11 @@ const Dashboard = () => {
   const { data: codes, loading: isLoading, refetch: loadCodes } = useFetchData("/api/isci");
   const { dialogProps, confirm } = useConfirmDialog();
 
+  const { user: sessionUser, ready, canEdit: userCanEdit } = useSession();
+
   useEffect(() => {
-    if (!isAuthenticated()) navigate("/login");
-  }, [navigate]);
+    if (ready && !sessionUser) navigate("/login");
+  }, [navigate, ready, sessionUser]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -83,12 +85,7 @@ const Dashboard = () => {
     }
   };
 
-  const [currentUserName, setCurrentUserName] = useState(null);
-
-  useEffect(() => {
-    const u = getUserSession();
-    setCurrentUserName(u ? `${u.firstName} ${u.lastName}` : null);
-  }, []);
+  const currentUserName = sessionUser ? `${sessionUser.firstName} ${sessionUser.lastName}` : null;
 
   // Group counts for sidebar (based on unfiltered codes so counts don't collapse)
   const { byClient, byPlacement } = useMemo(() => {
@@ -256,7 +253,7 @@ const Dashboard = () => {
             {searchTerm ? ` · ${filteredCodes.length} matching` : ""}
           </p>
         </div>
-        {!isLoading && canEdit() && (
+        {!isLoading && userCanEdit && (
           <div className={styles.pgActions}>
             <button
               type="button"
@@ -343,7 +340,7 @@ const Dashboard = () => {
           <div className={styles.footerShortcuts}>
             <kbd>↑↓</kbd> navigate
             <kbd>⏎</kbd> view
-            {canEdit() && (<><kbd>E</kbd> edit <kbd>N</kbd> new</>)}
+            {userCanEdit && (<><kbd>E</kbd> edit <kbd>N</kbd> new</>)}
             <kbd>⌘K</kbd> palette
           </div>
         </footer>

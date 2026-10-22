@@ -10,6 +10,7 @@ The reference implementation is the finished Dashboard: `app/containers/Dashboar
   - 3-letter client codes
   - placement letters
   - hex color values
+  - generated file names
   - `kbd`
 
   Everything else is sans: counts, dates, subtitles, hints, table cells, footers, "Created …" lines. For numbers in lists and counts, use `font-variant-numeric: tabular-nums`.

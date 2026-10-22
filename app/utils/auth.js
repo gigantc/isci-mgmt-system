@@ -44,18 +44,16 @@ export function isAuthenticated() {
 }
 
 /**
- * Check if user is admin
+ * Check if user is admin (defaults to the current session user)
  */
-export function isAdmin() {
-  const user = getUserSession();
+export function isAdmin(user = getUserSession()) {
   return user && user.userType === "admin";
 }
 
 /**
  * Check if user is a Viewer (read-only, no create/edit/admin/reports access).
  */
-export function isViewer() {
-  const user = getUserSession();
+export function isViewer(user = getUserSession()) {
   return user && user.userType === "viewer";
 }
 
@@ -63,8 +61,7 @@ export function isViewer() {
  * Check if user can create/edit ISCI codes (admins and editors).
  * Note: delete stays admin-only — use isAdmin() for that.
  */
-export function canEdit() {
-  const user = getUserSession();
+export function canEdit(user = getUserSession()) {
   return user && (user.userType === "admin" || user.userType === "editor");
 }
 
@@ -72,7 +69,9 @@ export function canEdit() {
  * Human-readable label for the current user's role.
  */
 export function getUserRoleLabel(user) {
-  const u = user ?? getUserSession();
+  // null means "no user" (e.g. before the session is read); only an omitted
+  // argument falls back to the stored session.
+  const u = user === undefined ? getUserSession() : user;
   if (!u) return "Guest";
   if (u.userType === "admin") return "Admin";
   if (u.userType === "viewer") return "Viewer";

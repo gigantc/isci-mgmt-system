@@ -2,9 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import ISCIForm from "@/components/ISCIForm";
 import Slate from "@/components/Slate";
-import { isAuthenticated, getUserSession, saveUserSession, isAdmin, canEdit } from "@/utils/auth";
+import CodeLayout from "@/components/CodeLayout";
+import QuickActions from "@/components/QuickActions";
+import ActivityFeed from "@/components/ActivityFeed";
+import { IconCopy, IconEdit, IconLink } from "@/components/Icons";
+import { getUserSession, saveUserSession } from "@/utils/auth";
+import { useSession } from "@/hooks";
 import { formatAirDateDot } from "@/utils/dates";
-import styles from "./Detail.module.scss";
 
 /**
  * Detail Container
@@ -17,8 +21,7 @@ import styles from "./Detail.module.scss";
 const Detail = () => {
   const navigate = useNavigate();
   const { code: isciCode } = useParams();
-  const userIsAdmin = isAdmin();
-  const userCanEdit = canEdit();
+  const { user: sessionUser, ready, canEdit: userCanEdit } = useSession();
 
   const [code, setCode] = useState(null);
   const [allCodes, setAllCodes] = useState([]);
@@ -27,33 +30,11 @@ const Detail = () => {
 
   const formatDate = formatAirDateDot;
 
-  const formatTime = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return "";
-    let hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const ampm = hours >= 12 ? "pm" : "am";
-    hours = hours % 12 || 12;
-    return `${hours}:${minutes} ${ampm}`;
-  };
-
-  const getEditHistory = () => {
-    if (!code || !code.editHistory) return [];
-    if (Array.isArray(code.editHistory)) return code.editHistory;
-    try {
-      const parsed = JSON.parse(code.editHistory);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  };
-
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (ready && !sessionUser) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, ready, sessionUser]);
 
   useEffect(() => {
     loadData();
@@ -107,184 +88,75 @@ const Detail = () => {
     }
   };
 
+  const subtitle = code
+    ? `${code.brand}${code.campaignName ? ` · ${code.campaignName}` : ""}${code.createdAt ? ` · Created ${formatDate(code.createdAt)}` : ""}${code.createdBy ? ` by ${code.createdBy}` : ""}`
+    : null;
+
   return (
-    <div className={styles.detail}>
-      <div className={styles.pageContent}>
-        <div className={styles.scrollableContent}>
-          {isLoading ? (
-            <div className={styles.loadingState}>Loading ISCI code...</div>
-          ) : error ? (
-            <div className={styles.errorState}>
-              <h3>Error</h3>
-              <p>{error}</p>
-              <button className="btn-primary" onClick={() => navigate("/")}>
-                Back to Dashboard
+    <CodeLayout
+      crumbs={[
+        { label: "Dashboard", to: "/" },
+        { label: isciCode },
+      ]}
+      title={
+        <>
+          ISCI <code>{isciCode}</code>
+        </>
+      }
+      badge={{ label: "Read only", tone: "neutral" }}
+      subtitle={subtitle}
+      loading={isLoading || !ready}
+      loadingText="Loading ISCI code…"
+      error={error}
+      headerActions={
+        code && (
+          <>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => { if (navigator.clipboard) navigator.clipboard.writeText(code.code); }}
+            >
+              <IconCopy /> Copy code
+            </button>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => { if (navigator.clipboard) navigator.clipboard.writeText(window.location.href); }}
+            >
+              <IconLink /> Share
+            </button>
+            {userCanEdit && (
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => navigate(`/edit/${isciCode}`)}
+              >
+                <IconEdit /> Edit
               </button>
-            </div>
-          ) : (
-            <div className={styles.editGrid}>
-              <div className={styles.formColumn}>
-                <div className={styles.pageHeader}>
-                  <div className={styles.pageHeaderMain}>
-                    <div className={styles.crumbs}>
-                      <button type="button" onClick={() => navigate("/")}>← Dashboard</button>
-                      <span className={styles.sep}>/</span>
-                      <span>{isciCode}</span>
-                    </div>
-                    <h1 className={styles.title}>
-                      <span className={styles.titleLabel}>ISCI</span>
-                      <span className={styles.titleCode}>{isciCode}</span>
-                      <span className={styles.readOnlyBadge}>Read only</span>
-                    </h1>
-                    {code && (
-                      <p className={styles.subtitle}>
-                        {code.brand}
-                        {code.campaignName ? ` · ${code.campaignName}` : ""}
-                        {code.createdAt ? ` · Created ${formatDate(code.createdAt)}` : ""}
-                        {code.createdBy ? ` by ${code.createdBy}` : ""}
-                      </p>
-                    )}
-                  </div>
-                  <div className={styles.pageHeaderActions}>
-                    <button
-                      type="button"
-                      className={styles.headerBtn}
-                      onClick={() => { if (navigator.clipboard) navigator.clipboard.writeText(code.code); }}
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <rect x="9" y="9" width="13" height="13" rx="2" />
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                      </svg>
-                      Copy code
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.headerBtn}
-                      onClick={() => { if (navigator.clipboard) navigator.clipboard.writeText(window.location.href); }}
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
-                        <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
-                      </svg>
-                      Share
-                    </button>
-                    {userCanEdit && (
-                      <button
-                        type="button"
-                        className={`${styles.headerBtn} ${styles.headerBtnPrimary}`}
-                        onClick={() => navigate(`/edit/${isciCode}`)}
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M12 20h9" />
-                          <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-                        </svg>
-                        Edit
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <ISCIForm
-                  code={code}
-                  onSubmit={() => {}}
-                  onCancel={() => navigate("/")}
-                  allCodes={allCodes}
-                  hideActions={true}
-                  hideTitle={true}
-                  viewOnly={true}
-                />
-
-                {/* 05 — Activity */}
-                <div className={styles.activitySection}>
-                  <h3 className={styles.activityTitle}>
-                    <span className={styles.activityNumber}>05</span> Activity
-                  </h3>
-                  <div className={styles.activityFeed}>
-                    <div className={styles.activityRow}>
-                      <span className={`${styles.activityDot} ${styles.activityDotNew}`} aria-hidden="true" />
-                      <div className={styles.activityBody}>
-                        <div className={styles.activityHead}>
-                          <strong>{code.createdBy || "Unknown"}</strong>
-                          <span className={styles.activityMeta}>
-                            · {formatDate(code.createdAt)} · {formatTime(code.createdAt)}
-                          </span>
-                        </div>
-                        <div className={styles.activityText}>Created ISCI {code.code}</div>
-                      </div>
-                    </div>
-
-                    {getEditHistory()
-                      .slice()
-                      .reverse()
-                      .map((entry, index) => (
-                        <div key={`${entry.timestamp}-${index}`} className={styles.activityRow}>
-                          <span className={styles.activityDot} aria-hidden="true" />
-                          <div className={styles.activityBody}>
-                            <div className={styles.activityHead}>
-                              <strong>{entry.user || "Unknown"}</strong>
-                              <span className={styles.activityMeta}>
-                                · {formatDate(entry.timestamp)} · {formatTime(entry.timestamp)}
-                              </span>
-                            </div>
-                            <div className={styles.activityText}>
-                              {entry.description || "Edited record"}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-              <aside className={styles.aside}>
-                <Slate code={code} />
-                <div className={styles.quickActions}>
-                  <div className={styles.quickActionsLabel}>Quick Actions</div>
-                  <button
-                    type="button"
-                    className={styles.qaButton}
-                    onClick={() => {
-                      if (navigator.clipboard) navigator.clipboard.writeText(code.code);
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="9" y="9" width="13" height="13" rx="2" />
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                    </svg>
-                    Copy ISCI code
-                  </button>
-                  {userCanEdit && (
-                    <button
-                      type="button"
-                      className={styles.qaButton}
-                      onClick={() => navigate(`/create?from=${encodeURIComponent(code.code)}`)}
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <rect x="9" y="9" width="13" height="13" rx="2" />
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                      </svg>
-                      Duplicate as new cutdown
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className={styles.qaButton}
-                    onClick={() => {
-                      if (navigator.clipboard) navigator.clipboard.writeText(window.location.href);
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" />
-                      <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />
-                    </svg>
-                    Copy share link
-                  </button>
-                </div>
-              </aside>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+            )}
+          </>
+        )
+      }
+      aside={
+        code && (
+          <>
+            <Slate code={code} />
+            <QuickActions code={code} canDuplicate={userCanEdit} />
+            <ActivityFeed code={code} />
+          </>
+        )
+      }
+    >
+      <ISCIForm
+        code={code}
+        onSubmit={() => {}}
+        onCancel={() => navigate("/")}
+        allCodes={allCodes}
+        hideActions={true}
+        hideTitle={true}
+        viewOnly={true}
+      />
+    </CodeLayout>
   );
 };
 

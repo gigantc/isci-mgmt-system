@@ -32,7 +32,9 @@ const themeBootstrap = `(function(){try{var t=localStorage.getItem('isciz-theme'
 
 export function Layout({ children }) {
   return (
-    <html lang="en">
+    // The inline themeBootstrap adds the theme class before hydration, so the
+    // server HTML never has it.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
         <meta charSet="utf-8" />
