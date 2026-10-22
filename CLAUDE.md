@@ -2,7 +2,7 @@
 
 This document provides context for AI assistants (like Claude) working on this project.
 
-**Version**: 1.3.0
+**Version**: 1.3.1
 **Last Updated**: October 22, 2026
 
 For detailed version history, see [CHANGELOG.md](CHANGELOG.md)
@@ -172,6 +172,7 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 
 **Tokens**: CSS custom properties in OKLCH, defined in `app/styles/_tokens.scss`. Light is the default; `html.theme-dark` switches to dark. The theme is saved in `localStorage['isciz-theme']` and applied before paint by the `themeBootstrap` script in `root.jsx` (hence `suppressHydrationWarning` on `<html>`).
 - Surfaces: `--frame` (warm gradient page background), `--card` (floating cards), `--paper*`, `--line*`
+- Fields: `--field` / `--field-border` for every editable input, select, textarea and search box (lighter than the card in dark mode); `--select-chevron` and `--date-icon` are the Lucide icons drawn in selects and date inputs
 - Text: `--ink`, `--ink-1`, `--ink-2`, `--ink-3`; accent text uses `--accent-ink`, status text uses `--ok-ink` / `--warn-ink` / `--danger-ink`
 - Accent: soft amber `--accent` with dark `--accent-text` on fills
 - Scales: `--text-xs` … `--text-2xl`, `--radius-sm` … `--radius-pill`, `--shadow-card`, `--shadow-drawer`
@@ -187,6 +188,7 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 - `CodeLayout` + `AsideSection` components: page frame for Create, Edit, Detail and Profile (form column + 320px aside)
 - `Modal` component: shared dialog surface (ConfirmDialog, About)
 - `Icons` component: shared line icons
+- `AppLogo` component: the amber logo tile (`sm` header, `md` Login, `lg` About)
 
 ---
 

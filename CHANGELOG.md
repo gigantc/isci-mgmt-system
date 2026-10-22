@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.1] - 2026-10-22
+
+### Design Polish
+
+Follow-up pass on the 1.3.0 design system. UI only; no data, API or schema changes.
+
+#### Added
+- **`AppLogo` component**: the amber logo tile in three sizes, shared by the header, Login and the About dialog.
+- **Field tokens** (`--field`, `--field-border`) for editable inputs, selects, textareas and search boxes.
+- **`--select-chevron` and `--date-icon` tokens**: Lucide chevron and calendar icons for selects and date inputs.
+- **Shared `IconDownload`** in `Icons` (Reports now uses it too).
+
+#### Changed
+- **Dark mode form fields** are lighter than their cards with a stronger border, so they no longer blend in. Dark `--ink-3` raised slightly to keep placeholders AA.
+- **Select arrow and calendar icon**: custom Lucide icons in `--ink-2`, aligned to the same position at the right edge of the field.
+- **Icon buttons** are always square (28×28) and hover with an amber outline on a muted amber fill; delete buttons hover red.
+- **Placement and Agency tiles** in Admin sit on a muted amber background.
+- **Code pages**: the right sidebar stays in view while the form scrolls; "Export as JPG" moved under the slate preview.
+
+#### Fixed
+- **About dialog logo** was invisible in dark mode; it now uses the amber tile.
+- **Dashboard row action buttons** were squeezed to 22px wide.
+
+---
+
 ## [1.3.0] - 2026-10-22
 
 ### Soft, Readable Design System

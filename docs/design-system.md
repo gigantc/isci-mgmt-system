@@ -37,7 +37,9 @@ The reference implementation is the finished Dashboard: `app/containers/Dashboar
 ## Controls
 - **Buttons:** only the globals (`btn-primary`, `btn-secondary`, `btn-text`, `btn-danger`, `btn-icon`, `btn-icon-danger`). Never restyle them locally. A local class may add layout only (width, margin).
 - **Search:** 38px, pill, `--text-md`, icon 16px, `--ink-3` placeholder. Focus is an accent border plus the `--accent-ring` ring. Match Dashboard `.search`.
-- **Inputs and selects:** 38px tall (textarea is auto), `--radius-md`, `1px solid var(--line)`, `--card` background, `--text-md`, `--ink`. Focus: `border-color: var(--accent)` plus `box-shadow: 0 0 0 3px var(--accent-ring)`. Error: `--danger` border.
+- **Inputs and selects:** 38px tall (textarea is auto), `--radius-md`, `1px solid var(--field-border)`, `--field` background, `--text-md`, `--ink`. Focus: `border-color: var(--accent)` plus `box-shadow: 0 0 0 3px var(--accent-ring)`. Error: `--danger` border. Locked/disabled fields use `--paper-1`; generated values (file name) sit in a `--paper` well. Selects and date inputs get their icons from the global rules (`--select-chevron`, `--date-icon`); don't use the `background:` shorthand on them or the icon disappears.
+- **Icon buttons:** `btn-icon` is always a 28×28 square (never let a container shrink it). Hover is an amber outline on `--accent-subtle`; `btn-icon-danger` hovers red on `--danger-soft`.
+- **Logo:** always the `AppLogo` component, never the raw SVG or an `<img>`.
 - **Filter chips and segmented choices** (All / Active / Inactive and similar): a track like Dashboard `.density`, with a `--paper-1` background, a `--line` border, `--radius-pill` and 2px padding. Each option is a pill button with a transparent background. The active option uses the raised-chip look. Counts go inside in `--ink-2` with tabular-nums. No slide animation needed.
 - **Switches (toggle tracks):** the knob moves with `transform` only, with a transition, plus `prefers-reduced-motion`. The on state is an `--accent` track.
 
