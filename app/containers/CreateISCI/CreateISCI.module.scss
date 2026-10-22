@@ -48,7 +48,7 @@
     font: inherit;
     letter-spacing: 0.02em;
 
-    &:hover { color: var(--accent); }
+    &:hover { color: var(--accent-ink); }
   }
 
   .sep {
@@ -84,7 +84,7 @@
 
 .titleBadgeNew {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .subtitle {

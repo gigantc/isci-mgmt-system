@@ -37,7 +37,7 @@
       transition: border-color 0.12s, color 0.12s;
 
       &:hover {
-        color: var(--accent);
+        color: var(--accent-ink);
         border-color: var(--accent);
       }
     }

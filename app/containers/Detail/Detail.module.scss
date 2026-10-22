@@ -111,7 +111,7 @@
     font: inherit;
     letter-spacing: 0.02em;
 
-    &:hover { color: var(--accent); }
+    &:hover { color: var(--accent-ink); }
   }
 
   .sep {
@@ -133,7 +133,7 @@
 
 .titleCode {
   font-family: var(--font-mono);
-  color: var(--accent);
+  color: var(--accent-ink);
   font-size: 1.75rem;
   letter-spacing: 0.02em;
 }

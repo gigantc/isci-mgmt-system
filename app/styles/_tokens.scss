@@ -1,4 +1,5 @@
-// Theme tokens — values taken verbatim from design-reference/shared/theme.css.
+// Theme tokens — based on design-reference/shared/theme.css, with the type scale,
+// radius and ink-3 values adjusted for readability.
 // Light is the default; `html.theme-dark` switches to the dark palette.
 
 :root {
@@ -12,17 +13,18 @@
   --ink: oklch(0.22 0.01 255);
   --ink-1: oklch(0.35 0.01 255);
   --ink-2: oklch(0.52 0.01 255);
-  --ink-3: oklch(0.68 0.008 255);
+  --ink-3: oklch(0.555 0.008 255);
 
   // Borders
   --line: oklch(0.88 0.006 85);
   --line-strong: oklch(0.78 0.008 85);
 
   // Accent (warm orange)
-  --accent: oklch(0.62 0.18 42);
-  --accent-hover: oklch(0.56 0.19 42);
-  --accent-text: oklch(0.985 0.004 85);
-  --accent-soft: oklch(0.95 0.04 42);
+  --accent: oklch(0.8 0.14 72);
+  --accent-hover: oklch(0.75 0.15 68);
+  --accent-text: oklch(0.28 0.05 55);
+  --accent-ink: oklch(0.54 0.13 60); // accent-colored text on light surfaces (AA)
+  --accent-soft: oklch(0.95 0.045 75);
 
   // Status
   --ok: oklch(0.6 0.12 155);
@@ -35,18 +37,37 @@
 
   // Derived soft / ring tokens used for faint hovers and focus rings.
   --accent-ring: var(--accent-soft);
-  --accent-subtle: oklch(0.97 0.02 42);
+  --accent-subtle: oklch(0.975 0.025 75);
 
   // Overlays used for subtle surface tints on hover.
   --overlay-1: oklch(0 0 0 / 0.03);
   --overlay-2: oklch(0 0 0 / 0.05);
   --overlay-3: oklch(0 0 0 / 0.08);
 
+  // Frame / card surfaces
+  --frame: linear-gradient(160deg, oklch(0.965 0.02 75) 0%, oklch(0.955 0.012 85) 55%, oklch(0.95 0.008 255) 100%);
+  --card: var(--paper);
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.04), 0 8px 24px oklch(0 0 0 / 0.06);
+
   color-scheme: light;
 
   // Typography
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  // Type scale
+  --text-xs: 0.75rem;   // 12px, floor; nothing smaller
+  --text-sm: 0.8125rem; // 13px
+  --text-md: 0.875rem;  // 14px, UI/table default
+  --text-lg: 1rem;      // 16px
+  --text-xl: 1.25rem;
+  --text-2xl: 1.75rem;  // page titles
+
+  // Radius
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
 }
 
 html.theme-dark {
@@ -58,15 +79,16 @@ html.theme-dark {
   --ink: oklch(0.96 0.005 85);
   --ink-1: oklch(0.82 0.006 85);
   --ink-2: oklch(0.62 0.007 85);
-  --ink-3: oklch(0.48 0.008 85);
+  --ink-3: oklch(0.585 0.008 85);
 
   --line: oklch(0.3 0.01 255);
   --line-strong: oklch(0.4 0.012 255);
 
-  --accent: oklch(0.72 0.18 50);
-  --accent-hover: oklch(0.78 0.19 50);
-  --accent-text: oklch(0.18 0.01 255);
-  --accent-soft: oklch(0.3 0.08 50);
+  --accent: oklch(0.8 0.14 72);
+  --accent-hover: oklch(0.85 0.13 75);
+  --accent-text: oklch(0.2 0.02 60);
+  --accent-ink: oklch(0.8 0.13 72); // accent-colored text on dark surfaces
+  --accent-soft: oklch(0.32 0.06 70);
 
   --ok: oklch(0.6 0.12 155);
   --warn: oklch(0.7 0.14 80);
@@ -77,11 +99,16 @@ html.theme-dark {
   --danger-soft: oklch(0.3 0.06 25);
 
   --accent-ring: var(--accent-soft);
-  --accent-subtle: oklch(0.3 0.05 50);
+  --accent-subtle: oklch(0.3 0.045 70);
 
   --overlay-1: oklch(1 0 0 / 0.03);
   --overlay-2: oklch(1 0 0 / 0.05);
   --overlay-3: oklch(1 0 0 / 0.1);
+
+  // Frame / card surfaces
+  --frame: linear-gradient(160deg, oklch(0.2 0.025 70) 0%, oklch(0.16 0.01 255) 60%);
+  --card: var(--paper-1);
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px oklch(0 0 0 / 0.35);
 
   color-scheme: dark;
 }

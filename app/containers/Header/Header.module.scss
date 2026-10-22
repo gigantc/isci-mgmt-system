@@ -3,10 +3,13 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  height: 48px;
-  padding: 0 1.25rem;
-  background-color: var(--paper);
-  border-bottom: 1px solid var(--line);
+  // 40px bar + 8px top margin = the 48px footprint page containers subtract.
+  height: 40px;
+  margin: 8px 0.75rem 0 0.75rem;
+  padding: 0 0.5rem 0 1rem;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -22,7 +25,7 @@
       height: 22px;
       display: inline-block;
       background: var(--accent);
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       padding: 4px;
 
       path {
@@ -56,15 +59,15 @@
   }
 
   .navLink {
-    padding: 0.35rem 0.625rem;
-    font-size: 0.8125rem;
+    padding: 0.375rem 0.875rem;
+    font-size: var(--text-md);
     font-weight: 500;
     color: var(--ink-1);
     background: transparent;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-pill);
     cursor: pointer;
-    transition: all 0.12s;
+    transition: background 0.12s, color 0.12s;
     text-decoration: none;
 
     &:hover {

@@ -114,7 +114,7 @@
 .chipOn {
   background: var(--accent-soft);
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
@@ -217,7 +217,7 @@
 }
 
 .codeTag {
-  color: var(--accent);
+  color: var(--accent-ink);
   font-weight: 600;
   font-size: 0.75rem;
 }
@@ -368,7 +368,7 @@
   }
 }
 
-.req { color: var(--accent); }
+.req { color: var(--accent-ink); }
 
 .lockedLabel {
   display: inline-flex;
@@ -392,7 +392,7 @@
   transform: translateY(-50%);
   font-family: var(--font-mono);
   font-size: 0.5625rem;
-  color: var(--accent);
+  color: var(--accent-ink);
   background: var(--accent-soft);
   padding: 2px 5px;
   border-radius: 3px;
@@ -444,7 +444,7 @@
 
 .lockWarnCode {
   font-family: var(--font-mono);
-  color: var(--accent);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 

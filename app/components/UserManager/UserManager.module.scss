@@ -114,7 +114,7 @@
 .chipOn {
   background: var(--accent-soft);
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
@@ -258,7 +258,7 @@
 
 .roleAdmin {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
@@ -409,7 +409,7 @@
   }
 }
 
-.req { color: var(--accent); }
+.req { color: var(--accent-ink); }
 
 .fieldOptional {
   font-size: 0.625rem;

@@ -15,7 +15,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-ink);
   background: var(--accent-soft);
   border-radius: 3px;
   pointer-events: none;
@@ -233,11 +233,11 @@ button.inputBadge {
       margin-top: -0.25rem;
 
       a {
-        color: var(--accent);
+        color: var(--accent-ink);
         text-decoration: underline;
 
         &:hover {
-          color: var(--accent-hover);
+          color: var(--accent-ink);
         }
       }
     }

@@ -124,7 +124,7 @@
   border: 0;
   padding: 0;
   font: inherit;
-  color: var(--accent);
+  color: var(--accent-ink);
   cursor: pointer;
 
   &:hover {
@@ -342,7 +342,7 @@
 .previewCode {
   font-family: var(--font-mono);
   font-weight: 600;
-  color: var(--accent) !important;
+  color: var(--accent-ink) !important;
   font-size: 0.75rem;
   letter-spacing: 0.02em;
 }
@@ -417,7 +417,7 @@
 
   .modeRadioDot { opacity: 1; }
   .modeRadio { border-color: var(--accent); }
-  .modeLabel { color: var(--accent); }
+  .modeLabel { color: var(--accent-ink); }
 }
 
 .modeCardDanger {
@@ -508,7 +508,7 @@
     border-color: var(--accent);
     background: var(--accent-soft);
 
-    svg { color: var(--accent); }
+    svg { color: var(--accent-ink); }
   }
 }
 
@@ -517,7 +517,7 @@
   border-color: var(--accent);
   background: var(--accent-soft);
 
-  svg { color: var(--accent); }
+  svg { color: var(--accent-ink); }
 }
 
 .dropzoneDragOver {
@@ -526,7 +526,7 @@
   background: var(--accent-soft);
   cursor: copy;
 
-  svg { color: var(--accent); }
+  svg { color: var(--accent-ink); }
 }
 
 .dropzoneText {
@@ -690,5 +690,5 @@
   cursor: pointer;
   font-family: inherit;
 
-  &:hover { color: var(--accent); }
+  &:hover { color: var(--accent-ink); }
 }

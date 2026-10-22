@@ -15,6 +15,7 @@ const Dashboard = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [density, setDensity] = useState("comfy");
+  const [densityReady, setDensityReady] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [view, setView] = useState("all"); // "all" | "mine"
   const [clientFilter, setClientFilter] = useState(null);
@@ -32,6 +33,10 @@ const Dashboard = () => {
     if (typeof window === "undefined") return;
     const stored = window.localStorage.getItem(DENSITY_KEY);
     if (stored === "comfy" || stored === "compact") setDensity(stored);
+    // Enable the thumb transition only after the stored value is painted, so
+    // the thumb doesn't slide on page load.
+    const raf = requestAnimationFrame(() => setDensityReady(true));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const updateDensity = (next) => {
@@ -255,7 +260,7 @@ const Dashboard = () => {
           <div className={styles.pgActions}>
             <button
               type="button"
-              className={styles.btnPrimary}
+              className="btn-primary"
               onClick={() => navigate("/create")}
             >
               + New ISCI Code
@@ -280,7 +285,11 @@ const Dashboard = () => {
             />
           </label>
 
-          <div className={styles.density} role="group" aria-label="Row density">
+          <div
+            className={`${styles.density} ${density === "compact" ? styles.densityCompact : ""} ${densityReady ? styles.densityReady : ""}`}
+            role="group"
+            aria-label="Row density"
+          >
             <button
               type="button"
               className={density === "comfy" ? styles.densityOn : ""}
