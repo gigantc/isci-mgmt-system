@@ -52,9 +52,11 @@ echo ""
 
 # Step 2: Install dependencies
 # Note: We need ALL dependencies (including dev) because build requires react-router CLI
+# npm ci installs exactly what package-lock.json says and never rewrites it, so the
+# server's checkout stays clean (npm install used to dirty the lockfile and break git pull).
 echo -e "${YELLOW}[2/6] Installing dependencies...${NC}"
-npm install || {
-    echo -e "${RED}npm install failed${NC}"
+npm ci || {
+    echo -e "${RED}npm ci failed${NC}"
     exit 1
 }
 echo -e "${GREEN}✓ Dependencies installed${NC}"

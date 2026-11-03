@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Server hygiene
+
+#### Added
+- **`public/robots.txt`** (disallow all) and a `noindex, nofollow` meta tag in `root.jsx`, until launch.
+- **Scanner block in `nginx.conf`**: dotfiles (except `/.well-known`), PHP/ASP/CGI and WordPress paths get a 404 from nginx instead of reaching Node.
+
+#### Changed
+- **`nginx.conf` mirrors the live server config** instead of a `yourdomain.com` template.
+- **`deploy.sh` uses `npm ci`**, so deploys no longer rewrite `package-lock.json` on the server.
+
+---
+
 ## [2.0.0] - 2026-11-03
 
 ### R&R ISCI Format, Deliverables Matrix and Family Views
