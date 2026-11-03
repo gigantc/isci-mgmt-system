@@ -181,24 +181,43 @@ npx prisma db push
 
 ### Baseline migrations (one time)
 
-Production's schema was created with `prisma db push`, so `_prisma_migrations` is empty and `prisma migrate deploy` has no history to work from. Mark the Postgres `init` baseline as already applied, once, on the server:
+Production's schema was created with `prisma db push`, so `_prisma_migrations` is empty and `prisma migrate deploy` has no history to work from. The first deploy that includes the Postgres baseline (v2.0.0) must mark `20261103172155_init` as already applied **before** `deploy.sh` runs, or `migrate deploy` tries to create tables that already exist and the deploy exits.
+
+Check prod against the schema **as of the baseline commit** (`9736ba2`), not the current `schema.prisma`: later migrations (`placement_media_type`, `add_isci_platform`) are meant to be applied by `deploy.sh` and would show up as a false difference.
 
 ```bash
 cd /var/www/isci-mgmt-system
 set -a; source .env; set +a
 
 # 1. Backup first
-pg_dump "$DATABASE_URL" > ~/isci_pre_baseline_$(date +%Y%m%d).sql
+pg_dump "$DATABASE_URL" > ~/isci_pre_v2_$(date +%Y%m%d_%H%M).sql
 
-# 2. Confirm prod already matches the schema. This MUST print an empty migration
+# 2. Get the new code (deploy.sh pulls again; that's a no-op)
+git fetch origin && git status          # nothing modified; if package-lock.json is, git checkout -- package-lock.json
+git pull origin main
+
+# 3. Confirm prod matches the BASELINE schema. This MUST print an empty migration
 #    ("-- This is an empty migration."). If it prints any SQL, stop and investigate.
-npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --script
+git show 9736ba2:prisma/schema.prisma > /tmp/schema-baseline.prisma
+npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel /tmp/schema-baseline.prisma --script
 
-# 3. Record the baseline as applied (no SQL is run)
-npx prisma migrate resolve --applied <init folder name>   # e.g. 20261103172155_init
+# 4. Record the baseline as applied (no SQL is run)
+npx prisma migrate resolve --applied 20261103172155_init
+
+# 5. Deploy: installs, builds, generates the client, applies the newer migrations, restarts PM2
+./deploy.sh
 ```
 
-After that, `migrate deploy` in `deploy.sh` works normally and applies only newer migrations.
+After that, `migrate deploy` in `deploy.sh` works normally and applies only newer migrations. Check with `npx prisma migrate status` (all three migrations applied).
+
+### Reseed demo data (v2.0.0)
+
+Production holds demo data only. Codes are still in the old format after the v2.0.0 migrations, so reseed them with the real client list and new-format codes. Users are kept (demo users are create-only), placements are reduced to Broadcast, Digital and Radio.
+
+```bash
+npm run seed:demo                 # dry run: check the "Target" line shows the production database
+npm run seed:demo -- --apply
+```
 
 ### Data Migration
 

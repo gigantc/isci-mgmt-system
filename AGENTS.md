@@ -2,8 +2,8 @@
 
 This document provides context for AI assistants (like Codex) working on this project.
 
-**Version**: 1.3.1
-**Last Updated**: October 22, 2026
+**Version**: 2.0.0
+**Last Updated**: November 3, 2026
 
 For detailed version history, see [CHANGELOG.md](CHANGELOG.md)
 For deployment instructions, see [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md)
