@@ -44,7 +44,7 @@ const USERS = [
 ];
 
 const AGENCIES = [
-  ["R&R partners", true],
+  ["R&R Partners", true],
   ["House of V", false],
   ["R&R Foundation", false],
 ];
@@ -469,7 +469,8 @@ const run = async () => {
   const now = new Date();
   const haveEmail = new Set(dbUsers.map((u) => u.email));
   const havePlacement = new Set(dbPlacements.map((p) => p.name));
-  const haveAgency = new Set(dbAgencies.map((a) => a.name));
+  // Case-insensitive, so "R&R partners" in an older DB doesn't spawn a duplicate.
+  const haveAgency = new Set(dbAgencies.map((a) => a.name.toLowerCase()));
   const newUsers = USERS.filter(([email]) => !haveEmail.has(email)).map(([email, firstName, lastName, userType, password, profileImage]) => ({
     id: stableId(`user:${email}`), email, password, firstName, lastName, userType,
     profileImage: profileImage ?? null,
@@ -478,7 +479,7 @@ const run = async () => {
   const newPlacements = PLACEMENTS.filter(([name]) => !havePlacement.has(name)).map(([name, mediaType]) => ({
     id: stableId(`placement:${name}`), name, mediaType, active: true, createdAt: now, updatedAt: now,
   }));
-  const newAgencies = AGENCIES.filter(([name]) => !haveAgency.has(name)).map(([name, isDefault]) => ({
+  const newAgencies = AGENCIES.filter(([name]) => !haveAgency.has(name.toLowerCase())).map(([name, isDefault]) => ({
     id: stableId(`agency:${name}`), name, isDefault, active: true, createdAt: now, updatedAt: now,
   }));
 
