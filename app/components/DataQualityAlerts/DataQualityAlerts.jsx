@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router";
-import { useFetchData } from "@/hooks";
 import styles from "./DataQualityAlerts.module.scss";
 
 /**
@@ -8,7 +7,8 @@ import styles from "./DataQualityAlerts.module.scss";
  *
  * Reports → Insights → Data quality. Shows codes missing fields critical
  * for licensing or stuck in TBD air-date limbo. Click a code chip to jump
- * to that code's Detail page and fix it.
+ * to that code's Detail page, or use "Fix N codes" to set the air date on
+ * the whole group in the bulk editor (the other alerts are not bulk-editable).
  */
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -72,9 +72,8 @@ const buildAlerts = (codes) => {
   ];
 };
 
-const DataQualityAlerts = () => {
+const DataQualityAlerts = ({ codes, loading }) => {
   const navigate = useNavigate();
-  const { data: codes, loading } = useFetchData("/api/isci");
 
   const alerts = useMemo(() => buildAlerts(codes || []), [codes]);
   const alertsTotal = alerts.reduce((sum, a) => sum + a.codes.length, 0);

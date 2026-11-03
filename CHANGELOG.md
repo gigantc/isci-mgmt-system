@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Tools section
 
 #### Added
+- **Group by on the Dashboard**: a view control (Family, Job, List; Family by default, and the choice is remembered) shows the list as cards. A family card has the spot title, client and campaign, a count badge and a pill per cut (length plus code) that opens the code (full edit for editors). Job cards list each spot title with its pills, with a final "No job number" card. "Edit family" and "Edit job" open the bulk editor. Search and filters list only matching pills. List keeps the table.
 - **Bulk edit**: a checkbox column on the Dashboard (select all visible, shift-click ranges, Space on the focused row), a selection bar and an "Edit N codes" drawer for the shared fields (job number, campaign, spot title, description, air date, agency, market, platform, language, accessibility, audio, file format, music rights, completion). Only changed fields are written, and the list updates in place.
 - **`PUT /api/isci/bulk`**: one transaction, per-code edit history with a bulk marker. Code, client, placement, length and aspect ratio are rejected.
 - **Select family** and **Select all on this job** on the Detail page open the Dashboard with the codes selected and the editor ready (`/?select=<ids>&edit=1`).
@@ -22,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tools page** (`/tools`, admins and editors): a home for workflow tools, with a sidebar grouped by tool type. Export and Import sit under "Data"; Import stays admin-only.
 - **Tools** link in the header (Dashboard, Tools, Reports, Admin) and in Cmd+K.
 - **`npm run seed:demo`** (`scripts/seedDemoData.js`): replaces the demo brands with R&R's real client list (36 clients) and generates about 100 fake ISCI codes for them. Dry run by default; `--apply` wipes and reseeds codes and brands. Users, agencies and placements are untouched.
+
+#### Removed
+- **Cutdown families report** (Reports). Family cards now live on the Dashboard (Group by). The Reports bulk drawer went with it; Reports still shares one codes fetch across its insights.
 
 #### Changed
 - **New R&R ISCI code format**: `CLIENT + MEDIA TYPE + "-" + YY + SEQ` (+ `H` for broadcast), e.g. `LVCT-2517H`, `LVCD-2517`, `LVCR-2517`. Rules in `app/utils/isci.js`; the hyphen and the broadcast `H` are settings (`ISCI_HYPHEN`, `ISCI_BROADCAST_H`) pending confirmation with media, and parsing accepts every variant. Legacy `SO` codes stay valid and count toward the client's digital sequence.

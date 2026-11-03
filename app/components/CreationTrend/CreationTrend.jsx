@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useFetchData } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
 import styles from "./CreationTrend.module.scss";
 
@@ -49,8 +48,7 @@ const buildMonthBuckets = (codes, clientFilter) => {
   return { buckets, max, total };
 };
 
-const CreationTrend = () => {
-  const { data: codes, loading } = useFetchData("/api/isci");
+const CreationTrend = ({ codes, loading }) => {
   const [clientFilter, setClientFilter] = useState("all");
   const wrapRef = useRef(null);
   const [width, setWidth] = useState(DEFAULT_WIDTH);

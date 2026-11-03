@@ -132,7 +132,7 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 **Location**: `/tools` page, "Data" group (admins and editors; Import is admin-only); the "Production" group holds the deliverables matrix. Each tool lives in its own folder under `app/containers/Tools/`; add new tools to the `GROUPS` list in `Tools.jsx`.
 
-**Reports** (`/reports`, admins and editors) is Insights only: Data quality, Placement mix, Cutdown families, Creation trend.
+**Reports** (`/reports`, admins and editors) is Insights only: Data quality, Placement mix, Creation trend.
 
 **Export**: Filter by date, client, placement and spot length, with a preview table; CSV export with all fields
 
@@ -144,11 +144,15 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 **API Endpoint**: `POST /api/isci/import` - Handler: `app/routes/api.isci.import.js`
 
+### Group by (Dashboard)
+
+A view control (Family / Job / List, no label; List is the table and is stored as `none`; saved in `localStorage['isciz-group']`, default Family; the stored value is applied in an effect so the first render is hydration-safe) switches the Dashboard between cards and the table (List) (`app/components/FamilyCards`). Family is client + campaign + spot title (`familyKey` in `app/utils/families.js`), spanning placements, and every code appears in a card (a singleton gets a card with one pill). A family card shows the spot title, "client · campaign", a count badge ("3 cuts", or "2 of 3 shown" when search narrows it) and pills (length chip plus the mono code, longest first, then placement, then code). Job mode shows the job number · client with its campaign(s), one line per spot title with its pills, and a final "No job number" card. Pills open the code: `/edit/:code` for editors and admins, `/isci/:code` for viewers. "Edit family" and "Edit job" open the bulk editor for the whole group, and the cards update in place after an apply. Search and filters apply first; cards are ordered by their newest visible code, and column sorting only exists in the table. Modes are key functions in `app/utils/grouping.js` (`GROUP_MODES`), so Campaign or Client is one entry. Row checkboxes, the selection bar and keyboard row navigation exist in List view only; switching to cards clears the selection, and Detail's "Select family" and "Select all on this job" open the Dashboard in List view with the codes selected.
+
 ### Bulk edit
 
 Admins and editors can change shared fields on many codes at once. On the Dashboard, tick the checkbox column (header box selects all visible rows, shift-click selects a range, Space toggles the keyboard-focused row; viewers see no checkboxes). A selection bar shows "N selected", "Edit N codes" and "Clear". The drawer (`app/components/BulkEditDrawer`) shows each field's shared value or "Mixed values", marks a field as changed only after it is edited (with a per-field "Reset"), and writes only the changed fields. Spot title shows a rename warning. After applying, the list is patched in place and the selection is kept. Selection is pruned to the rows that are still visible when filters change.
 
-**Shortcuts**: on the Detail page, "Select family" (same client, campaign and spot title, `app/utils/families.js`, shared with Cutdown families) and "Select all on this job" open the Dashboard with `/?select=<ids>&edit=1`, applied once after the codes load, so it survives a reload.
+**Shortcuts**: on the Detail page, "Select family" (same client, campaign and spot title, `app/utils/families.js`, also used by the Dashboard grouping) and "Select all on this job" open the Dashboard with `/?select=<ids>&edit=1`, applied once after the codes load, so it survives a reload.
 
 **API**: `PUT /api/isci/bulk` (`api.isci.bulk.js`) with `{ ids, changes, updatedBy }`, 1 to 500 ids, one transaction, each code gets its own history entry `{ user, timestamp, bulk: true, count, fields }`. Editable: jobNumber, campaignName, spotTitle, description, airDate (or "TBD"), agency, market, platform, language, closedCaptioning, audio, fileFormat, musicRights, completedAt. `code`, `brandId`, `placementId`, `spotLength` and `aspectRatio` are rejected with a 400. Field storage rules are shared with the single edit in `app/lib/isciFields.server.js`. There is no bulk delete.
 
@@ -226,7 +230,7 @@ Each placement carries a media type (`T`, `D` or `R`) that becomes the 4th chara
 
 | Route | Handler | Component | Description |
 |-------|---------|-----------|-------------|
-| `/` | `home.jsx` | Dashboard | Code list with search, client/placement filters, density toggle, keyboard nav |
+| `/` | `home.jsx` | Dashboard | Code list (table) or family/job cards, with search, client/placement filters, group by, density toggle, keyboard nav |
 | `/isci/:code` | `isci.jsx` | Detail | Read-only view of a code (row click lands here) |
 | `/create` | `create.jsx` | CreateISCI | Create new ISCI code (admins and editors) |
 | `/edit/:code` | `edit.jsx` | EditISCI | Edit an ISCI code (admins and editors; viewers redirect to `/isci/:code`) |

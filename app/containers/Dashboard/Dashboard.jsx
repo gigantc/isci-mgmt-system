@@ -1,15 +1,18 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import ISCIList from "@/components/ISCIList";
+import FamilyCards from "@/components/FamilyCards";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import BulkEditDrawer from "@/components/BulkEditDrawer";
 import { canEdit } from "@/utils/auth";
 import { useFetchData, useConfirmDialog, useSession } from "@/hooks";
 import { rankByFuzzy } from "@/utils/fuzzy";
 import { colorForCode } from "@/utils/palette";
+import { GROUP_OPTIONS } from "@/utils/grouping";
 import styles from "./Dashboard.module.scss";
 
 const DENSITY_KEY = "isciz-density";
+const GROUP_KEY = "isciz-group";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -18,6 +21,8 @@ const Dashboard = () => {
   const [density, setDensity] = useState("comfy");
   const [densityReady, setDensityReady] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [group, setGroup] = useState("family"); // default; "none" | a key of GROUP_MODES (stored choice applied in an effect)
+  const [navCodes, setNavCodes] = useState([]); // rows in display order, reported by the table
   const [view, setView] = useState("all"); // "all" | "mine"
   const [clientFilter, setClientFilter] = useState(null);
   const [placementFilter, setPlacementFilter] = useState(null);
@@ -26,7 +31,7 @@ const Dashboard = () => {
 
   // Bulk selection (checkbox column). Holds ids; pruned to the visible rows below.
   const [selectedIds, setSelectedIds] = useState(() => new Set());
-  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkIds, setBulkIds] = useState(null); // ids shown in the bulk editor, or null when closed
   const urlSelectionApplied = useRef(false);
 
   const { data: codes, loading: isLoading, refetch: loadCodes, setData: setCodes } = useFetchData("/api/isci");
@@ -40,6 +45,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    try {
+      const storedGroup = window.localStorage.getItem(GROUP_KEY);
+      if (GROUP_OPTIONS.some(([id]) => id === storedGroup)) setGroup(storedGroup);
+    } catch {
+      // storage unavailable: keep the default (Family)
+    }
     const stored = window.localStorage.getItem(DENSITY_KEY);
     if (stored === "comfy" || stored === "compact") setDensity(stored);
     // Enable the thumb transition only after the stored value is painted, so
@@ -51,6 +62,18 @@ const Dashboard = () => {
   const updateDensity = (next) => {
     setDensity(next);
     if (typeof window !== "undefined") window.localStorage.setItem(DENSITY_KEY, next);
+  };
+
+  const updateGroup = (next) => {
+    setGroup(next);
+    // Checkboxes only exist in the table; cards use Edit family / Edit job.
+    setSelectedIds(new Set());
+    setSelectedIndex(-1);
+    try {
+      window.localStorage.setItem(GROUP_KEY, next);
+    } catch {
+      // storage unavailable: the choice just won't persist
+    }
   };
 
   useEffect(() => {
@@ -138,8 +161,10 @@ const Dashboard = () => {
     const known = new Set(codes.map((c) => c.id));
     const ids = wanted.filter((id) => known.has(id));
     if (ids.length === 0) return;
+    // The selection lives in the table, so leave card mode (without saving that choice).
+    setGroup("none");
     setSelectedIds(new Set(ids));
-    if (searchParams.get("edit") === "1") setBulkOpen(true);
+    if (searchParams.get("edit") === "1") setBulkIds(ids);
   }, [isLoading, codes, searchParams]);
 
   // Selection survives filter changes only for rows that are still visible.
@@ -150,7 +175,7 @@ const Dashboard = () => {
     setSelectedIds(new Set([...selectedIds].filter((id) => visible.has(id))));
   }, [filteredCodes, selectedIds]);
 
-  const selectedCodes = useMemo(() => codes.filter((c) => selectedIds.has(c.id)), [codes, selectedIds]);
+  const bulkCodes = useMemo(() => (bulkIds ? codes.filter((c) => bulkIds.includes(c.id)) : []), [codes, bulkIds]);
 
   const handleBulkApplied = (updated) => {
     const byId = new Map(updated.map((c) => [c.id, c]));
@@ -180,21 +205,23 @@ const Dashboard = () => {
           target.isContentEditable);
       // Allow arrow/enter nav when search input is focused (handy), but skip letter keys
       const isSearch = target === searchInputRef.current;
+      // Row navigation only exists in the table.
+      if (group !== "none" && e.key !== "n" && e.key !== "N") return;
 
       if (e.key === "ArrowDown" && (!isEditable || isSearch)) {
         e.preventDefault();
-        setSelectedIndex((i) => Math.min(i + 1, Math.max(filteredCodes.length - 1, 0)));
+        setSelectedIndex((i) => Math.min(i + 1, Math.max(navCodes.length - 1, 0)));
       } else if (e.key === "ArrowUp" && (!isEditable || isSearch)) {
         e.preventDefault();
         setSelectedIndex((i) => Math.max(i - 1, 0));
       } else if (e.key === "Enter" && (!isEditable || isSearch)) {
-        const chosen = filteredCodes[selectedIndex];
+        const chosen = navCodes[selectedIndex];
         if (chosen) {
           e.preventDefault();
           navigate(`/isci/${chosen.code}`);
         }
       } else if (!isEditable && e.key === " " && canEdit()) {
-        const chosen = filteredCodes[selectedIndex];
+        const chosen = navCodes[selectedIndex];
         if (chosen) {
           e.preventDefault();
           setSelectedIds((prev) => {
@@ -205,7 +232,7 @@ const Dashboard = () => {
           });
         }
       } else if (!isEditable && (e.key === "e" || e.key === "E")) {
-        const chosen = filteredCodes[selectedIndex];
+        const chosen = navCodes[selectedIndex];
         if (chosen && canEdit()) {
           e.preventDefault();
           navigate(`/edit/${chosen.code}`);
@@ -219,7 +246,7 @@ const Dashboard = () => {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [filteredCodes, selectedIndex, navigate]);
+  }, [navCodes, selectedIndex, navigate, group]);
 
   const noFiltersActive = view === "all" && !clientFilter && !placementFilter;
 
@@ -305,7 +332,7 @@ const Dashboard = () => {
         {userCanEdit && selectedIds.size > 0 && (
           <div className={styles.selectionBar} role="region" aria-label="Selection">
             <span className={styles.selectionCount}>{selectedIds.size} selected</span>
-            <button type="button" className="btn-primary" onClick={() => setBulkOpen(true)}>
+            <button type="button" className="btn-primary" onClick={() => setBulkIds([...selectedIds])}>
               Edit {selectedIds.size} {selectedIds.size === 1 ? "code" : "codes"}
             </button>
             <button type="button" className="btn-text" onClick={() => setSelectedIds(new Set())}>
@@ -330,6 +357,20 @@ const Dashboard = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </label>
+
+          <div className={styles.groupBy} role="group" aria-label="View">
+            {GROUP_OPTIONS.map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                className={group === id ? styles.groupOn : ""}
+                onClick={() => updateGroup(id)}
+                aria-pressed={group === id}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
 
           <div
             className={`${styles.density} ${density === "compact" ? styles.densityCompact : ""} ${densityReady ? styles.densityReady : ""}`}
@@ -381,15 +422,27 @@ const Dashboard = () => {
         {isLoading ? (
           <div className={styles.loadingState}>Loading…</div>
         ) : (
-          <ISCIList
-            codes={filteredCodes}
-            onDelete={handleDeleteCode}
-            density={density}
-            selectedIndex={selectedIndex}
-            selectable={userCanEdit}
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-          />
+          group === "none" ? (
+            <ISCIList
+              codes={filteredCodes}
+              onNavChange={setNavCodes}
+              onDelete={handleDeleteCode}
+              density={density}
+              selectedIndex={selectedIndex}
+              selectable={userCanEdit}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+            />
+          ) : (
+            <FamilyCards
+              codes={filteredCodes}
+              allCodes={codes}
+              mode={group}
+              canEdit={userCanEdit}
+              onEdit={setBulkIds}
+              density={density}
+            />
+          )
         )}
       </div>
 
@@ -400,9 +453,14 @@ const Dashboard = () => {
             {selectedIndex >= 0 ? " · 1 selected" : ""}
           </div>
           <div className={styles.footerShortcuts}>
-            <kbd>↑↓</kbd> navigate
-            <kbd>⏎</kbd> view
-            {userCanEdit && (<><kbd>E</kbd> edit <kbd>N</kbd> new <kbd>Space</kbd> select</>)}
+            {group === "none" && (
+              <>
+                <kbd>↑↓</kbd> navigate
+                <kbd>⏎</kbd> view
+                {userCanEdit && (<><kbd>E</kbd> edit <kbd>N</kbd> new <kbd>Space</kbd> select</>)}
+              </>
+            )}
+            {group !== "none" && userCanEdit && (<><kbd>N</kbd> new</>)}
             <kbd>⌘K</kbd> palette
           </div>
         </footer>
@@ -410,9 +468,9 @@ const Dashboard = () => {
       </main>
 
       <BulkEditDrawer
-        open={bulkOpen && selectedCodes.length > 0}
-        onClose={() => setBulkOpen(false)}
-        codes={selectedCodes}
+        open={!!bulkIds && bulkCodes.length > 0}
+        onClose={() => setBulkIds(null)}
+        codes={bulkCodes}
         userName={currentUserName}
         onApplied={handleBulkApplied}
       />

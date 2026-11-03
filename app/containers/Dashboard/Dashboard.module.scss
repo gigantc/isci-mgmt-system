@@ -95,6 +95,39 @@
   }
 }
 
+// Text-labelled segmented control: matches the density track, but with words.
+.groupBy {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--paper-1);
+
+  button {
+    height: 32px;
+    padding: 0 0.75rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--ink-2);
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover { color: var(--ink); }
+    &:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-ring); }
+  }
+
+  button.groupOn {
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: var(--shadow-card);
+  }
+}
+
 .density {
   position: relative;
   display: flex;
