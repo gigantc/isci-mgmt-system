@@ -57,6 +57,9 @@ export default [
   // API endpoint for ISCI import
   route("api/isci/import", "routes/api.isci.import.js"),
 
+  // Bulk field edits across many codes ("bulk" is matched before any :id style route)
+  route("api/isci/bulk", "routes/api.isci.bulk.js"),
+
   // Batch code assignment for the Matrix tool
   route("api/isci/batch", "routes/api.isci.batch.js"),
 

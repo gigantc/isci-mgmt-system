@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useFetchData } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
+import { familyKey } from "@/utils/families";
 import styles from "./CutdownFamilies.module.scss";
 
 /**
@@ -20,8 +21,7 @@ const buildFamilies = (codes) => {
     const client = code.brand || "—";
     const campaign = (code.campaignName || "").trim();
     const title = (code.spotTitle || "").trim();
-    // Normalize key so casing/whitespace differences don't split a family.
-    const key = [client, campaign.toLowerCase(), title.toLowerCase()].join("|");
+    const key = familyKey(code);
 
     if (!map.has(key)) {
       map.set(key, {

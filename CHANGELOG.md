@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Tools section
 
 #### Added
+- **Bulk edit**: a checkbox column on the Dashboard (select all visible, shift-click ranges, Space on the focused row), a selection bar and an "Edit N codes" drawer for the shared fields (job number, campaign, spot title, description, air date, agency, market, platform, language, accessibility, audio, file format, music rights, completion). Only changed fields are written, and the list updates in place.
+- **`PUT /api/isci/bulk`**: one transaction, per-code edit history with a bulk marker. Code, client, placement, length and aspect ratio are rejected.
+- **Select family** and **Select all on this job** on the Detail page open the Dashboard with the codes selected and the editor ready (`/?select=<ids>&edit=1`).
 - **Deliverables matrix tool** (`/tools`, "Production" group, the default tab): fills a production spec matrix (.xlsx) with ISCI codes and file names. Four steps: Job, Matrix, Tune-up, Review. Ported from the editors' ISCI Wiz without its ISCI-log step. Existing matching codes are reused and nothing is saved until the matrix is downloaded. Library in `Tools/Matrix/lib` (jszip 3.10.1, loaded on demand).
 - **`POST /api/isci/batch`**: assigns or reuses codes for a batch of rows in one transaction, with a preview mode.
 - **Optional `platform` field on codes** (Comcast, Hulu, Meta...): migration `add_isci_platform`, ISCIForm input with suggestions, Detail, and a `Platform` CSV column. Not part of the filename.

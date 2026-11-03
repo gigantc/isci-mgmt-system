@@ -10,19 +10,9 @@
 
 import { prisma } from "@/lib/prisma";
 import { allocateCodes, checkCode } from "@/lib/isciAllocator.server";
+import { EDITABLE_FIELDS, parseEditHistory, parseSpotLength, toApiCode } from "@/lib/isciFields.server";
 
 const MAX_ALLOCATION_ATTEMPTS = 5;
-
-const parseEditHistory = (value) => {
-  if (!value) return [];
-  if (Array.isArray(value)) return value;
-  try {
-    const parsed = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-};
 
 /**
  * loader function - GET /api/isci
@@ -37,33 +27,13 @@ export async function loader() {
 
     // Denormalize brand + placement for frontend compatibility.
     // `placement` is kept as an object so consumers can read name/mediaType directly.
-    const codesWithBrandName = codes.map((code) => ({
-      ...code,
-      brand: code.brand.name,
-      brandCode: code.brand.code,
-      brandColor: code.brand.color || null,
-      placement: code.placement
-        ? { id: code.placement.id, name: code.placement.name, mediaType: code.placement.mediaType }
-        : null,
-      editHistory: parseEditHistory(code.editHistory),
-    }));
+    const codesWithBrandName = codes.map(toApiCode);
 
     return Response.json(codesWithBrandName);
   } catch (error) {
     console.error("Error reading ISCI codes:", error);
     return Response.json([], { status: 500 });
   }
-}
-
-/**
- * Helper function to convert spotLength to int or null
- */
-function parseSpotLength(value) {
-  if (value === null || value === undefined || value === "") {
-    return null;
-  }
-  const parsed = parseInt(value);
-  return isNaN(parsed) ? null : parsed;
 }
 
 /**
@@ -212,26 +182,14 @@ export async function action({ request }) {
       };
       if (data.code !== undefined) updateData.code = data.code;
       if (data.brandId !== undefined) updateData.brandId = data.brandId;
-      if (data.campaignName !== undefined) updateData.campaignName = data.campaignName || null;
-      if (data.jobNumber !== undefined) updateData.jobNumber = data.jobNumber || null;
-      if (data.spotTitle !== undefined) updateData.spotTitle = data.spotTitle;
+      for (const [field, store] of Object.entries(EDITABLE_FIELDS)) {
+        if (data[field] !== undefined) updateData[field] = store(data[field]);
+      }
+      // Identity fields: only the single edit may change these.
       if (data.spotLength !== undefined) updateData.spotLength = parseSpotLength(data.spotLength);
-      if (data.description !== undefined) updateData.description = data.description || null;
-      if (data.language !== undefined) updateData.language = data.language;
-      if (data.closedCaptioning !== undefined) updateData.closedCaptioning = data.closedCaptioning;
-      if (data.audio !== undefined) updateData.audio = data.audio;
-      if (data.fileFormat !== undefined) updateData.fileFormat = data.fileFormat;
-      if (data.airDate !== undefined) updateData.airDate = data.airDate || null;
       if (data.aspectRatio !== undefined) updateData.aspectRatio = data.aspectRatio;
       if (data.placementId !== undefined) updateData.placementId = data.placementId;
-      if (data.musicRights !== undefined) updateData.musicRights = data.musicRights || null;
-      if (data.agency !== undefined) updateData.agency = data.agency || null;
-      if (data.market !== undefined) updateData.market = data.market || null;
-      if (data.platform !== undefined) updateData.platform = data.platform || null;
       if (data.updatedBy !== undefined) updateData.updatedBy = data.updatedBy || null;
-      if (data.completedAt !== undefined) {
-        updateData.completedAt = data.completedAt ? new Date(data.completedAt) : null;
-      }
 
       if (data.updatedBy) {
         const existing = await prisma.iSCICode.findUnique({

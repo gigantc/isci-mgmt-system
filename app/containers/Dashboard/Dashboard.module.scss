@@ -10,17 +10,51 @@
 @include shell.footer;
 @include shell.footer-shortcuts;
 
-.pgActions {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .toolbar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0 1.5rem 1rem;
   background: transparent;
+}
+
+// Pushed to the far right of the toolbar, level with the search box.
+.newCode { margin-left: auto; }
+
+// The selection bar overlays the page head, so the head is its positioning
+// context. Scoped here; the shared shell head stays static elsewhere.
+.pgHead { position: relative; }
+
+// Appears when one or more codes are checked. Absolutely positioned over the
+// head so the toolbar and list never move while rows are being selected.
+.selectionBar {
+  position: absolute;
+  inset: 1rem 1.5rem 0.75rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.75rem 0 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  // Opaque card underneath so the title doesn't show through the tint.
+  background: linear-gradient(var(--accent-subtle), var(--accent-subtle)), var(--card);
+  animation: selectionIn 0.12s ease-out;
+
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}
+
+@keyframes selectionIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.selectionCount {
+  margin-right: auto;
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
 .search {

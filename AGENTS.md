@@ -144,6 +144,14 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 **API Endpoint**: `POST /api/isci/import` - Handler: `app/routes/api.isci.import.js`
 
+### Bulk edit
+
+Admins and editors can change shared fields on many codes at once. On the Dashboard, tick the checkbox column (header box selects all visible rows, shift-click selects a range, Space toggles the keyboard-focused row; viewers see no checkboxes). A selection bar shows "N selected", "Edit N codes" and "Clear". The drawer (`app/components/BulkEditDrawer`) shows each field's shared value or "Mixed values", marks a field as changed only after it is edited (with a per-field "Reset"), and writes only the changed fields. Spot title shows a rename warning. After applying, the list is patched in place and the selection is kept. Selection is pruned to the rows that are still visible when filters change.
+
+**Shortcuts**: on the Detail page, "Select family" (same client, campaign and spot title, `app/utils/families.js`, shared with Cutdown families) and "Select all on this job" open the Dashboard with `/?select=<ids>&edit=1`, applied once after the codes load, so it survives a reload.
+
+**API**: `PUT /api/isci/bulk` (`api.isci.bulk.js`) with `{ ids, changes, updatedBy }`, 1 to 500 ids, one transaction, each code gets its own history entry `{ user, timestamp, bulk: true, count, fields }`. Editable: jobNumber, campaignName, spotTitle, description, airDate (or "TBD"), agency, market, platform, language, closedCaptioning, audio, fileFormat, musicRights, completedAt. `code`, `brandId`, `placementId`, `spotLength` and `aspectRatio` are rejected with a 400. Field storage rules are shared with the single edit in `app/lib/isciFields.server.js`. There is no bulk delete.
+
 ### Deliverables matrix tool
 
 **Location**: `/tools`, "Production" group, "Deliverables matrix" (the default tab; admins and editors). Ported from the editors' ISCI Wiz (`docs/research/`), without its ISCI-log step: the database is the log.
@@ -239,6 +247,7 @@ Each placement carries a media type (`T`, `D` or `R`) that becomes the 4th chara
 - **PUT /api/isci/:id** - Update ISCI code (`api.isci.js`)
 - **DELETE /api/isci/:id** - Delete ISCI code (`api.isci.js`)
 - **POST /api/isci/import** - Import from CSV (`api.isci.import.js`) - Modes: add/update/replace
+- **PUT /api/isci/bulk** - Apply the same field changes to many codes (`api.isci.bulk.js`)
 - **POST /api/isci/batch** - Assign or reuse codes for matrix rows, with `preview` (`api.isci.batch.js`)
 - **GET /api/isci/languages** - Distinct languages used across codes (`api.isci.languages.js`)
 
@@ -446,7 +455,8 @@ pm2 status && pm2 logs isci-mgmt
 - [ ] Dashboard analytics and reporting
 - [ ] Activity logs and audit trail
 - [ ] Email notifications for due dates
-- [ ] Batch operations (bulk edit/delete)
+- [x] Bulk edit (multi-select and an "Edit N codes" drawer)
+- [ ] Bulk delete
 - [ ] Brand usage statistics
 - [ ] Automatic year rollover handling
 - [x] Exportable Slate feature (1920x1080 JPG)

@@ -11,6 +11,12 @@
     font-size: var(--text-md);
   }
 
+  // Extra leading column for the selection checkboxes.
+  &.selectable .gridContainer {
+    grid-template-columns: 48px 150px 180px 1fr 80px 130px 110px 96px;
+    min-width: 1048px;
+  }
+
   .gridHeader {
     display: contents;
 
@@ -57,7 +63,8 @@
       opacity: 1;
     }
 
-    &.selected .gridItems > span {
+    &.selected .gridItems > span,
+    &.checked .gridItems > span {
       background: var(--accent-subtle);
     }
 
@@ -87,6 +94,31 @@
       &:first-child { padding-left: 1.5rem; }
       &:last-child { padding-right: 1.5rem; }
     }
+  }
+
+  // Selection checkbox cells. In selectable mode the checkbox is the first cell, so
+  // the code cell gives its leading padding back.
+  .gridHeader span.checkCell,
+  .gridItems > span.checkCell {
+    padding-right: 0;
+    justify-content: center;
+    overflow: visible;
+
+    input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+  }
+
+  &.selectable {
+    .gridHeader span.checkCell,
+    .gridItems > span.checkCell { padding-left: 1.5rem; }
+
+    .gridHeader span:nth-child(2),
+    .gridItems > span:nth-child(2) { padding-left: 0.75rem; }
   }
 
   // Block (not flex) so the main value keeps its ellipsis; the secondary
