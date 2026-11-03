@@ -9,6 +9,9 @@
  */
 
 import { prisma } from "@/lib/prisma";
+import { allocateCodes, checkCode } from "@/lib/isciAllocator.server";
+
+const MAX_ALLOCATION_ATTEMPTS = 5;
 
 const parseEditHistory = (value) => {
   if (!value) return [];
@@ -33,14 +36,14 @@ export async function loader() {
     });
 
     // Denormalize brand + placement for frontend compatibility.
-    // `placement` is kept as an object so consumers can read name/letter directly.
+    // `placement` is kept as an object so consumers can read name/mediaType directly.
     const codesWithBrandName = codes.map((code) => ({
       ...code,
       brand: code.brand.name,
       brandCode: code.brand.code,
       brandColor: code.brand.color || null,
       placement: code.placement
-        ? { id: code.placement.id, name: code.placement.name, letter: code.placement.letter }
+        ? { id: code.placement.id, name: code.placement.name, mediaType: code.placement.mediaType }
         : null,
       editHistory: parseEditHistory(code.editHistory),
     }));
@@ -74,18 +77,7 @@ export async function action({ request }) {
     // CREATE - POST /api/isci
     if (method === "POST") {
       const data = await request.json();
-      console.log("📝 Creating new ISCI code:", data.code);
-
-      // Check if code already exists
-      const existingCode = await prisma.iSCICode.findUnique({
-        where: { code: data.code },
-      });
-      if (existingCode) {
-        return Response.json(
-          { success: false, error: "ISCI code already exists" },
-          { status: 400 }
-        );
-      }
+      console.log("📝 Creating new ISCI code:", data.code || "(server-assigned)");
 
       // Verify brand exists
       const brand = await prisma.brand.findUnique({
@@ -115,35 +107,63 @@ export async function action({ request }) {
         );
       }
 
-      const isciCode = await prisma.iSCICode.create({
-        data: {
-          id: data.id,
-          code: data.code,
-          brandId: data.brandId,
-          placementId: data.placementId,
-          campaignName: data.campaignName || null,
-          jobNumber: data.jobNumber || null,
-          spotTitle: data.spotTitle,
-          spotLength: parseSpotLength(data.spotLength),
-          description: data.description || null,
-          language: data.language || "English",
-          closedCaptioning: data.closedCaptioning || "No",
-          audio: data.audio || "Stereo LR",
-          fileFormat: data.fileFormat || "Pro Res",
-          airDate: data.airDate || null,
-          aspectRatio: data.aspectRatio || "16:9",
-          musicRights: data.musicRights || null,
-          agency: data.agency || null,
-          market: data.market || null,
-          createdBy: data.createdBy || null,
-          updatedBy: data.updatedBy || null,
-          editHistory: JSON.stringify(Array.isArray(data.editHistory) ? data.editHistory : []),
-          createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
-          updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
-          completedAt: data.completedAt ? new Date(data.completedAt) : null,
-        },
-        include: { brand: true, placement: true },
-      });
+      // An explicit code must pass the format, client, media type and duplicate checks.
+      if (data.code) {
+        const problem = await checkCode(prisma, { code: data.code, brand, placement });
+        if (problem) {
+          return Response.json({ success: false, error: problem }, { status: 400 });
+        }
+      }
+
+      const createdAt = data.createdAt ? new Date(data.createdAt) : new Date();
+      const yy = createdAt.getFullYear() % 100;
+
+      // Without an explicit code the server assigns the next one. A concurrent
+      // create can win the same sequence; the unique index rejects ours, so retry.
+      let isciCode;
+      for (let attempt = 1; ; attempt++) {
+        try {
+          isciCode = await prisma.$transaction(async (tx) => {
+            const [code] = data.code
+              ? [data.code]
+              : await allocateCodes(tx, { brandId: brand.id, placementId: placement.id, yy });
+            return tx.iSCICode.create({
+              data: {
+                id: data.id || crypto.randomUUID(),
+                code,
+                brandId: data.brandId,
+                placementId: data.placementId,
+                campaignName: data.campaignName || null,
+                jobNumber: data.jobNumber || null,
+                spotTitle: data.spotTitle,
+                spotLength: parseSpotLength(data.spotLength),
+                description: data.description || null,
+                language: data.language || "English",
+                closedCaptioning: data.closedCaptioning || "No",
+                audio: data.audio || "Stereo LR",
+                fileFormat: data.fileFormat || "Pro Res",
+                airDate: data.airDate || null,
+                aspectRatio: data.aspectRatio || "16:9",
+                musicRights: data.musicRights || null,
+                agency: data.agency || null,
+                market: data.market || null,
+                platform: data.platform || null,
+                createdBy: data.createdBy || null,
+                updatedBy: data.updatedBy || null,
+                editHistory: JSON.stringify(Array.isArray(data.editHistory) ? data.editHistory : []),
+                createdAt,
+                updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+                completedAt: data.completedAt ? new Date(data.completedAt) : null,
+              },
+              include: { brand: true, placement: true },
+            });
+          });
+          break;
+        } catch (error) {
+          const collision = error.code === "P2002" && !data.code && attempt < MAX_ALLOCATION_ATTEMPTS;
+          if (!collision) throw error;
+        }
+      }
 
       const result = {
         ...isciCode,
@@ -151,7 +171,7 @@ export async function action({ request }) {
         placement: {
           id: isciCode.placement.id,
           name: isciCode.placement.name,
-          letter: isciCode.placement.letter,
+          mediaType: isciCode.placement.mediaType,
         },
       };
 
@@ -164,19 +184,25 @@ export async function action({ request }) {
       const data = await request.json();
       console.log("📝 Updating ISCI code:", data.id);
 
-      // Check if code is taken by another ISCI code
+      // A changed code must pass the format, client, media type and duplicate checks.
       if (data.code) {
-        const existingCode = await prisma.iSCICode.findFirst({
-          where: {
-            code: data.code,
-            NOT: { id: data.id },
-          },
+        const current = await prisma.iSCICode.findUnique({
+          where: { id: data.id },
+          include: { brand: true, placement: true },
         });
-        if (existingCode) {
-          return Response.json(
-            { success: false, error: "ISCI code already exists" },
-            { status: 400 }
-          );
+        if (!current) {
+          return Response.json({ success: false, error: "ISCI code not found" }, { status: 404 });
+        }
+        const brand = data.brandId ? await prisma.brand.findUnique({ where: { id: data.brandId } }) : current.brand;
+        const placement = data.placementId
+          ? await prisma.placement.findUnique({ where: { id: data.placementId } })
+          : current.placement;
+        if (!brand || !placement) {
+          return Response.json({ success: false, error: "Client or placement not found" }, { status: 400 });
+        }
+        const problem = await checkCode(prisma, { code: data.code, brand, placement, excludeId: data.id });
+        if (problem) {
+          return Response.json({ success: false, error: problem }, { status: 400 });
         }
       }
 
@@ -201,6 +227,7 @@ export async function action({ request }) {
       if (data.musicRights !== undefined) updateData.musicRights = data.musicRights || null;
       if (data.agency !== undefined) updateData.agency = data.agency || null;
       if (data.market !== undefined) updateData.market = data.market || null;
+      if (data.platform !== undefined) updateData.platform = data.platform || null;
       if (data.updatedBy !== undefined) updateData.updatedBy = data.updatedBy || null;
       if (data.completedAt !== undefined) {
         updateData.completedAt = data.completedAt ? new Date(data.completedAt) : null;
@@ -237,7 +264,7 @@ export async function action({ request }) {
         ...isciCode,
         brand: isciCode.brand.name,
         placement: isciCode.placement
-          ? { id: isciCode.placement.id, name: isciCode.placement.name, letter: isciCode.placement.letter }
+          ? { id: isciCode.placement.id, name: isciCode.placement.name, mediaType: isciCode.placement.mediaType }
           : null,
         editHistory: parseEditHistory(isciCode.editHistory),
       };

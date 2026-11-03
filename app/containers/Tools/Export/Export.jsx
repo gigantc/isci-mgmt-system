@@ -61,7 +61,7 @@ const Export = ({ codes, brands, placements, isLoading }) => {
       // Schedule & People
       c.airDate || "", c.market || "", c.agency || "", c.language || "",
       // Technical
-      c.spotLength || "", c.aspectRatio || "", c.fileFormat || "", c.placement?.name || "", c.audio || "", c.closedCaptioning || "", c.musicRights || "",
+      c.spotLength || "", c.aspectRatio || "", c.fileFormat || "", c.placement?.name || "", c.audio || "", c.closedCaptioning || "", c.musicRights || "", c.platform || "",
       // System
       c.createdAt, c.updatedAt,
     ],

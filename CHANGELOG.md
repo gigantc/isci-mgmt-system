@@ -12,11 +12,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Tools section
 
 #### Added
+- **Deliverables matrix tool** (`/tools`, "Production" group, the default tab): fills a production spec matrix (.xlsx) with ISCI codes and file names. Four steps: Job, Matrix, Tune-up, Review. Ported from the editors' ISCI Wiz without its ISCI-log step. Existing matching codes are reused and nothing is saved until the matrix is downloaded. Library in `Tools/Matrix/lib` (jszip 3.10.1, loaded on demand).
+- **`POST /api/isci/batch`**: assigns or reuses codes for a batch of rows in one transaction, with a preview mode.
+- **Optional `platform` field on codes** (Comcast, Hulu, Meta...): migration `add_isci_platform`, ISCIForm input with suggestions, Detail, and a `Platform` CSV column. Not part of the filename.
+- **`app/utils/fileName.js`**: the filename builder, now shared by ISCIForm and the matrix.
 - **Tools page** (`/tools`, admins and editors): a home for workflow tools, with a sidebar grouped by tool type. Export and Import sit under "Data"; Import stays admin-only.
 - **Tools** link in the header (Dashboard, Tools, Reports, Admin) and in Cmd+K.
 - **`npm run seed:demo`** (`scripts/seedDemoData.js`): replaces the demo brands with R&R's real client list (36 clients) and generates about 100 fake ISCI codes for them. Dry run by default; `--apply` wipes and reseeds codes and brands. Users, agencies and placements are untouched.
 
 #### Changed
+- **New R&R ISCI code format**: `CLIENT + MEDIA TYPE + "-" + YY + SEQ` (+ `H` for broadcast), e.g. `LVCT-2517H`, `LVCD-2517`, `LVCR-2517`. Rules in `app/utils/isci.js`; the hyphen and the broadcast `H` are settings (`ISCI_HYPHEN`, `ISCI_BROADCAST_H`) pending confirmation with media, and parsing accepts every variant. Legacy `SO` codes stay valid and count toward the client's digital sequence.
+- **Server-side code allocation**: `POST /api/isci` assigns the code (`app/lib/isciAllocator.server.js`) and retries on collisions; the create form only previews it and opens the new code after save. PUT and import validate format, client, media type and duplicates (by identity, ignoring hyphen, `H` and the `SO` prefix).
+- **Placements use a media type, not a letter**: `Placement.letter` is replaced by `mediaType` (`T`/`D`/`R`, not unique). Migration `placement_media_type` backfills B to T, R to R, everything else to D. The Placements admin has a media-type select, locked once codes use the placement. Import matches placements by name only.
+- **Placements reduced to Broadcast (T), Digital (D) and Radio (R)** as the seeded set; `seed:demo --apply` removes any other placement once the codes are wiped. More can be added in Admin → Placements, picking T, D or R.
 - **Export and Import moved from Reports to Tools.** Each now lives in its own folder (`app/containers/Tools/Export`, `Tools/Import`) with shared tool styles in `Tools/_tool.scss` and CSV headers in `Tools/csv.js`. No behavior changes.
 - **Reports is Insights only**, defaulting to Data quality.
 - **Local dev now runs on Postgres 16**, matching production. The old SQLite migrations moved to `prisma/migrations_sqlite_archive/`, replaced by a single Postgres `init` baseline; `seed:demo` also create-only seeds demo users, agencies and placements.

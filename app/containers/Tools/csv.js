@@ -6,7 +6,7 @@ export const CSV_HEADERS = [
   // Schedule & People
   "Air Date", "Market", "Agency", "Language",
   // Technical
-  "Spot Length", "Aspect Ratio", "File Format", "Placement", "Audio", "Accessibility", "Music Rights",
+  "Spot Length", "Aspect Ratio", "File Format", "Placement", "Audio", "Accessibility", "Music Rights", "Platform",
   // System
   "Created At", "Updated At",
 ];

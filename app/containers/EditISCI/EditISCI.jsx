@@ -8,6 +8,7 @@ import ActivityFeed from "@/components/ActivityFeed";
 import { getUserSession, saveUserSession } from "@/utils/auth";
 import { useSession } from "@/hooks";
 import { formatClockTime } from "@/utils/dates";
+import { sameISCI } from "@/utils/isci";
 
 /**
  * EditISCI Container
@@ -95,7 +96,7 @@ const EditISCI = () => {
       setAllCodes(data);
 
       // Find the specific code to edit by ISCI code
-      const codeToEdit = data.find(c => c.code === isciCode);
+      const codeToEdit = data.find(c => sameISCI(c.code, isciCode));
       if (!codeToEdit) {
         setError(`ISCI code "${isciCode}" not found`);
         return;

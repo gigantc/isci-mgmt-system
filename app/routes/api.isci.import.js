@@ -6,6 +6,7 @@
  */
 
 import { prisma } from "@/lib/prisma";
+import { checkCodeShape, findExistingCode } from "@/lib/isciAllocator.server";
 import { normalizeMarketValue } from "@/utils/markets";
 
 // Parse a single CSV line correctly, handling quoted fields and empty values.
@@ -42,8 +43,8 @@ const parseCSVLine = (line) => {
  * Air Date, Market, Agency, Language, Spot Length, Aspect Ratio,
  * File Format, Placement, Audio, Accessibility, Music Rights, Created At, Updated At
  *
- * The Placement column is required. Values may be the placement name
- * (e.g. "Broadcast") or its single-letter code (e.g. "B").
+ * The Placement column is required and holds the placement name (e.g.
+ * "Broadcast"). Each ISCI code must match its client and the placement's media type.
  */
 export async function action({ request }) {
   try {
@@ -63,7 +64,7 @@ export async function action({ request }) {
     if (!hasPlacementColumn) {
       return Response.json({
         success: false,
-        message: "Import blocked. This file has no Placement column. Every row needs a placement (name or single-letter code) so the ISCI code can be validated.",
+        message: "Import blocked. This file has no Placement column. Every row needs a placement name so the ISCI code can be validated.",
       });
     }
 
@@ -98,14 +99,12 @@ export async function action({ request }) {
       addKey(brand.abbreviation, brand.id);
     });
 
-    // Load placements. Lookup accepts the placement name or its single-letter code.
+    // Load placements. Lookup is by name.
     const placementRecords = await prisma.placement.findMany();
     const placementLookup = {};
     placementRecords.forEach(p => {
       const nameKey = String(p.name || "").trim().toLowerCase();
-      const letterKey = String(p.letter || "").trim().toLowerCase();
       if (nameKey && !placementLookup[nameKey]) placementLookup[nameKey] = p;
-      if (letterKey && !placementLookup[letterKey]) placementLookup[letterKey] = p;
     });
 
     // Preflight: collect every unique Client and Placement value in the CSV, then
@@ -173,6 +172,7 @@ export async function action({ request }) {
         audio:            getValue(values, ["Audio"], 14) || "Stereo LR",
         closedCaptioning: getValue(values, ["Accessibility", "Closed Captioning"], 15) || "Clean",
         musicRights:      getValue(values, ["Music Rights"], 16) || null,
+        platform:         getValue(values, ["Platform"]) || null,
       };
 
       // Validation
@@ -188,11 +188,21 @@ export async function action({ request }) {
         continue;
       }
 
-      // Look up placement by name or letter. Preflight already surfaced any
+      // Look up placement by name. Preflight already surfaced any
       // missing placements, so a miss here means an empty value on this row.
       const placement = placementLookup[String(code.placementRaw || "").trim().toLowerCase()];
       if (!placement) {
-        errors.push({ row: i + 1, error: `Placement is required (name or single letter)` });
+        errors.push({ row: i + 1, error: `Placement is required (placement name)` });
+        continue;
+      }
+
+      const problem = checkCodeShape({
+        code: code.code,
+        brand: brands.find((b) => b.id === brandId),
+        placement,
+      });
+      if (problem) {
+        errors.push({ row: i + 1, error: `${code.code}: ${problem}` });
         continue;
       }
 
@@ -239,14 +249,13 @@ export async function action({ request }) {
       let updateCount = 0;
 
       for (const importCode of importedCodes) {
-        const { brand, ...codeData } = importCode;
-        const existing = await prisma.iSCICode.findUnique({
-          where: { code: importCode.code },
-        });
+        // Keep the stored code string as is (a hyphen variant in the CSV must not rewrite it).
+        const { brand, code: _code, ...codeData } = importCode;
+        const existing = await findExistingCode(prisma, importCode.code);
 
         if (existing) {
           await prisma.iSCICode.update({
-            where: { code: importCode.code },
+            where: { id: existing.id },
             data: {
               ...codeData,
               updatedAt: now,
@@ -269,9 +278,7 @@ export async function action({ request }) {
 
       for (const importCode of importedCodes) {
         const { brand, ...codeData } = importCode;
-        const existing = await prisma.iSCICode.findUnique({
-          where: { code: importCode.code },
-        });
+        const existing = await findExistingCode(prisma, importCode.code);
 
         if (existing) {
           skippedCount++;

@@ -7,30 +7,30 @@ import styles from "./Import.module.scss";
 
 // Template example rows. Values match the dropdown options in ISCIForm so a
 // fresh export/import round-trips cleanly:
-//   Placement:     name (Broadcast, Social, ...) or single letter (B, S, ...)
+//   Placement:     placement name only (Broadcast, Social, Radio, ...); the code's 4th character must match its media type
 //   Audio:         "Stereo LR" | "Broadcast" | "Digital Streaming" | "Cinema 5:1" | "Digital"
 //   Accessibility: "Clean" | "Closed Captions" | "Subtitles"
 //   Market:        two-letter code (US, CA, GB, ...) — see app/utils/markets.js
 const TEMPLATE_EXAMPLES = [
   [
-    "LVCB2699", "LVCVA", "Summer Campaign", "JOB-2026-001",
+    "LVCT-2699H", "LVCVA", "Summer Campaign", "JOB-2026-001",
     "Vegas Summer Spots 30s", "Summer campaign broadcast spot",
     "2026-06-01", "US", "R&R Partners", "English",
-    "30", "16:9", "Pro Res", "Broadcast", "Stereo LR", "Clean", "Licensed",
+    "30", "16:9", "Pro Res", "Broadcast", "Stereo LR", "Clean", "Licensed", "Comcast",
     "", "",
   ],
   [
-    "LVCS2698", "LVCVA", "Summer Campaign", "JOB-2026-001",
+    "LVCD-2698", "LVCVA", "Summer Campaign", "JOB-2026-001",
     "Vegas Summer Spots 15s Cutdown", "15 second cutdown for social",
     "2026-06-15", "US", "R&R Partners", "English",
-    "15", "9:16", "H.264", "Social", "Stereo LR", "Subtitles", "Licensed",
+    "15", "9:16", "H.264", "Digital", "Stereo LR", "Subtitles", "Licensed", "Meta",
     "", "",
   ],
   [
-    "LVCR2697", "LVCVA", "Summer Campaign", "JOB-2026-001",
+    "LVCR-2697", "LVCVA", "Summer Campaign", "JOB-2026-001",
     "Vegas Summer Radio 30s", "Radio companion spot",
     "TBD", "US", "R&R Partners", "Spanish",
-    "30", "", "WAV", "R", "Stereo LR", "Clean", "Original",
+    "30", "", "WAV", "Radio", "Stereo LR", "Clean", "Original", "iHeart",
     "", "",
   ],
 ];

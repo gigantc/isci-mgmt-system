@@ -1,4 +1,7 @@
 /**
+ * NOTE: predates the media-type change (Placement.letter was replaced by
+ * Placement.mediaType and the ISCI format changed); not runnable as is.
+ *
  * One-off importer: takes a legacy CSV export (4-letter brand codes, free-text
  * Channel column) and rebuilds it as new-format data.
  *

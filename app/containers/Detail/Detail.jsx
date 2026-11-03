@@ -9,6 +9,7 @@ import { IconCopy, IconEdit, IconLink } from "@/components/Icons";
 import { getUserSession, saveUserSession } from "@/utils/auth";
 import { useSession } from "@/hooks";
 import { formatAirDateDot } from "@/utils/dates";
+import { sameISCI } from "@/utils/isci";
 
 /**
  * Detail Container
@@ -74,7 +75,7 @@ const Detail = () => {
       if (!response.ok) throw new Error("Failed to load ISCI codes");
       const data = await response.json();
       setAllCodes(data);
-      const found = data.find((c) => c.code === isciCode);
+      const found = data.find((c) => sameISCI(c.code, isciCode));
       if (!found) {
         setError(`ISCI code "${isciCode}" not found`);
         return;

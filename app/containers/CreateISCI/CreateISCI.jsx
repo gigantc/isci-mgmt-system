@@ -6,6 +6,7 @@ import { getUserSession } from "@/utils/auth";
 import { useSession } from "@/hooks";
 import { generateUUID } from "@/utils/uuid";
 import styles from "./CreateISCI.module.scss";
+import { sameISCI } from "@/utils/isci";
 
 /**
  * Fields carried over when duplicating a code as a new cutdown.
@@ -17,6 +18,7 @@ const CUTDOWN_TEMPLATE_FIELDS = [
   "brand",
   "placementId",
   "placement",
+  "platform",
   "campaignName",
   "jobNumber",
   "spotTitle",
@@ -49,7 +51,7 @@ const CreateISCI = () => {
 
   const template = useMemo(() => {
     if (!fromCode || codes.length === 0) return null;
-    const source = codes.find((c) => c.code === fromCode);
+    const source = codes.find((c) => sameISCI(c.code, fromCode));
     if (!source) return null;
     const seed = {};
     for (const field of CUTDOWN_TEMPLATE_FIELDS) {
@@ -101,9 +103,11 @@ const CreateISCI = () => {
     const user = getUserSession();
     const userDisplayName = user ? `${user.firstName} ${user.lastName}` : "";
 
+    // The server assigns the code on create; the form only previews it.
+    const { code: _preview, ...fields } = formData;
     const newCode = {
       id: generateUUID(),
-      ...formData,
+      ...fields,
       createdBy: userDisplayName || null,
       updatedBy: userDisplayName || null,
       editHistory: [],
@@ -123,8 +127,8 @@ const CreateISCI = () => {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        // Success! Navigate back to dashboard
-        navigate("/");
+        // The server assigned the code; open its detail view.
+        navigate(`/isci/${result.isciCode.code}`);
       } else {
         console.error("Failed to save ISCI code:", result.error);
         // TODO: Show error message to user
@@ -166,7 +170,7 @@ const CreateISCI = () => {
       subtitle={
         template
           ? `Duplicating from ${fromCode}. Adjust length and air date.`
-          : "Select a client to auto-generate the code."
+          : "Select a client and placement to preview the code."
       }
       loading={isLoading}
       aside={
@@ -178,7 +182,7 @@ const CreateISCI = () => {
           </AsideSection>
           <AsideSection label="Tips">
             <ul className={styles.tipList}>
-              <li>Select a <strong>Client</strong> to auto-generate the code.</li>
+              <li>Select a <strong>Client</strong> and <strong>Placement</strong> to preview the code.</li>
               <li><strong>Spot title</strong> is required.</li>
               <li>Leave the <strong>Air / start date</strong> blank and check TBD if unknown.</li>
             </ul>

@@ -57,6 +57,9 @@ export default [
   // API endpoint for ISCI import
   route("api/isci/import", "routes/api.isci.import.js"),
 
+  // Batch code assignment for the Matrix tool
+  route("api/isci/batch", "routes/api.isci.batch.js"),
+
   // API endpoint for distinct languages used across ISCI codes
   route("api/isci/languages", "routes/api.isci.languages.js"),
 

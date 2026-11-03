@@ -3,6 +3,7 @@ import { useResourceManager, useConfirmDialog, useFetchData } from "@/hooks";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Drawer from "@/components/Drawer";
 import { IconSearch, IconLock, IconEdit, IconTrash, IconWarn } from "@/components/Icons";
+import { MEDIA_TYPES } from "@/utils/isci";
 import styles from "./PlacementManager.module.scss";
 
 const fmtDate = (d) => {
@@ -10,6 +11,8 @@ const fmtDate = (d) => {
   const dt = new Date(d);
   return `${String(dt.getMonth() + 1).padStart(2, "0")}/${String(dt.getDate()).padStart(2, "0")}/${String(dt.getFullYear()).slice(2)}`;
 };
+
+const mediaTypeLabel = (value) => MEDIA_TYPES.find((m) => m.value === value)?.label || "";
 
 const PlacementManager = () => {
   const { dialogProps, confirm } = useConfirmDialog();
@@ -39,25 +42,17 @@ const PlacementManager = () => {
     handleNew,
     resetForm,
   } = useResourceManager("/api/placements", {
-    initialFormData: { name: "", letter: "" },
+    initialFormData: { name: "", mediaType: "D" },
     validate: (data, list, editing) => {
       const e = {};
       if (!data.name.trim()) e.name = "Placement name is required";
-      const letter = String(data.letter || "").toUpperCase();
-      if (!letter) {
-        e.letter = "Letter is required";
-      } else if (!/^[A-Z]$/.test(letter)) {
-        e.letter = "Must be a single uppercase letter (A–Z)";
-      } else {
-        const dup = list.some((p) => p.letter === letter && p.id !== editing?.id);
-        if (dup) e.letter = "This letter is already in use";
-      }
+      if (!MEDIA_TYPES.some((m) => m.value === data.mediaType)) e.mediaType = "Choose a media type";
       return e;
     },
     createItem: (data, now) => ({
       id: Date.now().toString(),
       name: data.name.trim(),
-      letter: String(data.letter).toUpperCase(),
+      mediaType: data.mediaType,
       active: true,
       createdAt: now,
       updatedAt: now,
@@ -69,7 +64,7 @@ const PlacementManager = () => {
       if (count > 0) {
         await confirm({
           title: "Cannot Delete Placement",
-          message: `${p?.name} (${p?.letter}) has ${count} ISCI code${count !== 1 ? "s" : ""} referencing it and cannot be deleted. Deactivate it to hide it from new ISCI creation.`,
+          message: `${p?.name} (${p?.mediaType}) has ${count} ISCI code${count !== 1 ? "s" : ""} referencing it and cannot be deleted. Deactivate it to hide it from new ISCI creation.`,
           confirmText: "Got it",
           isDangerous: false,
         });
@@ -77,7 +72,7 @@ const PlacementManager = () => {
       }
       return confirm({
         title: "Delete Placement",
-        message: `Delete ${p?.name} (${p?.letter})? This can't be undone.`,
+        message: `Delete ${p?.name} (${p?.mediaType})? This can't be undone.`,
         confirmText: "Delete",
         cancelText: "Cancel",
         isDangerous: true,
@@ -91,7 +86,7 @@ const PlacementManager = () => {
     handleDelete(placement);
   };
 
-  const letterLocked = !!editingPlacement && (countByPlacementId[editingPlacement.id] || 0) > 0;
+  const mediaTypeLocked = !!editingPlacement && (countByPlacementId[editingPlacement.id] || 0) > 0;
   const activeCount = placements.filter((p) => p.active).length;
   const inactiveCount = placements.length - activeCount;
 
@@ -102,7 +97,7 @@ const PlacementManager = () => {
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter((p) =>
-        p.name.toLowerCase().includes(q) || (p.letter || "").toLowerCase().includes(q)
+        p.name.toLowerCase().includes(q) || mediaTypeLabel(p.mediaType).toLowerCase().includes(q)
       );
     }
     return list;
@@ -129,7 +124,7 @@ const PlacementManager = () => {
           <IconSearch />
           <input
             type="text"
-            placeholder="Search placement name or letter…"
+            placeholder="Search placement name or media type…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -180,16 +175,16 @@ const PlacementManager = () => {
                   className={`${styles.card} ${!placement.active ? styles.cardInactive : ""}`}
                 >
                   <div className={styles.cardTop}>
-                    <div className={`${styles.dot} ${styles.tileAccent}`}>{placement.letter}</div>
+                    <div className={`${styles.dot} ${styles.tileAccent}`}>{placement.mediaType}</div>
                     <div className={styles.cardInfo}>
                       <h3>{placement.name}</h3>
                       <div className={styles.cardSub}>
-                        <span className={styles.codeTag}>{placement.letter}</span>
+                        <span className={styles.codeTag}>{placement.mediaType}</span>
                         {count > 0 && (
                           <>
                             <span className={styles.sep}>·</span>
                             <span className={styles.codeCount}>{count} code{count !== 1 ? "s" : ""}</span>
-                            <span className={styles.lockIcon} title="Letter locked, ISCI codes reference this placement">
+                            <span className={styles.lockIcon} title="Media type locked, ISCI codes reference this placement">
                               <IconLock />
                             </span>
                           </>
@@ -235,7 +230,7 @@ const PlacementManager = () => {
         title={editingPlacement ? "Edit Placement" : "New Placement"}
         subtitle={
           editingPlacement
-            ? `${editingPlacement.letter} · ${countByPlacementId[editingPlacement.id] || 0} ISCI code${(countByPlacementId[editingPlacement.id] || 0) !== 1 ? "s" : ""}`
+            ? `${editingPlacement.mediaType} · ${countByPlacementId[editingPlacement.id] || 0} ISCI code${(countByPlacementId[editingPlacement.id] || 0) !== 1 ? "s" : ""}`
             : "Add a new placement category"
         }
         footer={
@@ -275,42 +270,39 @@ const PlacementManager = () => {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="pm-letter">
-              Letter <span className={styles.req}>*</span>
-              {letterLocked && (
+            <label htmlFor="pm-mediaType">
+              Media type <span className={styles.req}>*</span>
+              {mediaTypeLocked && (
                 <span className={styles.lockedLabel}>
                   <IconLock /> Locked
                 </span>
               )}
             </label>
-            <div className={styles.autoField}>
-              <input
-                type="text"
-                id="pm-letter"
-                name="letter"
-                value={formData.letter || ""}
-                onChange={handleChange}
-                placeholder="B"
-                maxLength={1}
-                readOnly={letterLocked}
-                style={{ textTransform: "uppercase" }}
-                className={`${errors.letter ? styles.inputError : ""} ${letterLocked ? styles.inputLocked : ""}`}
-              />
-              {letterLocked && <span className={styles.autoBadge}>Locked</span>}
-            </div>
-            {errors.letter && <span className={styles.fieldError}>{errors.letter}</span>}
-            {!errors.letter && (
+            <select
+              id="pm-mediaType"
+              name="mediaType"
+              value={formData.mediaType || "D"}
+              onChange={handleChange}
+              disabled={mediaTypeLocked}
+              className={errors.mediaType ? styles.inputError : ""}
+            >
+              {MEDIA_TYPES.map((m) => (
+                <option key={m.value} value={m.value}>{m.label} · {m.value}</option>
+              ))}
+            </select>
+            {errors.mediaType && <span className={styles.fieldError}>{errors.mediaType}</span>}
+            {!errors.mediaType && (
               <span className={styles.fieldHint}>
-                {letterLocked
-                  ? `Locked, ${countByPlacementId[editingPlacement?.id] || 0} ISCI code${(countByPlacementId[editingPlacement?.id] || 0) !== 1 ? "s" : ""} reference this letter.`
-                  : "4th character of every ISCI code created against this placement. Locks once the first code is created."}
+                {mediaTypeLocked
+                  ? `Locked, ${countByPlacementId[editingPlacement?.id] || 0} ISCI code${(countByPlacementId[editingPlacement?.id] || 0) !== 1 ? "s" : ""} use this media type.`
+                  : "4th character of every ISCI code created against this placement (T broadcast, D digital, R radio). Locks once the first code is created."}
               </span>
             )}
-            {letterLocked && (
+            {mediaTypeLocked && (
               <div className={styles.lockWarn}>
                 <IconWarn />
                 <div>
-                  <strong>Why it&apos;s locked:</strong> changing the letter would invalidate{" "}
+                  <strong>Why it&apos;s locked:</strong> changing the media type would invalidate{" "}
                   {countByPlacementId[editingPlacement?.id] || 0} existing ISCI code
                   {(countByPlacementId[editingPlacement?.id] || 0) !== 1 ? "s" : ""}.
                   The name and status are still editable.

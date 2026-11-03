@@ -62,20 +62,24 @@ isci-mgmt-system/
 
 ### ISCI Code Format
 
-**Auto-Generated Format**: `[BRAND(3)][PLACEMENT(1)][YEAR][NUMBER]`
+**Format**: `CLIENT(3) + MEDIA TYPE(1) + "-" + YY + SEQ`, plus `H` appended for media type `T`. Rules live in `app/utils/isci.js` (pure, used by client, server and the seed script).
 
-- **BRAND**: 3-letter client/brand code (e.g., `LVC`, `NIK`, `APL`)
-- **PLACEMENT**: 1-letter placement code (e.g., `B` for Broadcast, `S` for Social)
-- **YEAR**: 2-digit year (e.g., `25` for 2025)
-- **NUMBER**: Sequential 2-3 digit number, per brand + placement + year (pads to 2 digits for 1-99, uses 3 digits for 100+)
+- **CLIENT**: 3-letter client code (e.g., `LVC`)
+- **MEDIA TYPE**: `T` Broadcast, `D` Digital (social, CTV, streaming, everything that isn't broadcast or radio), `R` Radio
+- **YY**: 2-digit year
+- **SEQ**: sequential, pads to 2 digits for 1-99, 3 digits from 100
 
-**Examples**: `LVCB2501` (LVC / Broadcast / 2025 / 01), `NIKS2515`, `APLR25100`
+**Examples**: `LVCT-2517H`, `LVCD-2517`, `LVCR-2517`, `LVCD-25100`
 
-**Validation**: `/^[A-Z]{4}\d{4,5}$/` (8-9 characters). First 3 letters must match a Brand `code`; 4th letter must match a Placement `letter`.
+**Sequence scope**: independent per `(client, media type, year)`.
 
-**Sequence scope**: independent per `(brandCode, placementLetter, year)` — so LVCB2501, LVCS2501, LVCB2502 are all valid concurrent codes.
+**Legacy SO codes**: `SO` + 3-4 letters + optional `-` + YY + SEQ (`SOLVC-2517`, `SOLVCV-2517`). Retired for new codes, valid forever, never changed. They count toward that client's `D` sequence, so after `SOLVC-2517` the next LVC digital code for 25 is `LVCD-2518`.
 
-**Implementation**: See `app/components/ISCIForm/ISCIForm.jsx` — `generateISCICode(brandCode, placementLetter)`.
+**Pending with media** (settings in `app/config.js`, defined in `app/utils/isciSettings.js`): `ISCI_HYPHEN` (new codes include the `-`) and `ISCI_BROADCAST_H` (new `T` codes get the `H`). They only change what is generated; parsing accepts every variant.
+
+**Identity**: duplicates and lookups compare `isciKey(code)` (client, type, yy, seq, with legacy as `D`), so `LVCT2517` equals `LVCT-2517H` and `SOLVC-2517` equals `LVCD-2517`. Filenames use `fileNameCode(code)` (no hyphen).
+
+**Allocation**: the server assigns new codes. `POST /api/isci` calls `allocateCodes(tx, { brandId, placementId, yy, count })` in `app/lib/isciAllocator.server.js` (batch-ready for the matrix tool) and retries on a unique collision. The create form only previews the next code. An explicit code is accepted only if valid, matching the client and the placement's media type, and not a duplicate. PUT and import use the same checks.
 
 ### User Management & Authentication
 
@@ -126,7 +130,7 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 ### Import/Export System
 
-**Location**: `/tools` page, "Data" group (admins and editors; Import is admin-only). Each tool lives in its own folder under `app/containers/Tools/`; add new tools to the `GROUPS` list in `Tools.jsx`.
+**Location**: `/tools` page, "Data" group (admins and editors; Import is admin-only); the "Production" group holds the deliverables matrix. Each tool lives in its own folder under `app/containers/Tools/`; add new tools to the `GROUPS` list in `Tools.jsx`.
 
 **Reports** (`/reports`, admins and editors) is Insights only: Data quality, Placement mix, Cutdown families, Creation trend.
 
@@ -136,9 +140,23 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 **CSV Format**: ISCI Code, Client, Campaign Name, Job Number, Spot Title, Description, Air Date, Market, Agency, Language, Spot Length, Aspect Ratio, File Format, Placement, Audio, Accessibility, Music Rights, Created At, Updated At
 
-**Required**: The `Placement` column must be present on import (value may be placement name or its single-letter code). Legacy `Channel` header still resolves for backward compatibility.
+**Required**: The `Placement` column must be present on import (the placement name). Legacy `Channel` header still resolves for backward compatibility.
 
 **API Endpoint**: `POST /api/isci/import` - Handler: `app/routes/api.isci.import.js`
+
+### Deliverables matrix tool
+
+**Location**: `/tools`, "Production" group, "Deliverables matrix" (the default tab; admins and editors). Ported from the editors' ISCI Wiz (`docs/research/`), without its ISCI-log step: the database is the log.
+
+**Flow**: Job (job number `######.##`, client, optional campaign, year) → Matrix (drop an .xlsx/.xlsm, check the matched columns, set each placement group's ISCI placement, platform and include switch) → Tune-up (edit titles, lengths, sizes and languages once for all rows) → Review (preview, then "Save codes and download matrix"). State is React only; changing the client or year after a file is loaded starts the matrix over.
+
+**Library**: plain modules in `app/containers/Tools/Matrix/lib/` (workbook read, extract and group, normalizers and suggestions, surgical XLSX writer, filename wrapper). It is loaded with a dynamic `import()` when a file is dropped, so jszip (3.10.1) ships in its own chunk. The XML parser is the browser `DOMParser`; node tests inject one with `setDOMParser()`. Existing codes in a row are detected with `findISCICodes` from `app/utils/isci.js`, and a row that already has a code is skipped.
+
+**Filenames**: `buildFileName` in `app/utils/fileName.js`, the same builder as ISCIForm (empty segments are dropped in the matrix). The platform is not part of the filename.
+
+**Batch endpoint**: `POST /api/isci/batch` (`api.isci.batch.js`, logic in `app/lib/isciBatch.server.js`). One transaction: reuse an existing code when client, year, media type, title, length, aspect, language and platform all match, otherwise allocate. Codes already in the matrix count as taken. `preview: true` writes nothing, and the workbook is always written from the non-preview response. Like the other API routes it has no server-side role check.
+
+**Languages**: full names with an optional region in brackets (`Spanish (US)`, `English (UK, Canada)`); textless masters use `Clean`. Lengths are whole seconds, aspect ratios look like `16:9`.
 
 ### Brand/Client Management
 
@@ -150,19 +168,19 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 ### Placement Management
 
-Placements are the second half of the ISCI code prefix. Each carries a single uppercase letter that becomes the 4th character of every code.
+Each placement carries a media type (`T`, `D` or `R`) that becomes the 4th character of every code created against it. Placements are descriptive labels under a fixed media type: they feed the filename and reports, never the code. Admins can add more in Admin → Placements, always picking T, D or R.
 
-**Placement Data Structure**: `id`, `name` (unique), `letter` (unique, 1 uppercase letter), `active`, `createdAt`, `updatedAt`
+**Placement Data Structure**: `id`, `name` (unique), `mediaType` (`T` | `D` | `R`), `active`, `createdAt`, `updatedAt`
 
-**Letter Requirements**: Single uppercase A–Z, globally unique across all placements
+**Media type lock**: changing a placement's media type is blocked once any ISCI code uses it (the API enforces it, like delete).
 
-**Defaults seeded**: Broadcast (B), Social (S), Digital (D), Radio (R), Print (P), OOH (O), Cinema (C), Other (X)
+**Defaults seeded**: Broadcast (T), Digital (D), Radio (R)
 
 **Storage**: Prisma database (Placement model). Managed from Admin → Placements.
 
 ### ISCI Code Data Structure
 
-**Key Fields**: `id`, `code`, `brandId`, `placementId`, `brand`, `placement { id, name, letter }`, `campaignName`, `jobNumber`, `spotTitle`, `spotLength`, `description`, `language`, `closedCaptioning`, `audio`, `fileFormat`, `airDate`, `aspectRatio`, `musicRights`, `agency`, `market`, `createdAt`, `updatedAt`, `completedAt`
+**Key Fields**: `id`, `code`, `brandId`, `placementId`, `brand`, `placement { id, name, mediaType }`, `campaignName`, `jobNumber`, `spotTitle`, `spotLength`, `description`, `language`, `closedCaptioning`, `audio`, `fileFormat`, `airDate`, `aspectRatio`, `musicRights`, `agency`, `market`, `platform`, `createdAt`, `updatedAt`, `completedAt`
 
 **Storage**: Prisma database (ISCICode model). Consumers read placement as `code.placement?.name` — the free-text `channel` column was removed in 1.2.0.
 
@@ -180,7 +198,7 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 - Scales: `--text-xs` … `--text-2xl`, `--radius-sm` … `--radius-pill`, `--shadow-card`, `--shadow-drawer`
 - In dark mode the frame is deliberately lighter than the cards so panels stand out.
 
-**Fonts**: Figtree (UI) and JetBrains Mono (ISCI codes, client codes, placement letters, hex values, file names, `kbd` only).
+**Fonts**: Figtree (UI) and JetBrains Mono (ISCI codes, client codes, media types, hex values, file names, `kbd` only).
 
 **Global Button Classes** (`app/styles/app.scss`, the only button styles): `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-text`, `.btn-icon`, `.btn-icon-danger`
 
@@ -206,7 +224,7 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 | `/edit/:code` | `edit.jsx` | EditISCI | Edit an ISCI code (admins and editors; viewers redirect to `/isci/:code`) |
 | `/login` | `login.jsx` | Login | User authentication page (shows demo credentials on purpose) |
 | `/profile` | `profile.jsx` | Profile | User profile management (protected) |
-| `/tools` | `tools.jsx` | Tools | Export and import (admins and editors; Import is admin-only) |
+| `/tools` | `tools.jsx` | Tools | Deliverables matrix, export and import (admins and editors; Import is admin-only) |
 | `/reports` | `reports.jsx` | Reports | Insights (admins and editors) |
 | `/admin` | `admin.jsx` | BrandManager, PlacementManager, AgencyManager, UserManager | Brand, placement, agency, and user management (admin-only) |
 
@@ -221,6 +239,7 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 - **PUT /api/isci/:id** - Update ISCI code (`api.isci.js`)
 - **DELETE /api/isci/:id** - Delete ISCI code (`api.isci.js`)
 - **POST /api/isci/import** - Import from CSV (`api.isci.import.js`) - Modes: add/update/replace
+- **POST /api/isci/batch** - Assign or reuse codes for matrix rows, with `preview` (`api.isci.batch.js`)
 - **GET /api/isci/languages** - Distinct languages used across codes (`api.isci.languages.js`)
 
 #### Agencies
@@ -315,10 +334,10 @@ npm run seed:demo        # Dry run of the demo seed (add -- --apply to write)
 2. **No Tailwind**: Custom SCSS with CSS Modules
 3. **CSS Modules**: Scoped styling with camelCase class names
 4. **Modern Sass**: Use `@use` syntax, not `@import`
-5. **Auto-Generation**: ISCI codes auto-generated on create (editable on edit)
+5. **Code assignment**: the server assigns ISCI codes on create (the form previews them); codes are locked on edit
 6. **Brand Codes**: Must be exactly 3 uppercase letters and unique
 7. **Database**: Uses Prisma ORM - modify schema in `prisma/schema.prisma`
-8. **ISCI Code Format**: `[BRAND(3)][PLACEMENT(1)][YEAR][NUMBER]` format enforced
+8. **ISCI Code Format**: `CLIENT + MEDIA TYPE + "-" + YY + SEQ` (+ `H` for broadcast), see ISCI Code Format
 9. **Component Structure**: Components (presentational) vs Containers (logic)
 10. **Theme**: Light (default) and dark, toggled in the header; see Theming & Design System
 11. **Form Behavior**: ISCIForm adapts to create/edit/view modes based on user role
@@ -338,7 +357,7 @@ npm run seed:demo        # Dry run of the demo seed (add -- --apply to write)
 
 ### Creating a New ISCI Code
 1. Navigate to `/` → Click "+ New ISCI Code"
-2. Select brand → Code auto-generates
+2. Select client and placement → the form previews the code; the server assigns it on save
 3. Fill required fields (Spot Title) → Submit
 4. New code saved to database
 

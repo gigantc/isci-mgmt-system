@@ -3,12 +3,17 @@ import { useNavigate } from "react-router";
 import { useFetchData, useSession } from "@/hooks";
 import Export from "./Export";
 import Import from "./Import";
+import Matrix from "./Matrix";
 import styles from "./Tools.module.scss";
 
 const TAB_KEY = "isciz-tools-tab";
 
 // Sidebar groups. Add a tool by adding an item here and rendering it below.
 const GROUPS = [
+  {
+    label: "Production",
+    items: [{ id: "matrix", label: "Deliverables matrix", adminOnly: false }],
+  },
   {
     label: "Data",
     items: [
@@ -21,7 +26,7 @@ const GROUPS = [
 const Tools = () => {
   const navigate = useNavigate();
   const { user, ready, isViewer, isAdmin: isUserAdmin } = useSession();
-  const [activeTab, setActiveTab] = useState("export");
+  const [activeTab, setActiveTab] = useState("matrix");
 
   const { data: codes, loading: codesLoading, refetch: loadData } = useFetchData("/api/isci");
   const { data: brands, loading: brandsLoading } = useFetchData("/api/brands");
@@ -42,6 +47,7 @@ const Tools = () => {
       const stored = window.localStorage.getItem(TAB_KEY);
       const isAdmin = isUserAdmin;
       if (
+        stored === "matrix" ||
         stored === "export" ||
         (stored === "import" && isAdmin)
       ) {
@@ -77,6 +83,9 @@ const Tools = () => {
 
       <main className={styles.main}>
         <div className={styles.scrollableContent}>
+          {activeTab === "matrix" && (
+            <Matrix brands={brands} placements={placements} onSaved={loadData} />
+          )}
           {activeTab === "export" && (
             <Export
               codes={codes}
@@ -92,6 +101,7 @@ const Tools = () => {
 
         <footer className={styles.footer}>
           <div>
+            {activeTab === "matrix" && "Deliverables matrix"}
             {activeTab === "export" && `${codes.length} ${codes.length === 1 ? "code" : "codes"} available`}
             {activeTab === "import" && "CSV import"}
           </div>
