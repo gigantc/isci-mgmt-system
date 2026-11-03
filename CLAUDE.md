@@ -22,7 +22,7 @@ The ISCI Management System is a web application for managing ISCI (Industry Stan
 - **Styling**: Sass (SCSS) with CSS Modules and modern `@use` syntax; design tokens are CSS custom properties (see [docs/design-system.md](docs/design-system.md))
 - **Build Tool**: Vite
 - **Server**: React Router SSR
-- **Database**: Prisma ORM with SQLite (local) / PostgreSQL (production)
+- **Database**: Prisma ORM with PostgreSQL (local and production; Postgres 16)
 - **Authentication**: Simple session-based auth using sessionStorage (POC only)
 
 ## Project Structure
@@ -31,8 +31,8 @@ The ISCI Management System is a web application for managing ISCI (Industry Stan
 isci-mgmt-system/
 ├── app/
 │   ├── components/        # Reusable UI (ISCIForm, ISCIList, CodeLayout, Modal, Icons, the Admin managers, etc.)
-│   ├── containers/        # Page containers with logic (Dashboard, CreateISCI, EditISCI, Detail, Admin, Reports, Profile, Login, Header)
-│   ├── routes/            # Route handlers and API endpoints (home, admin, reports, isci, api.*)
+│   ├── containers/        # Page containers with logic (Dashboard, CreateISCI, EditISCI, Detail, Admin, Tools, Reports, Profile, Login, Header)
+│   ├── routes/            # Route handlers and API endpoints (home, admin, tools, reports, isci, api.*)
 │   ├── hooks/             # Custom React hooks (useSession, useFetchData, useResourceManager, etc.)
 │   ├── utils/             # Utility functions (auth.js, api.js, dates.js, palette.js, etc.)
 │   ├── lib/               # Library instances (prisma.js)
@@ -94,13 +94,13 @@ isci-mgmt-system/
 
 ### Role-Based Access Control
 
-| Role | Codes | Reports | Admin |
-|------|-------|---------|-------|
-| `admin` | Create, edit, delete | Export and import | Yes |
-| `editor` | Create and edit (no delete) | Export only | No |
-| `viewer` | Read-only (Detail view) | No | No |
+| Role | Codes | Tools | Reports | Admin |
+|------|-------|-------|---------|-------|
+| `admin` | Create, edit, delete | Export and import | Yes | Yes |
+| `editor` | Create and edit (no delete) | Export only | Yes | No |
+| `viewer` | Read-only (Detail view) | No | No | No |
 
-**Implementation**: Header links render only once `ready`. Viewers hitting `/edit/:code` are redirected to `/isci/:code`; `/create`, `/reports` and `/admin` redirect non-permitted roles to `/`. Logged-out users go to `/login`.
+**Implementation**: Header links render only once `ready`. Viewers hitting `/edit/:code` are redirected to `/isci/:code`; `/create`, `/tools`, `/reports` and `/admin` redirect non-permitted roles to `/`. Logged-out users go to `/login`.
 
 ### Custom Hooks (Reusable Logic)
 
@@ -112,12 +112,12 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 | Hook | Purpose | Used By | Lines |
 |------|---------|---------|-------|
-| `useSession` | Hydration-safe current user + role flags | Header, Dashboard, ISCIList, CmdK, code pages, Admin, Reports, Profile | ~50 |
-| `useFetchData` | Eliminates duplicate fetch patterns with loading/error states | ISCIForm, Dashboard, Reports | 97 |
+| `useSession` | Hydration-safe current user + role flags | Header, Dashboard, ISCIList, CmdK, code pages, Admin, Tools, Reports, Profile | ~50 |
+| `useFetchData` | Eliminates duplicate fetch patterns with loading/error states | ISCIForm, Dashboard, Tools | 97 |
 | `useResourceManager` | Consolidates CRUD operations for manager components | BrandManager, UserManager, AgencyManager | 298 |
 | `useFormState` | Centralized form state management with validation | (Created, not yet used) | 170 |
-| `useExportData` | Data export with filtering and CSV generation | Reports | 208 |
-| `useImportData` | CSV file imports with preview and validation | Reports | 220 |
+| `useExportData` | Data export with filtering and CSV generation | Tools (Export) | 208 |
+| `useImportData` | CSV file imports with preview and validation | Tools (Import) | 220 |
 | `useConfirmDialog` | Promise-based confirmation dialogs | All delete operations | ~80 |
 
 **Impact**: 72% code reduction in manager components (BrandManager: 293→82 lines, UserManager: 353→100 lines)
@@ -126,7 +126,9 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 ### Import/Export System
 
-**Location**: `/reports` page (admins and editors; Import is admin-only). Reports also has Insights views: Data quality, Placement mix, Cutdown families, Creation trend.
+**Location**: `/tools` page, "Data" group (admins and editors; Import is admin-only). Each tool lives in its own folder under `app/containers/Tools/`; add new tools to the `GROUPS` list in `Tools.jsx`.
+
+**Reports** (`/reports`, admins and editors) is Insights only: Data quality, Placement mix, Cutdown families, Creation trend.
 
 **Export**: Filter by date, client, placement and spot length, with a preview table; CSV export with all fields
 
@@ -183,7 +185,7 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 **Global Button Classes** (`app/styles/app.scss`, the only button styles): `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-text`, `.btn-icon`, `.btn-icon-danger`
 
 **Shared layout**:
-- `_shell.scss` mixins: sidebar + floating main card + page head + footer (Dashboard, Admin, Reports)
+- `_shell.scss` mixins: sidebar + floating main card + page head + footer (Dashboard, Admin, Tools, Reports)
 - `_manager.scss` mixins: shared Admin manager styles (Brand, Placement, Agency, User)
 - `CodeLayout` + `AsideSection` components: page frame for Create, Edit, Detail and Profile (form column + 320px aside)
 - `Modal` component: shared dialog surface (ConfirmDialog, About)
@@ -204,7 +206,8 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 | `/edit/:code` | `edit.jsx` | EditISCI | Edit an ISCI code (admins and editors; viewers redirect to `/isci/:code`) |
 | `/login` | `login.jsx` | Login | User authentication page (shows demo credentials on purpose) |
 | `/profile` | `profile.jsx` | Profile | User profile management (protected) |
-| `/reports` | `reports.jsx` | Reports | Export, import (admin-only) and insights (admins and editors) |
+| `/tools` | `tools.jsx` | Tools | Export and import (admins and editors; Import is admin-only) |
+| `/reports` | `reports.jsx` | Reports | Insights (admins and editors) |
 | `/admin` | `admin.jsx` | BrandManager, PlacementManager, AgencyManager, UserManager | Brand, placement, agency, and user management (admin-only) |
 
 ### API Endpoints
@@ -274,7 +277,7 @@ Styles use the CSS custom-property tokens directly (`color: var(--ink-1)`). Shar
 - Container components manage data flow
 
 ### Data Persistence
-Uses Prisma ORM with SQLite (local) / PostgreSQL (production). See `prisma/schema.prisma` for models.
+Uses Prisma ORM with PostgreSQL (local and production). See `prisma/schema.prisma` for models. Schema changes go through `npx prisma migrate dev`; `prisma/migrations/` holds the Postgres baseline (`init`) and later migrations. The old SQLite migrations are archived in `prisma/migrations_sqlite_archive/` (reference only).
 
 ---
 
@@ -286,7 +289,8 @@ npm run dev              # Start dev server (with HMR)
 npm run build            # Build for production
 npm run preview          # Preview production build
 npx prisma studio        # Open Prisma Studio (database GUI)
-npx prisma migrate dev   # Run database migrations
+npx prisma migrate dev   # Create/apply migrations to the local Postgres DB
+npm run seed:demo        # Dry run of the demo seed (add -- --apply to write)
 ```
 
 ---
@@ -385,11 +389,24 @@ npx prisma migrate reset  # Reset database (destructive)
 npx prisma studio         # GUI to inspect database
 ```
 
+### Local database setup
+
+```bash
+brew install postgresql@16
+brew services start postgresql@16
+/opt/homebrew/opt/postgresql@16/bin/createdb isciz_dev
+# .env: DATABASE_URL="postgresql://<your-user>@localhost:5432/isciz_dev?schema=public"
+npx prisma migrate dev
+npm run seed:demo -- --apply
+```
+
+The Postgres binaries are keg-only: call them by full path (`/opt/homebrew/opt/postgresql@16/bin/psql`, `pg_dump`) or add that directory to `PATH`. The seed upserts demo users, agencies and placements (create-only) and reseeds brands and codes; see the header of `scripts/seedDemoData.js`.
+
 ---
 
 ## Production Deployment
 
-**Live URL**: http://54.158.87.192
+**Live URL**: https://54-158-87-192.sslip.io (Let's Encrypt cert via certbot; the bare IP returns 404)
 **Platform**: AWS EC2 (Ubuntu 24.04 LTS), PM2, Nginx
 
 **Quick Deploy**:
@@ -414,7 +431,7 @@ pm2 status && pm2 logs isci-mgmt
 - [ ] Brand usage statistics
 - [ ] Automatic year rollover handling
 - [x] Exportable Slate feature (1920x1080 JPG)
-- [ ] SSL/HTTPS setup
+- [x] SSL/HTTPS setup
 - [ ] S3 backups
 
 ---

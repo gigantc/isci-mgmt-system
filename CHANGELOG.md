@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Tools section
+
+#### Added
+- **Tools page** (`/tools`, admins and editors): a home for workflow tools, with a sidebar grouped by tool type. Export and Import sit under "Data"; Import stays admin-only.
+- **Tools** link in the header (Dashboard, Tools, Reports, Admin) and in Cmd+K.
+- **`npm run seed:demo`** (`scripts/seedDemoData.js`): replaces the demo brands with R&R's real client list (36 clients) and generates about 100 fake ISCI codes for them. Dry run by default; `--apply` wipes and reseeds codes and brands. Users, agencies and placements are untouched.
+
+#### Changed
+- **Export and Import moved from Reports to Tools.** Each now lives in its own folder (`app/containers/Tools/Export`, `Tools/Import`) with shared tool styles in `Tools/_tool.scss` and CSV headers in `Tools/csv.js`. No behavior changes.
+- **Reports is Insights only**, defaulting to Data quality.
+- **Local dev now runs on Postgres 16**, matching production. The old SQLite migrations moved to `prisma/migrations_sqlite_archive/`, replaced by a single Postgres `init` baseline; `seed:demo` also create-only seeds demo users, agencies and placements.
+
+---
+
 ## [1.3.1] - 2026-10-22
 
 ### Design Polish

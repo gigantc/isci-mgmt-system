@@ -1,0 +1,58 @@
+@use "@/styles/shell";
+
+// Styles shared by every tool (Export, Import, ...). Each tool module includes
+// this once so its class names stay unprefixed and resolve through CSS Modules.
+@mixin tool {
+  @include shell.head;
+
+  // ── Section frame (each tool) ───────────────────────────────────────────────
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  // The section is a flex column, so the head must not shrink.
+  .pgHead { flex-shrink: 0; }
+
+  .scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0.25rem 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  // ── Card ────────────────────────────────────────────────────────────────────
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .cardHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-bottom: 0.625rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .cardTitle {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+  }
+}

@@ -5,7 +5,7 @@ Complete guide for deploying the ISCI Management System to AWS EC2.
 ## Current Production Environment
 
 - **Platform**: AWS EC2 (Ubuntu 24.04 LTS)
-- **Live URL**: http://54.158.87.192
+- **Live URL**: https://54-158-87-192.sslip.io (the bare IP is no longer served)
 - **Node.js**: v20.20.0
 - **Database**: PostgreSQL 16.11
 - **ORM**: Prisma
@@ -30,7 +30,7 @@ Nginx reverse proxy configuration
 - Proxies requests from port 80 to Node.js app on port 3000
 - Serves static assets directly (build/client/assets/, uploads/)
 - Includes gzip compression, security headers, and WebSocket support
-- **Note**: Contains placeholder `yourdomain.com` - replace before SSL setup
+- **Note**: The repo copy is a template with `yourdomain.com` placeholders. The live config is `/etc/nginx/sites-available/isci-mgmt` on the server, with `server_name 54-158-87-192.sslip.io` and the SSL blocks certbot added.
 
 ### 3. deploy.sh
 Automated deployment script
@@ -178,6 +178,27 @@ npx prisma generate
 # Push schema to database (creates all tables)
 npx prisma db push
 ```
+
+### Baseline migrations (one time)
+
+Production's schema was created with `prisma db push`, so `_prisma_migrations` is empty and `prisma migrate deploy` has no history to work from. Mark the Postgres `init` baseline as already applied, once, on the server:
+
+```bash
+cd /var/www/isci-mgmt-system
+set -a; source .env; set +a
+
+# 1. Backup first
+pg_dump "$DATABASE_URL" > ~/isci_pre_baseline_$(date +%Y%m%d).sql
+
+# 2. Confirm prod already matches the schema. This MUST print an empty migration
+#    ("-- This is an empty migration."). If it prints any SQL, stop and investigate.
+npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --script
+
+# 3. Record the baseline as applied (no SQL is run)
+npx prisma migrate resolve --applied <init folder name>   # e.g. 20261103172155_init
+```
+
+After that, `migrate deploy` in `deploy.sh` works normally and applies only newer migrations.
 
 ### Data Migration
 
@@ -355,9 +376,9 @@ pm2 monit
 
 4. **Logs**: PM2 logs are written to `/var/www/isci-mgmt-system/logs/` and are excluded from git via `.gitignore`.
 
-5. **SSL/HTTPS**: Not yet configured. When ready, update nginx.conf with domain name and follow Let's Encrypt setup instructions.
+5. **SSL/HTTPS**: Configured (Let's Encrypt via certbot for `54-158-87-192.sslip.io`). See "SSL/HTTPS Setup" below.
 
-6. **Security**: Security groups should allow SSH (port 22) from your IP only, and HTTP (port 80) from anywhere. HTTPS (port 443) will be needed when SSL is configured.
+6. **Security**: Security groups should allow SSH (port 22) from your IP only, and HTTP (port 80) from anywhere. HTTPS (port 443) from anywhere.
 
 ## Server Management Commands
 
@@ -422,15 +443,23 @@ npm install                   # Try manual install
 npm run build                 # Try manual build
 ```
 
-## SSL/HTTPS Setup (TODO)
+## SSL/HTTPS Setup
 
-When ready to configure SSL:
-1. Register a domain name
-2. Update nginx.conf with your domain (replace `yourdomain.com`)
-3. Install Certbot: `sudo apt install certbot python3-certbot-nginx`
-4. Obtain SSL certificate: `sudo certbot --nginx -d yourdomain.com`
-5. Configure auto-renewal: `sudo certbot renew --dry-run`
-6. Update security groups to allow HTTPS (port 443)
+Configured on 2026-10-22 with an [sslip.io](https://sslip.io) hostname (no registered domain needed):
+
+- **Hostname**: `54-158-87-192.sslip.io` (resolves to the EC2 IP)
+- **Certificate**: Let's Encrypt via certbot (nginx plugin). Auto-renews; certbot's renewal timer handles it.
+- **nginx**: `server_name 54-158-87-192.sslip.io;` in `/etc/nginx/sites-available/isci-mgmt`. Certbot added the `listen 443 ssl` block and an HTTP → HTTPS redirect. Requests to the bare IP return 404 (intentional; share the sslip.io link).
+- **Security group**: ports 80 and 443 open to anywhere (80 is needed for the redirect and for certificate renewal).
+
+Steps used, for reference or for moving to a real domain later:
+1. Open port 443 in the EC2 security group
+2. Set `server_name` in the live nginx site config, then `sudo nginx -t && sudo systemctl reload nginx`
+3. `sudo apt install -y certbot python3-certbot-nginx`
+4. `sudo certbot --nginx -d <hostname>` (choose the redirect option)
+5. `sudo certbot renew --dry-run` to confirm renewal
+
+If the EC2 public IP ever changes, the sslip.io hostname changes with it: set the new `server_name` and rerun certbot.
 
 ## Backup Strategy
 

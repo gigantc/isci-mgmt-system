@@ -1,0 +1,251 @@
+@use "@/containers/Tools/tool";
+
+@include tool.tool;
+
+// ── Import: mode cards ────────────────────────────────────────────────────────
+
+.modeOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modeCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+
+  &:hover {
+    border-color: var(--line-strong);
+    background: var(--paper-1);
+  }
+
+  &:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-ring); }
+}
+
+// Selected state: accent border plus ring, no border-width change.
+.modeCardOn {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+
+  .modeRadioDot { opacity: 1; }
+  .modeRadio { border-color: var(--accent); }
+}
+
+.modeCardDanger {
+  &.modeCardOn {
+    border-color: var(--danger);
+    background: var(--danger-soft);
+    box-shadow: 0 0 0 3px var(--danger-soft);
+
+    .modeRadio { border-color: var(--danger); }
+    .modeRadioDot { background: var(--danger); }
+    .modeLabel { color: var(--danger-ink); }
+  }
+}
+
+.modeRadio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.modeRadioDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.modeText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.modeLabel {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.modeDesc {
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+
+// ── Import: file dropzone ─────────────────────────────────────────────────────
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--paper-1);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+
+  svg {
+    width: 28px;
+    height: 28px;
+    color: var(--ink-2);
+  }
+
+  &:hover {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+
+    svg { color: var(--accent-ink); }
+  }
+}
+
+.dropzoneFilled {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+
+  svg { color: var(--accent-ink); }
+}
+
+// Drag-over is shown with a ring so the border width never changes.
+.dropzoneDragOver {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+  cursor: copy;
+
+  svg { color: var(--accent-ink); }
+}
+
+.dropzoneText {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--ink);
+  word-break: break-all;
+}
+
+.dropzoneHint {
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
+// ── Import: preview row ───────────────────────────────────────────────────────
+
+.previewRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper-1);
+  flex-wrap: wrap;
+}
+
+.previewItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.previewLabel {
+  font-size: var(--text-xs);
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.previewValue {
+  font-size: var(--text-md);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
+// ── Import: result card ───────────────────────────────────────────────────────
+
+.resultCard {
+  border-width: 1px;
+}
+
+.resultSuccess {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+
+  .cardHead { border-bottom-color: var(--ok); }
+  .cardTitle { color: var(--ok-ink); }
+}
+
+.resultError {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+
+  .cardHead { border-bottom-color: var(--danger); }
+  .cardTitle { color: var(--danger-ink); }
+}
+
+.resultMessage {
+  margin: 0;
+  font-size: var(--text-md);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.errorList {
+  font-size: var(--text-sm);
+  color: var(--ink-1);
+  line-height: 1.6;
+
+  ul {
+    margin: 0.25rem 0 0;
+    padding-left: 1.25rem;
+  }
+}
+
+.errorListTitle {
+  margin: 0;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.errorListMore {
+  margin: 0.25rem 0 0;
+  color: var(--ink-2);
+}

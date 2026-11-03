@@ -12,7 +12,8 @@
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "migrate:data": "node scripts/migrateJsonToDb.js",
-    "db:studio": "npx prisma studio"
+    "db:studio": "npx prisma studio",
+    "seed:demo": "node scripts/seedDemoData.js"
   },
   "dependencies": {
     "@prisma/client": "6.19.2",

@@ -22,7 +22,10 @@ export default [
   // Admin panel - manages brands/clients
   route("admin", "routes/admin.jsx"),
 
-  // Reports page - data export/import
+  // Tools page - data export/import
+  route("tools", "routes/tools.jsx"),
+
+  // Reports page - insights
   route("reports", "routes/reports.jsx"),
 
   // User profile page
