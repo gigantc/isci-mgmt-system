@@ -161,12 +161,6 @@ export const PLATFORMS = [
   [/samsung/i, "Samsung"], [/vizio/i, "Vizio"], [/effectv/i, "Effectv"], [/comcast/i, "Comcast"], [/\bespn\b/i, "ESPN"], [/\bfubo\b/i, "Fubo"],
 ];
 
-export const CHANNELS = [
-  [/\bctv\b|connected\s*tv/i, "CTV"], [/\bott\b/i, "OTT"], [/pre\s*-?\s*roll/i, "Preroll"], [/\bolv\b|online\s*video/i, "OLV"],
-  [/stream\w*\s*(radio|audio)|(radio|audio)\s*stream|digital\s*audio|podcast/i, "Audio"], [/display/i, "Display"], [/social/i, "Social"], [/\bdooh\b/i, "DOOH"],
-  [/cinema/i, "Cinema"], [/\bradio\b/i, "Radio"], [/broadcast|\btv\b/i, "Broadcast"],
-];
-
 export const firstPlatform = (t) => {
   let best = null;
   let pos = 1e9;
@@ -180,37 +174,21 @@ export const firstPlatform = (t) => {
   return best;
 };
 
-const firstChannel = (t) => {
-  for (const [rx, label] of CHANNELS) if (rx.test(t)) return label;
-  return null;
-};
-
 export const partnerShort = (p) => {
   const first = String(p || "").split(/\n/).find((l) => l.trim()) || "";
   return str(first).slice(0, 80);
 };
 
+// The partner name alone (Comcast, Hulu, Meta...), or null when none is recognized.
+// Looks at the placement text first, then the partner/notes text, then the first specs line.
 export const suggestPlatform = (placement, partner, specs) => {
-  const pp = firstPlatform(placement);
-  let part = partner && !/^https?:/i.test(partner) ? firstPlatform(partner) : null;
-  if (!part && specs) part = firstPlatform(String(specs).split(/\n/)[0]); // e.g. "CTV The Trade Desk" in the template's SPECS column
-  const ch = firstChannel(placement);
-  if (pp) return pp;
-  if (/\bsrt\b/i.test(placement)) return "SRT";
-  if (/\bmasters?\b/i.test(placement)) return "Master";
-  if (ch === "Broadcast" && part) return part;
-  if (ch && part && ch !== "Social") return ch + "-" + part;
-  if (part) return part;
-  if (ch) return ch;
-  return (
-    str(placement)
-      .replace(/[^A-Za-z0-9 ]/g, " ")
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
-      .join("") || "Digital"
-  );
+  const fromPlacement = firstPlatform(String(placement || ""));
+  if (fromPlacement) return fromPlacement;
+  if (partner && !/^https?:/i.test(partner)) {
+    const fromPartner = firstPlatform(String(partner));
+    if (fromPartner) return fromPartner;
+  }
+  return specs ? firstPlatform(String(specs).split(/\n/)[0]) : null;
 };
 
 // ISCI media type for a placement group: T broadcast, R radio, otherwise D.

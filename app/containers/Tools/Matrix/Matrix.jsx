@@ -169,6 +169,12 @@ const Matrix = ({ brands, placements, onSaved }) => {
   const lib = libRef.current;
   const activeRows = useMemo(() => (lib ? lib.activeRows(rows, maps) : []), [lib, rows, maps]);
   const hdr = sheet.hdr;
+  // A sheet with a header but no spots to code is the blank template (its A1 says
+  // "template only", and some copies keep that text).
+  const hasSpots = rows.some((r) => r.kind === "spot");
+  const hasFilled = rows.some((r) => r.kind === "filled");
+  const a1 = sheet.grid ? String(sheet.grid.raw.get("1,1") || "") : "";
+  const isBlankTemplate = !!hdr && !hasSpots && (/template only/i.test(a1) || !hasFilled);
 
   const jobBlocker = () => {
     if (!JOB_RX.test(job.trim())) return "Add a valid job number.";
@@ -379,6 +385,7 @@ const Matrix = ({ brands, placements, onSaved }) => {
             maps={maps}
             placements={placements}
             onGroup={handleGroup}
+            isBlankTemplate={isBlankTemplate}
             blocker={matrixBlocker()}
             onBack={() => goTo(0)}
             onNext={() => goTo(2)}

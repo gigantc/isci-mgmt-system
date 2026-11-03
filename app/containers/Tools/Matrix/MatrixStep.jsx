@@ -20,7 +20,7 @@ const IconFile = () => (
 
 const MatrixStep = ({
   file, loading, loadError, onFile, wb, sheetIdx, onSheet, hdr, colOptions, jobCell, onColumn,
-  rows, maps, placements, onGroup, blocker, onBack, onNext,
+  rows, maps, placements, onGroup, isBlankTemplate, blocker, onBack, onNext,
 }) => {
   const [dragOver, setDragOver] = useState(false);
   const notes = rows.filter((r) => r.kind === "note").length;
@@ -71,11 +71,13 @@ const MatrixStep = ({
           <header className={styles.cardHead}>
             <h2 className={styles.cardTitle}>Columns matched</h2>
             {visibleSheets.length > 1 && (
-              <select value={sheetIdx} onChange={(e) => onSheet(Number(e.target.value))} aria-label="Sheet">
-                {visibleSheets.map(({ s, i }) => (
-                  <option key={i} value={i}>{s.name}</option>
-                ))}
-              </select>
+              <div className={styles.field}>
+                <select value={sheetIdx} onChange={(e) => onSheet(Number(e.target.value))} aria-label="Sheet">
+                  {visibleSheets.map(({ s, i }) => (
+                    <option key={i} value={i}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
             )}
           </header>
 
@@ -108,6 +110,18 @@ const MatrixStep = ({
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {isBlankTemplate && (
+        <div className={styles.card}>
+          <header className={styles.cardHead}>
+            <h2 className={styles.cardTitle}>This is the blank template</h2>
+          </header>
+          <p className={styles.helper}>
+            Make a copy for the job, fill in Spot length, Aspect ratio and Version for each deliverable under its placement, then drop that copy here.
+          </p>
+          <p className={styles.helper}>Rows with a length or aspect ratio are treated as spots; notes and spec rows are skipped.</p>
         </div>
       )}
 
@@ -158,7 +172,7 @@ const MatrixStep = ({
                       <td>
                         <input
                           type="text"
-                          value={g.platform}
+                          value={g.platform || ""}
                           onChange={(e) => onGroup(gk, { platform: e.target.value })}
                           aria-label={`Platform for ${g.placement}`}
                         />
