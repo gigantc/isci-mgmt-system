@@ -39,6 +39,8 @@ export function Layout({ children }) {
         <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Pre-launch: keep the app out of search engines (pairs with public/robots.txt). */}
+        <meta name="robots" content="noindex, nofollow" />
         <Meta />
         <Links />
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />

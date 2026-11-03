@@ -30,12 +30,12 @@ Nginx reverse proxy configuration
 - Proxies requests from port 80 to Node.js app on port 3000
 - Serves static assets directly (build/client/assets/, uploads/)
 - Includes gzip compression, security headers, and WebSocket support
-- **Note**: The repo copy is a template with `yourdomain.com` placeholders. The live config is `/etc/nginx/sites-available/isci-mgmt` on the server, with `server_name 54-158-87-192.sslip.io` and the SSL blocks certbot added.
+- **Note**: The repo copy mirrors the live config at `/etc/nginx/sites-available/isci-mgmt` (`server_name 54-158-87-192.sslip.io`, certbot's SSL lines, and a block that answers scanner probes like `/.env` and `wp-admin` with a 404 so they never reach Node). Edit it in the repo, then copy it to the server (steps at the top of the file).
 
 ### 3. deploy.sh
 Automated deployment script
 - Pulls latest code from GitHub
-- Installs dependencies with `npm install`
+- Installs dependencies with `npm ci` (exactly what `package-lock.json` says; never rewrites the lockfile)
 - Backs up data files before deployment
 - Builds application
 - Runs database migrations (`npx prisma generate` and `npx prisma migrate deploy`)
