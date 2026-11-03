@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useFetchData } from "@/hooks";
+import { formatISCI, nextSequence } from "@/utils/isci";
+import { buildFileName } from "@/utils/fileName";
 import { MARKET_OPTIONS, getMarketLabel, normalizeMarketValue } from "@/utils/markets";
 import styles from "./ISCIForm.module.scss";
 
@@ -17,37 +19,6 @@ const BASE_LANGUAGES = [
   "Arabic",
 ];
 
-// Sanitize a piece of the auto-generated File Name: strip characters that
-// are awkward in filenames, replace spaces with underscores, collapse repeats.
-const sanitizeFileNameSegment = (value) => {
-  if (value === null || value === undefined) return "";
-  return String(value)
-    .trim()
-    .replace(/[^A-Za-z0-9\s\-]/g, "") // drop punctuation, keep letters/digits/space/hyphen
-    .replace(/\s+/g, "_")
-    .replace(/_+/g, "_");
-};
-
-const FILE_NAME_TEMPLATE = [
-  { key: "code",         label: "ISCI",         get: (d) => d.code },
-  { key: "brand",        label: "Client",       get: (d) => d.brand },
-  { key: "campaignName", label: "Campaign",     get: (d) => d.campaignName },
-  { key: "spotTitle",    label: "Spot Title",   get: (d) => d.spotTitle },
-  { key: "language",     label: "Language",     get: (d) => d.language },
-  { key: "spotLength",   label: "Length",       get: (d) => (d.spotLength ? `${d.spotLength}s` : "") },
-  { key: "aspectRatio",  label: "Aspect Ratio", get: (d) => (d.aspectRatio ? String(d.aspectRatio).replace(":", "-") : "") },
-  { key: "placement",    label: "Placement",    get: (d) => d.placementName },
-];
-
-const buildFileName = (data) => {
-  return FILE_NAME_TEMPLATE
-    .map((seg) => {
-      const clean = sanitizeFileNameSegment(seg.get(data));
-      return clean || `[${seg.label}]`;
-    })
-    .join("_");
-};
-
 const capitalizeLanguage = (value) => {
   const trimmed = (value || "").trim();
   if (!trimmed) return "";
@@ -64,8 +35,9 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     brandId: "",
     brand: "",
     placementId: "",
-    placementLetter: "",
+    placementMediaType: "",
     placementName: "",
+    platform: "",
     campaignName: "",
     jobNumber: "",
     spotTitle: "",
@@ -133,6 +105,12 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     [dbLanguages]
   );
 
+  // Distinct platforms already used, offered as suggestions (free text still allowed).
+  const platformOptions = useMemo(
+    () => Array.from(new Set(allCodes.map((c) => c.platform).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
+    [allCodes]
+  );
+
   // Derived read-only File Name shown under Spot Title.
   const effectiveAspectRatio = aspectRatioChoice === "custom" ? customAspectRatio : aspectRatioChoice;
   const fileName = useMemo(
@@ -188,8 +166,9 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         brandId: code.brandId || "",
         brand: code.brand,
         placementId: code.placementId || "",
-        placementLetter: code.placement?.letter || "",
+        placementMediaType: code.placement?.mediaType || "",
         placementName: code.placement?.name || "",
+        platform: code.platform || "",
         campaignName: code.campaignName || "",
         jobNumber: code.jobNumber || "",
         spotTitle: code.spotTitle,
@@ -219,8 +198,9 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
         brandId: initialData.brandId || "",
         brand: initialData.brand || "",
         placementId: initialData.placementId || "",
-        placementLetter: initialData.placement?.letter || "",
+        placementMediaType: initialData.placement?.mediaType || "",
         placementName: initialData.placement?.name || "",
+        platform: initialData.platform || "",
         campaignName: initialData.campaignName || "",
         jobNumber: initialData.jobNumber || "",
         spotTitle: initialData.spotTitle || "",
@@ -257,39 +237,21 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     if (!sourceBrand || !sourcePlacement) return;
     setFormData(prev => ({
       ...prev,
-      code: generateISCICode(sourceBrand.code, sourcePlacement.letter),
+      code: previewISCICode(sourceBrand.code, sourcePlacement.mediaType),
     }));
   }, [code, initialData, brands, placements, allCodes, formData.code]);
 
-  // Sequence per brand + placement + year. Prefix is 3-letter brand code +
-  // 1-letter placement letter + 2-digit year (e.g. LVCB25).
-  const generateISCICode = (brandCode, placementLetter) => {
-    if (!brandCode || !placementLetter) return "";
-    const currentYear = new Date().getFullYear().toString().slice(-2);
-    const prefix = `${brandCode}${placementLetter}${currentYear}`;
-
-    let highestNumber = 0;
-    allCodes.forEach(c => {
-      if (!c.code || !c.code.startsWith(prefix)) return;
-      const tail = c.code.slice(prefix.length);
-      const match = tail.match(/^(\d+)$/);
-      if (match) {
-        const num = parseInt(match[1], 10);
-        if (num > highestNumber) highestNumber = num;
-      }
-    });
-
-    const nextNumber = highestNumber + 1;
-    const paddedNumber = nextNumber < 100 ? nextNumber.toString().padStart(2, '0') : nextNumber.toString();
-    return `${prefix}${paddedNumber}`;
+  // Preview only: the server assigns the real code on save. Same rules as the
+  // server (client + media type + year, legacy SO counts as digital).
+  const previewISCICode = (brandCode, mediaType) => {
+    if (!brandCode || !mediaType) return "";
+    const yy = new Date().getFullYear().toString().slice(-2);
+    const seq = nextSequence(allCodes.map((c) => c.code), brandCode, mediaType, yy);
+    return formatISCI({ client: brandCode, type: mediaType, yy, seq });
   };
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.code.trim()) {
-      newErrors.code = "ISCI code is required";
-    }
 
     if (!formData.brand.trim()) {
       newErrors.brand = "Client is required";
@@ -316,8 +278,8 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     const selectedBrand = brands.find(b => b.id === brandId);
 
     if (selectedBrand) {
-      const generatedCode = formData.placementLetter
-        ? generateISCICode(selectedBrand.code, formData.placementLetter)
+      const generatedCode = formData.placementMediaType
+        ? previewISCICode(selectedBrand.code, formData.placementMediaType)
         : "";
       setFormData(prev => ({
         ...prev,
@@ -346,12 +308,12 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
     if (selectedPlacement) {
       const selectedBrand = brands.find(b => b.id === formData.brandId);
       const generatedCode = selectedBrand
-        ? generateISCICode(selectedBrand.code, selectedPlacement.letter)
+        ? previewISCICode(selectedBrand.code, selectedPlacement.mediaType)
         : "";
       setFormData(prev => ({
         ...prev,
         placementId,
-        placementLetter: selectedPlacement.letter,
+        placementMediaType: selectedPlacement.mediaType,
         placementName: selectedPlacement.name,
         code: generatedCode,
       }));
@@ -359,7 +321,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
       setFormData(prev => ({
         ...prev,
         placementId: "",
-        placementLetter: "",
+        placementMediaType: "",
         placementName: "",
         code: "",
       }));
@@ -482,7 +444,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
                 <div className={styles.inputBadgeWrap}>
                   <input
                     type="text"
-                    value={formData.placementName ? `${formData.placementName} (${formData.placementLetter})` : ""}
+                    value={formData.placementName ? `${formData.placementName} · ${formData.placementMediaType}` : ""}
                     disabled
                     className={styles.disabledInput}
                     title="Changing the placement would break the code pattern"
@@ -506,7 +468,7 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
                   <option value="">Select a placement...</option>
                   {placements.map(p => (
                     <option key={p.id} value={p.id}>
-                      {p.name} ({p.letter})
+                      {p.name} · {p.mediaType}
                     </option>
                   ))}
                 </select>
@@ -553,24 +515,43 @@ const ISCIForm = ({ code, initialData, onSubmit, onCancel, allCodes, hideActions
                       name="code"
                       value={formData.code}
                       onChange={handleChange}
-                      placeholder="Auto-generated"
-                      maxLength={12}
+                      placeholder="Assigned when you save"
+                      maxLength={14}
                       readOnly
                       className={`${errors.code ? "error" : ""} ${styles.readonlyInput}`}
-                      title="Auto-generated based on client selection"
+                      title="Preview. The final code is assigned when you save"
                     />
                     <span
                       className={styles.inputBadge}
-                      title="Auto-generated based on client selection"
-                      aria-label="Auto"
+                      title="Preview. The final code is assigned when you save"
+                      aria-label="Preview"
                     >
-                      Auto
+                      Preview
                     </span>
                   </div>
                   {errors.code && <span className={styles.errorMessage}>{errors.code}</span>}
-                  <span className={styles.helpText}>Auto-generated: [CLIENT][PLACEMENT][YEAR][NUMBER]</span>
+                  <span className={styles.helpText}>Preview only. The code is assigned when you save: [CLIENT][MEDIA TYPE]-[YEAR][NUMBER]</span>
                 </>
               )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="platform">Platform</label>
+              <input
+                type="text"
+                id="platform"
+                name="platform"
+                value={formData.platform}
+                onChange={handleChange}
+                placeholder="e.g. Comcast, Hulu, Meta"
+                list="platform-options"
+                disabled={viewOnly}
+              />
+              <datalist id="platform-options">
+                {platformOptions.map((name) => (
+                  <option key={name} value={name} />
+                ))}
+              </datalist>
             </div>
           </div>
 

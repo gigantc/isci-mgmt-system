@@ -1,0 +1,19 @@
+@use "@/styles/shell";
+
+// ── Page shell (shared with Admin) ────────────────────────────────────────────
+
+.toolsPage {
+  @include shell.page;
+}
+
+@include shell.sidebar;
+@include shell.main;
+@include shell.footer;
+@include shell.footer-link;
+
+.scrollableContent {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

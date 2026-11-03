@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useFetchData } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
 import styles from "./PlacementMix.module.scss";
 
@@ -40,8 +39,7 @@ const buildMatrix = (codes) => {
   return { placements, rows, totals, grandTotal };
 };
 
-const PlacementMix = () => {
-  const { data: codes, loading } = useFetchData("/api/isci");
+const PlacementMix = ({ codes, loading }) => {
   const matrix = useMemo(() => buildMatrix(codes || []), [codes]);
 
   if (loading) {

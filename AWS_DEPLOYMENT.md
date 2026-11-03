@@ -5,7 +5,7 @@ Complete guide for deploying the ISCI Management System to AWS EC2.
 ## Current Production Environment
 
 - **Platform**: AWS EC2 (Ubuntu 24.04 LTS)
-- **Live URL**: http://54.158.87.192
+- **Live URL**: https://54-158-87-192.sslip.io (the bare IP is no longer served)
 - **Node.js**: v20.20.0
 - **Database**: PostgreSQL 16.11
 - **ORM**: Prisma
@@ -30,7 +30,7 @@ Nginx reverse proxy configuration
 - Proxies requests from port 80 to Node.js app on port 3000
 - Serves static assets directly (build/client/assets/, uploads/)
 - Includes gzip compression, security headers, and WebSocket support
-- **Note**: Contains placeholder `yourdomain.com` - replace before SSL setup
+- **Note**: The repo copy is a template with `yourdomain.com` placeholders. The live config is `/etc/nginx/sites-available/isci-mgmt` on the server, with `server_name 54-158-87-192.sslip.io` and the SSL blocks certbot added.
 
 ### 3. deploy.sh
 Automated deployment script
@@ -177,6 +177,46 @@ npx prisma generate
 
 # Push schema to database (creates all tables)
 npx prisma db push
+```
+
+### Baseline migrations (one time)
+
+Production's schema was created with `prisma db push`, so `_prisma_migrations` is empty and `prisma migrate deploy` has no history to work from. The first deploy that includes the Postgres baseline (v2.0.0) must mark `20261103172155_init` as already applied **before** `deploy.sh` runs, or `migrate deploy` tries to create tables that already exist and the deploy exits.
+
+Check prod against the schema **as of the baseline commit** (`9736ba2`), not the current `schema.prisma`: later migrations (`placement_media_type`, `add_isci_platform`) are meant to be applied by `deploy.sh` and would show up as a false difference.
+
+```bash
+cd /var/www/isci-mgmt-system
+set -a; source .env; set +a
+
+# 1. Backup first
+pg_dump "$DATABASE_URL" > ~/isci_pre_v2_$(date +%Y%m%d_%H%M).sql
+
+# 2. Get the new code (deploy.sh pulls again; that's a no-op)
+git fetch origin && git status          # nothing modified; if package-lock.json is, git checkout -- package-lock.json
+git pull origin main
+
+# 3. Confirm prod matches the BASELINE schema. This MUST print an empty migration
+#    ("-- This is an empty migration."). If it prints any SQL, stop and investigate.
+git show 9736ba2:prisma/schema.prisma > /tmp/schema-baseline.prisma
+npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel /tmp/schema-baseline.prisma --script
+
+# 4. Record the baseline as applied (no SQL is run)
+npx prisma migrate resolve --applied 20261103172155_init
+
+# 5. Deploy: installs, builds, generates the client, applies the newer migrations, restarts PM2
+./deploy.sh
+```
+
+After that, `migrate deploy` in `deploy.sh` works normally and applies only newer migrations. Check with `npx prisma migrate status` (all three migrations applied).
+
+### Reseed demo data (v2.0.0)
+
+Production holds demo data only. Codes are still in the old format after the v2.0.0 migrations, so reseed them with the real client list and new-format codes. Users are kept (demo users are create-only), placements are reduced to Broadcast, Digital and Radio.
+
+```bash
+npm run seed:demo                 # dry run: check the "Target" line shows the production database
+npm run seed:demo -- --apply
 ```
 
 ### Data Migration
@@ -355,9 +395,9 @@ pm2 monit
 
 4. **Logs**: PM2 logs are written to `/var/www/isci-mgmt-system/logs/` and are excluded from git via `.gitignore`.
 
-5. **SSL/HTTPS**: Not yet configured. When ready, update nginx.conf with domain name and follow Let's Encrypt setup instructions.
+5. **SSL/HTTPS**: Configured (Let's Encrypt via certbot for `54-158-87-192.sslip.io`). See "SSL/HTTPS Setup" below.
 
-6. **Security**: Security groups should allow SSH (port 22) from your IP only, and HTTP (port 80) from anywhere. HTTPS (port 443) will be needed when SSL is configured.
+6. **Security**: Security groups should allow SSH (port 22) from your IP only, and HTTP (port 80) from anywhere. HTTPS (port 443) from anywhere.
 
 ## Server Management Commands
 
@@ -422,15 +462,23 @@ npm install                   # Try manual install
 npm run build                 # Try manual build
 ```
 
-## SSL/HTTPS Setup (TODO)
+## SSL/HTTPS Setup
 
-When ready to configure SSL:
-1. Register a domain name
-2. Update nginx.conf with your domain (replace `yourdomain.com`)
-3. Install Certbot: `sudo apt install certbot python3-certbot-nginx`
-4. Obtain SSL certificate: `sudo certbot --nginx -d yourdomain.com`
-5. Configure auto-renewal: `sudo certbot renew --dry-run`
-6. Update security groups to allow HTTPS (port 443)
+Configured on 2026-10-22 with an [sslip.io](https://sslip.io) hostname (no registered domain needed):
+
+- **Hostname**: `54-158-87-192.sslip.io` (resolves to the EC2 IP)
+- **Certificate**: Let's Encrypt via certbot (nginx plugin). Auto-renews; certbot's renewal timer handles it.
+- **nginx**: `server_name 54-158-87-192.sslip.io;` in `/etc/nginx/sites-available/isci-mgmt`. Certbot added the `listen 443 ssl` block and an HTTP → HTTPS redirect. Requests to the bare IP return 404 (intentional; share the sslip.io link).
+- **Security group**: ports 80 and 443 open to anywhere (80 is needed for the redirect and for certificate renewal).
+
+Steps used, for reference or for moving to a real domain later:
+1. Open port 443 in the EC2 security group
+2. Set `server_name` in the live nginx site config, then `sudo nginx -t && sudo systemctl reload nginx`
+3. `sudo apt install -y certbot python3-certbot-nginx`
+4. `sudo certbot --nginx -d <hostname>` (choose the redirect option)
+5. `sudo certbot renew --dry-run` to confirm renewal
+
+If the EC2 public IP ever changes, the sslip.io hostname changes with it: set the new `server_name` and rerun certbot.
 
 ## Backup Strategy
 

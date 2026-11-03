@@ -1,0 +1,175 @@
+// Matches the old Cutdown families report: title, client and campaign underneath,
+// a row of pills (length chip plus the mono code) and a count badge on the right.
+
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  height: 100%;
+}
+
+// Two columns: content on the left; the count badge (top) and the edit button
+// (bottom) stacked in the right column so they line up on every card.
+.card {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "head  badge"
+    "body  edit";
+  column-gap: 1rem;
+  row-gap: 0.625rem;
+  flex-shrink: 0;
+}
+
+.compact .card {
+  padding: 0.625rem 1rem;
+  row-gap: 0.375rem;
+}
+
+.edit {
+  grid-area: edit;
+  align-self: end;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.head {
+  grid-area: head;
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.headText {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mono { font-family: var(--font-mono); }
+
+.sub {
+  margin: 0.125rem 0 0;
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
+.badge {
+  grid-area: badge;
+  align-self: start;
+  justify-self: end;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--overlay-1);
+  color: var(--ink-1);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+// Body indent = dot width + head gap, so pills line up with the title text.
+$text-indent: calc(8px + 0.625rem);
+
+.pills {
+  grid-area: body;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-left: $text-indent;
+}
+
+.lines {
+  grid-area: body;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: $text-indent;
+
+  .pills { padding-left: 0; }
+}
+
+.line {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.lineTitle {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--text-xs);
+  transition: background 0.1s, border-color 0.1s;
+
+  &:hover {
+    background: var(--paper-1);
+    border-color: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-ring);
+  }
+}
+
+.length {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+}
+
+.code {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 5rem 1.5rem;
+  color: var(--ink-1);
+
+  p {
+    font-size: var(--text-md);
+    margin: 0;
+  }
+}

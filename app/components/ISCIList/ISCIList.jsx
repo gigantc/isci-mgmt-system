@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSession } from "@/hooks";
 import { colorForCode } from "@/utils/palette";
@@ -6,12 +6,61 @@ import { IconEdit, IconTrash } from "@/components/Icons";
 import { formatAirDateSlash } from "@/utils/dates";
 import styles from "./ISCIList.module.scss";
 
-const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) => {
+const ISCIList = ({
+  codes,
+  onDelete,
+  density = "comfy",
+  selectedIndex = -1,
+  selectable = false,
+  selectedIds,
+  onSelectionChange,
+  onNavChange,
+}) => {
   const navigate = useNavigate();
   const { isAdmin: userIsAdmin, canEdit: userCanEdit } = useSession();
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const formatDate = formatAirDateSlash;
+
+  //////////////////////////////////////
+  // Selection (checkbox column; shift-click selects a range in the displayed order)
+
+  const headerCheckRef = useRef(null);
+  const lastClickedRef = useRef(null);
+  const selected = selectedIds || new Set();
+  const visibleIds = codes.map((c) => c.id);
+  const selectedVisible = visibleIds.filter((id) => selected.has(id)).length;
+  const allSelected = visibleIds.length > 0 && selectedVisible === visibleIds.length;
+
+  useEffect(() => {
+    if (headerCheckRef.current) {
+      headerCheckRef.current.indeterminate = selectedVisible > 0 && !allSelected;
+    }
+  }, [selectedVisible, allSelected]);
+
+  const toggleAll = () => {
+    const next = new Set(selected);
+    if (allSelected) visibleIds.forEach((id) => next.delete(id));
+    else visibleIds.forEach((id) => next.add(id));
+    onSelectionChange?.(next);
+  };
+
+  const toggleRow = (id, shift, displayed) => {
+    const next = new Set(selected);
+    const checked = !selected.has(id);
+    const anchor = lastClickedRef.current;
+    if (shift && anchor && anchor !== id) {
+      const order = displayed.map((c) => c.id);
+      const a = order.indexOf(anchor);
+      const b = order.indexOf(id);
+      if (a >= 0 && b >= 0) {
+        order.slice(Math.min(a, b), Math.max(a, b) + 1).forEach((rid) => (checked ? next.add(rid) : next.delete(rid)));
+      }
+    } else if (checked) next.add(id);
+    else next.delete(id);
+    lastClickedRef.current = id;
+    onSelectionChange?.(next);
+  };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -81,6 +130,14 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
     return sortDirection === "asc" ? "▲" : "▼";
   };
 
+  // The rows in display order, reported so keyboard navigation follows the sorted list.
+  const displayed = sortData(codes);
+  const navSignature = displayed.map((c) => c.id).join("|");
+  useEffect(() => {
+    onNavChange?.(displayed);
+    // navSignature captures the order; `displayed` changes identity every render.
+  }, [navSignature]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (codes.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -89,11 +146,85 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
     );
   }
 
+  const renderRow = (code, navIdx) => (
+    <div
+      key={code.id}
+      className={`${styles.gridRow} ${navIdx === selectedIndex ? styles.selected : ""} ${selected.has(code.id) ? styles.checked : ""}`}
+      onClick={() => navigate(`/isci/${code.code}`)}
+    >
+      <div className={styles.gridItems}>
+        {selectable && (
+          <span className={styles.checkCell} onClick={(e) => e.stopPropagation()}>
+            <input
+              type="checkbox"
+              checked={selected.has(code.id)}
+              onChange={() => {}}
+              onClick={(e) => toggleRow(code.id, e.shiftKey, displayed)}
+              aria-label={`Select ${code.code}`}
+            />
+          </span>
+        )}
+        <span className={`${styles.twoLine} ${styles.codeCell}`}>
+          {code.code}
+          {code.jobNumber && <small>{code.jobNumber}</small>}
+        </span>
+        <span className={styles.clientCell}>
+          <span className={styles.clientDot} style={{ background: code.brandColor || colorForCode(code.brandCode || code.brand) }} />
+          {code.brand}
+        </span>
+        <span className={`${styles.twoLine} ${styles.spotTitleCell}`}>
+          {code.spotTitle}
+          {code.campaignName && <small>{code.campaignName}</small>}
+        </span>
+        <span className={styles.numCell}>{code.spotLength ? `${code.spotLength}s` : "—"}</span>
+        <span>
+          {code.placement?.name ? <span className={styles.pill}>{code.placement.name}</span> : "—"}
+        </span>
+        <span>{formatDate(code.airDate)}</span>
+        <span className={styles.actionsCell}>
+          {userCanEdit && (
+            <button
+              type="button"
+              className={`btn-icon ${styles.rowAction}`}
+              onClick={(e) => { e.stopPropagation(); navigate(`/edit/${code.code}`); }}
+              title="Edit"
+              aria-label="Edit"
+            >
+              <IconEdit />
+            </button>
+          )}
+          {userIsAdmin && (
+            <button
+              type="button"
+              className={`btn-icon btn-icon-danger ${styles.rowAction}`}
+              onClick={(e) => { e.stopPropagation(); onDelete(code.id); }}
+              title="Delete"
+              aria-label="Delete"
+            >
+              <IconTrash />
+            </button>
+          )}
+        </span>
+      </div>
+    </div>
+  );
+
   return (
-    <div className={`${styles.isciList} ${density === "compact" ? styles.compact : ""}`}>
+    <div className={`${styles.isciList} ${density === "compact" ? styles.compact : ""} ${selectable ? styles.selectable : ""}`}>
       <div className={styles.gridContainer}>
         {/* Header Row */}
         <div className={styles.gridHeader}>
+          {selectable && (
+            <span className={styles.checkCell}>
+              <input
+                ref={headerCheckRef}
+                type="checkbox"
+                checked={allSelected}
+                onChange={toggleAll}
+                aria-label="Select all visible codes"
+              />
+            </span>
+          )}
           <span onClick={() => handleSort("code")} className={styles.sortable}>
             ISCI code {getSortIndicator("code")}
           </span>
@@ -115,58 +246,7 @@ const ISCIList = ({ codes, onDelete, density = "comfy", selectedIndex = -1 }) =>
           <span />
         </div>
 
-        {/* Data Rows */}
-        {sortData(codes).map((code, idx) => (
-          <div
-            key={code.id}
-            className={`${styles.gridRow} ${idx === selectedIndex ? styles.selected : ""}`}
-            onClick={() => navigate(`/isci/${code.code}`)}
-          >
-            <div className={styles.gridItems}>
-              <span className={`${styles.twoLine} ${styles.codeCell}`}>
-                {code.code}
-                {code.jobNumber && <small>{code.jobNumber}</small>}
-              </span>
-              <span className={styles.clientCell}>
-                <span className={styles.clientDot} style={{ background: code.brandColor || colorForCode(code.brandCode || code.brand) }} />
-                {code.brand}
-              </span>
-              <span className={`${styles.twoLine} ${styles.spotTitleCell}`}>
-                {code.spotTitle}
-                {code.campaignName && <small>{code.campaignName}</small>}
-              </span>
-              <span className={styles.numCell}>{code.spotLength ? `${code.spotLength}s` : "—"}</span>
-              <span>
-                {code.placement?.name ? <span className={styles.pill}>{code.placement.name}</span> : "—"}
-              </span>
-              <span>{formatDate(code.airDate)}</span>
-              <span className={styles.actionsCell}>
-                {userCanEdit && (
-                  <button
-                    type="button"
-                    className={`btn-icon ${styles.rowAction}`}
-                    onClick={(e) => { e.stopPropagation(); navigate(`/edit/${code.code}`); }}
-                    title="Edit"
-                    aria-label="Edit"
-                  >
-                    <IconEdit />
-                  </button>
-                )}
-                {userIsAdmin && (
-                  <button
-                    type="button"
-                    className={`btn-icon btn-icon-danger ${styles.rowAction}`}
-                    onClick={(e) => { e.stopPropagation(); onDelete(code.id); }}
-                    title="Delete"
-                    aria-label="Delete"
-                  >
-                    <IconTrash />
-                  </button>
-                )}
-              </span>
-            </div>
-          </div>
-        ))}
+        {displayed.map((code, idx) => renderRow(code, idx))}
       </div>
     </div>
   );

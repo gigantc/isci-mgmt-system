@@ -22,7 +22,10 @@ export default [
   // Admin panel - manages brands/clients
   route("admin", "routes/admin.jsx"),
 
-  // Reports page - data export/import
+  // Tools page - data export/import
+  route("tools", "routes/tools.jsx"),
+
+  // Reports page - insights
   route("reports", "routes/reports.jsx"),
 
   // User profile page
@@ -53,6 +56,12 @@ export default [
 
   // API endpoint for ISCI import
   route("api/isci/import", "routes/api.isci.import.js"),
+
+  // Bulk field edits across many codes ("bulk" is matched before any :id style route)
+  route("api/isci/bulk", "routes/api.isci.bulk.js"),
+
+  // Batch code assignment for the Matrix tool
+  route("api/isci/batch", "routes/api.isci.batch.js"),
 
   // API endpoint for distinct languages used across ISCI codes
   route("api/isci/languages", "routes/api.isci.languages.js"),

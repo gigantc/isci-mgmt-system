@@ -2,8 +2,8 @@
 
 This document provides context for AI assistants (like Claude) working on this project.
 
-**Version**: 1.3.1
-**Last Updated**: October 22, 2026
+**Version**: 2.0.0
+**Last Updated**: November 3, 2026
 
 For detailed version history, see [CHANGELOG.md](CHANGELOG.md)
 For deployment instructions, see [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md)
@@ -22,7 +22,7 @@ The ISCI Management System is a web application for managing ISCI (Industry Stan
 - **Styling**: Sass (SCSS) with CSS Modules and modern `@use` syntax; design tokens are CSS custom properties (see [docs/design-system.md](docs/design-system.md))
 - **Build Tool**: Vite
 - **Server**: React Router SSR
-- **Database**: Prisma ORM with SQLite (local) / PostgreSQL (production)
+- **Database**: Prisma ORM with PostgreSQL (local and production; Postgres 16)
 - **Authentication**: Simple session-based auth using sessionStorage (POC only)
 
 ## Project Structure
@@ -31,8 +31,8 @@ The ISCI Management System is a web application for managing ISCI (Industry Stan
 isci-mgmt-system/
 ├── app/
 │   ├── components/        # Reusable UI (ISCIForm, ISCIList, CodeLayout, Modal, Icons, the Admin managers, etc.)
-│   ├── containers/        # Page containers with logic (Dashboard, CreateISCI, EditISCI, Detail, Admin, Reports, Profile, Login, Header)
-│   ├── routes/            # Route handlers and API endpoints (home, admin, reports, isci, api.*)
+│   ├── containers/        # Page containers with logic (Dashboard, CreateISCI, EditISCI, Detail, Admin, Tools, Reports, Profile, Login, Header)
+│   ├── routes/            # Route handlers and API endpoints (home, admin, tools, reports, isci, api.*)
 │   ├── hooks/             # Custom React hooks (useSession, useFetchData, useResourceManager, etc.)
 │   ├── utils/             # Utility functions (auth.js, api.js, dates.js, palette.js, etc.)
 │   ├── lib/               # Library instances (prisma.js)
@@ -62,20 +62,24 @@ isci-mgmt-system/
 
 ### ISCI Code Format
 
-**Auto-Generated Format**: `[BRAND(3)][PLACEMENT(1)][YEAR][NUMBER]`
+**Format**: `CLIENT(3) + MEDIA TYPE(1) + "-" + YY + SEQ`, plus `H` appended for media type `T`. Rules live in `app/utils/isci.js` (pure, used by client, server and the seed script).
 
-- **BRAND**: 3-letter client/brand code (e.g., `LVC`, `NIK`, `APL`)
-- **PLACEMENT**: 1-letter placement code (e.g., `B` for Broadcast, `S` for Social)
-- **YEAR**: 2-digit year (e.g., `25` for 2025)
-- **NUMBER**: Sequential 2-3 digit number, per brand + placement + year (pads to 2 digits for 1-99, uses 3 digits for 100+)
+- **CLIENT**: 3-letter client code (e.g., `LVC`)
+- **MEDIA TYPE**: `T` Broadcast, `D` Digital (social, CTV, streaming, everything that isn't broadcast or radio), `R` Radio
+- **YY**: 2-digit year
+- **SEQ**: sequential, pads to 2 digits for 1-99, 3 digits from 100
 
-**Examples**: `LVCB2501` (LVC / Broadcast / 2025 / 01), `NIKS2515`, `APLR25100`
+**Examples**: `LVCT-2517H`, `LVCD-2517`, `LVCR-2517`, `LVCD-25100`
 
-**Validation**: `/^[A-Z]{4}\d{4,5}$/` (8-9 characters). First 3 letters must match a Brand `code`; 4th letter must match a Placement `letter`.
+**Sequence scope**: independent per `(client, media type, year)`.
 
-**Sequence scope**: independent per `(brandCode, placementLetter, year)` — so LVCB2501, LVCS2501, LVCB2502 are all valid concurrent codes.
+**Legacy SO codes**: `SO` + 3-4 letters + optional `-` + YY + SEQ (`SOLVC-2517`, `SOLVCV-2517`). Retired for new codes, valid forever, never changed. They count toward that client's `D` sequence, so after `SOLVC-2517` the next LVC digital code for 25 is `LVCD-2518`.
 
-**Implementation**: See `app/components/ISCIForm/ISCIForm.jsx` — `generateISCICode(brandCode, placementLetter)`.
+**Pending with media** (settings in `app/config.js`, defined in `app/utils/isciSettings.js`): `ISCI_HYPHEN` (new codes include the `-`) and `ISCI_BROADCAST_H` (new `T` codes get the `H`). They only change what is generated; parsing accepts every variant.
+
+**Identity**: duplicates and lookups compare `isciKey(code)` (client, type, yy, seq, with legacy as `D`), so `LVCT2517` equals `LVCT-2517H` and `SOLVC-2517` equals `LVCD-2517`. Filenames use `fileNameCode(code)` (no hyphen).
+
+**Allocation**: the server assigns new codes. `POST /api/isci` calls `allocateCodes(tx, { brandId, placementId, yy, count })` in `app/lib/isciAllocator.server.js` (batch-ready for the matrix tool) and retries on a unique collision. The create form only previews the next code. An explicit code is accepted only if valid, matching the client and the placement's media type, and not a duplicate. PUT and import use the same checks.
 
 ### User Management & Authentication
 
@@ -94,13 +98,13 @@ isci-mgmt-system/
 
 ### Role-Based Access Control
 
-| Role | Codes | Reports | Admin |
-|------|-------|---------|-------|
-| `admin` | Create, edit, delete | Export and import | Yes |
-| `editor` | Create and edit (no delete) | Export only | No |
-| `viewer` | Read-only (Detail view) | No | No |
+| Role | Codes | Tools | Reports | Admin |
+|------|-------|-------|---------|-------|
+| `admin` | Create, edit, delete | Export and import | Yes | Yes |
+| `editor` | Create and edit (no delete) | Export only | Yes | No |
+| `viewer` | Read-only (Detail view) | No | No | No |
 
-**Implementation**: Header links render only once `ready`. Viewers hitting `/edit/:code` are redirected to `/isci/:code`; `/create`, `/reports` and `/admin` redirect non-permitted roles to `/`. Logged-out users go to `/login`.
+**Implementation**: Header links render only once `ready`. Viewers hitting `/edit/:code` are redirected to `/isci/:code`; `/create`, `/tools`, `/reports` and `/admin` redirect non-permitted roles to `/`. Logged-out users go to `/login`.
 
 ### Custom Hooks (Reusable Logic)
 
@@ -112,12 +116,12 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 | Hook | Purpose | Used By | Lines |
 |------|---------|---------|-------|
-| `useSession` | Hydration-safe current user + role flags | Header, Dashboard, ISCIList, CmdK, code pages, Admin, Reports, Profile | ~50 |
-| `useFetchData` | Eliminates duplicate fetch patterns with loading/error states | ISCIForm, Dashboard, Reports | 97 |
+| `useSession` | Hydration-safe current user + role flags | Header, Dashboard, ISCIList, CmdK, code pages, Admin, Tools, Reports, Profile | ~50 |
+| `useFetchData` | Eliminates duplicate fetch patterns with loading/error states | ISCIForm, Dashboard, Tools | 97 |
 | `useResourceManager` | Consolidates CRUD operations for manager components | BrandManager, UserManager, AgencyManager | 298 |
 | `useFormState` | Centralized form state management with validation | (Created, not yet used) | 170 |
-| `useExportData` | Data export with filtering and CSV generation | Reports | 208 |
-| `useImportData` | CSV file imports with preview and validation | Reports | 220 |
+| `useExportData` | Data export with filtering and CSV generation | Tools (Export) | 208 |
+| `useImportData` | CSV file imports with preview and validation | Tools (Import) | 220 |
 | `useConfirmDialog` | Promise-based confirmation dialogs | All delete operations | ~80 |
 
 **Impact**: 72% code reduction in manager components (BrandManager: 293→82 lines, UserManager: 353→100 lines)
@@ -126,7 +130,9 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 ### Import/Export System
 
-**Location**: `/reports` page (admins and editors; Import is admin-only). Reports also has Insights views: Data quality, Placement mix, Cutdown families, Creation trend.
+**Location**: `/tools` page, "Data" group (admins and editors; Import is admin-only); the "Production" group holds the deliverables matrix. Each tool lives in its own folder under `app/containers/Tools/`; add new tools to the `GROUPS` list in `Tools.jsx`.
+
+**Reports** (`/reports`, admins and editors) is Insights only: Data quality, Placement mix, Creation trend.
 
 **Export**: Filter by date, client, placement and spot length, with a preview table; CSV export with all fields
 
@@ -134,9 +140,35 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 **CSV Format**: ISCI Code, Client, Campaign Name, Job Number, Spot Title, Description, Air Date, Market, Agency, Language, Spot Length, Aspect Ratio, File Format, Placement, Audio, Accessibility, Music Rights, Created At, Updated At
 
-**Required**: The `Placement` column must be present on import (value may be placement name or its single-letter code). Legacy `Channel` header still resolves for backward compatibility.
+**Required**: The `Placement` column must be present on import (the placement name). Legacy `Channel` header still resolves for backward compatibility.
 
 **API Endpoint**: `POST /api/isci/import` - Handler: `app/routes/api.isci.import.js`
+
+### Group by (Dashboard)
+
+A view control (Family / Job / List, no label; List is the table and is stored as `none`; saved in `localStorage['isciz-group']`, default Family; the stored value is applied in an effect so the first render is hydration-safe) switches the Dashboard between cards and the table (List) (`app/components/FamilyCards`). Family is client + campaign + spot title (`familyKey` in `app/utils/families.js`), spanning placements, and every code appears in a card (a singleton gets a card with one pill). A family card shows the spot title, "client · campaign", a count badge ("3 cuts", or "2 of 3 shown" when search narrows it) and pills (length chip plus the mono code, longest first, then placement, then code). Job mode shows the job number · client with its campaign(s), one line per spot title with its pills, and a final "No job number" card. Pills open the code: `/edit/:code` for editors and admins, `/isci/:code` for viewers. "Edit family" and "Edit job" open the bulk editor for the whole group, and the cards update in place after an apply. Search and filters apply first; cards are ordered by their newest visible code, and column sorting only exists in the table. Modes are key functions in `app/utils/grouping.js` (`GROUP_MODES`), so Campaign or Client is one entry. Row checkboxes, the selection bar and keyboard row navigation exist in List view only; switching to cards clears the selection, and Detail's "Select family" and "Select all on this job" open the Dashboard in List view with the codes selected.
+
+### Bulk edit
+
+Admins and editors can change shared fields on many codes at once. On the Dashboard, tick the checkbox column (header box selects all visible rows, shift-click selects a range, Space toggles the keyboard-focused row; viewers see no checkboxes). A selection bar shows "N selected", "Edit N codes" and "Clear". The drawer (`app/components/BulkEditDrawer`) shows each field's shared value or "Mixed values", marks a field as changed only after it is edited (with a per-field "Reset"), and writes only the changed fields. Spot title shows a rename warning. After applying, the list is patched in place and the selection is kept. Selection is pruned to the rows that are still visible when filters change.
+
+**Shortcuts**: on the Detail page, "Select family" (same client, campaign and spot title, `app/utils/families.js`, also used by the Dashboard grouping) and "Select all on this job" open the Dashboard with `/?select=<ids>&edit=1`, applied once after the codes load, so it survives a reload.
+
+**API**: `PUT /api/isci/bulk` (`api.isci.bulk.js`) with `{ ids, changes, updatedBy }`, 1 to 500 ids, one transaction, each code gets its own history entry `{ user, timestamp, bulk: true, count, fields }`. Editable: jobNumber, campaignName, spotTitle, description, airDate (or "TBD"), agency, market, platform, language, closedCaptioning, audio, fileFormat, musicRights, completedAt. `code`, `brandId`, `placementId`, `spotLength` and `aspectRatio` are rejected with a 400. Field storage rules are shared with the single edit in `app/lib/isciFields.server.js`. There is no bulk delete.
+
+### Deliverables matrix tool
+
+**Location**: `/tools`, "Production" group, "Deliverables matrix" (the default tab; admins and editors). Ported from the editors' ISCI Wiz (`docs/research/`), without its ISCI-log step: the database is the log.
+
+**Flow**: Job (job number `######.##`, client, optional campaign, year) → Matrix (drop an .xlsx/.xlsm, check the matched columns, set each placement group's ISCI placement, platform and include switch) → Tune-up (edit titles, lengths, sizes and languages once for all rows) → Review (preview, then "Save codes and download matrix"). State is React only; changing the client or year after a file is loaded starts the matrix over.
+
+**Library**: plain modules in `app/containers/Tools/Matrix/lib/` (workbook read, extract and group, normalizers and suggestions, surgical XLSX writer, filename wrapper). It is loaded with a dynamic `import()` when a file is dropped, so jszip (3.10.1) ships in its own chunk. The XML parser is the browser `DOMParser`; node tests inject one with `setDOMParser()`. Existing codes in a row are detected with `findISCICodes` from `app/utils/isci.js`, and a row that already has a code is skipped.
+
+**Filenames**: `buildFileName` in `app/utils/fileName.js`, the same builder as ISCIForm (empty segments are dropped in the matrix). The platform is not part of the filename.
+
+**Batch endpoint**: `POST /api/isci/batch` (`api.isci.batch.js`, logic in `app/lib/isciBatch.server.js`). One transaction: reuse an existing code when client, year, media type, title, length, aspect, language and platform all match, otherwise allocate. Codes already in the matrix count as taken. `preview: true` writes nothing, and the workbook is always written from the non-preview response. Like the other API routes it has no server-side role check.
+
+**Languages**: full names with an optional region in brackets (`Spanish (US)`, `English (UK, Canada)`); textless masters use `Clean`. Lengths are whole seconds, aspect ratios look like `16:9`.
 
 ### Brand/Client Management
 
@@ -148,19 +180,19 @@ All hooks are in `app/hooks/` and exported from `app/hooks/index.js`.
 
 ### Placement Management
 
-Placements are the second half of the ISCI code prefix. Each carries a single uppercase letter that becomes the 4th character of every code.
+Each placement carries a media type (`T`, `D` or `R`) that becomes the 4th character of every code created against it. Placements are descriptive labels under a fixed media type: they feed the filename and reports, never the code. Admins can add more in Admin → Placements, always picking T, D or R.
 
-**Placement Data Structure**: `id`, `name` (unique), `letter` (unique, 1 uppercase letter), `active`, `createdAt`, `updatedAt`
+**Placement Data Structure**: `id`, `name` (unique), `mediaType` (`T` | `D` | `R`), `active`, `createdAt`, `updatedAt`
 
-**Letter Requirements**: Single uppercase A–Z, globally unique across all placements
+**Media type lock**: changing a placement's media type is blocked once any ISCI code uses it (the API enforces it, like delete).
 
-**Defaults seeded**: Broadcast (B), Social (S), Digital (D), Radio (R), Print (P), OOH (O), Cinema (C), Other (X)
+**Defaults seeded**: Broadcast (T), Digital (D), Radio (R)
 
 **Storage**: Prisma database (Placement model). Managed from Admin → Placements.
 
 ### ISCI Code Data Structure
 
-**Key Fields**: `id`, `code`, `brandId`, `placementId`, `brand`, `placement { id, name, letter }`, `campaignName`, `jobNumber`, `spotTitle`, `spotLength`, `description`, `language`, `closedCaptioning`, `audio`, `fileFormat`, `airDate`, `aspectRatio`, `musicRights`, `agency`, `market`, `createdAt`, `updatedAt`, `completedAt`
+**Key Fields**: `id`, `code`, `brandId`, `placementId`, `brand`, `placement { id, name, mediaType }`, `campaignName`, `jobNumber`, `spotTitle`, `spotLength`, `description`, `language`, `closedCaptioning`, `audio`, `fileFormat`, `airDate`, `aspectRatio`, `musicRights`, `agency`, `market`, `platform`, `createdAt`, `updatedAt`, `completedAt`
 
 **Storage**: Prisma database (ISCICode model). Consumers read placement as `code.placement?.name` — the free-text `channel` column was removed in 1.2.0.
 
@@ -178,12 +210,12 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 - Scales: `--text-xs` … `--text-2xl`, `--radius-sm` … `--radius-pill`, `--shadow-card`, `--shadow-drawer`
 - In dark mode the frame is deliberately lighter than the cards so panels stand out.
 
-**Fonts**: Figtree (UI) and JetBrains Mono (ISCI codes, client codes, placement letters, hex values, file names, `kbd` only).
+**Fonts**: Figtree (UI) and JetBrains Mono (ISCI codes, client codes, media types, hex values, file names, `kbd` only).
 
 **Global Button Classes** (`app/styles/app.scss`, the only button styles): `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-text`, `.btn-icon`, `.btn-icon-danger`
 
 **Shared layout**:
-- `_shell.scss` mixins: sidebar + floating main card + page head + footer (Dashboard, Admin, Reports)
+- `_shell.scss` mixins: sidebar + floating main card + page head + footer (Dashboard, Admin, Tools, Reports)
 - `_manager.scss` mixins: shared Admin manager styles (Brand, Placement, Agency, User)
 - `CodeLayout` + `AsideSection` components: page frame for Create, Edit, Detail and Profile (form column + 320px aside)
 - `Modal` component: shared dialog surface (ConfirmDialog, About)
@@ -198,13 +230,14 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 
 | Route | Handler | Component | Description |
 |-------|---------|-----------|-------------|
-| `/` | `home.jsx` | Dashboard | Code list with search, client/placement filters, density toggle, keyboard nav |
+| `/` | `home.jsx` | Dashboard | Code list (table) or family/job cards, with search, client/placement filters, group by, density toggle, keyboard nav |
 | `/isci/:code` | `isci.jsx` | Detail | Read-only view of a code (row click lands here) |
 | `/create` | `create.jsx` | CreateISCI | Create new ISCI code (admins and editors) |
 | `/edit/:code` | `edit.jsx` | EditISCI | Edit an ISCI code (admins and editors; viewers redirect to `/isci/:code`) |
 | `/login` | `login.jsx` | Login | User authentication page (shows demo credentials on purpose) |
 | `/profile` | `profile.jsx` | Profile | User profile management (protected) |
-| `/reports` | `reports.jsx` | Reports | Export, import (admin-only) and insights (admins and editors) |
+| `/tools` | `tools.jsx` | Tools | Deliverables matrix, export and import (admins and editors; Import is admin-only) |
+| `/reports` | `reports.jsx` | Reports | Insights (admins and editors) |
 | `/admin` | `admin.jsx` | BrandManager, PlacementManager, AgencyManager, UserManager | Brand, placement, agency, and user management (admin-only) |
 
 ### API Endpoints
@@ -218,6 +251,8 @@ Placements are the second half of the ISCI code prefix. Each carries a single up
 - **PUT /api/isci/:id** - Update ISCI code (`api.isci.js`)
 - **DELETE /api/isci/:id** - Delete ISCI code (`api.isci.js`)
 - **POST /api/isci/import** - Import from CSV (`api.isci.import.js`) - Modes: add/update/replace
+- **PUT /api/isci/bulk** - Apply the same field changes to many codes (`api.isci.bulk.js`)
+- **POST /api/isci/batch** - Assign or reuse codes for matrix rows, with `preview` (`api.isci.batch.js`)
 - **GET /api/isci/languages** - Distinct languages used across codes (`api.isci.languages.js`)
 
 #### Agencies
@@ -274,7 +309,7 @@ Styles use the CSS custom-property tokens directly (`color: var(--ink-1)`). Shar
 - Container components manage data flow
 
 ### Data Persistence
-Uses Prisma ORM with SQLite (local) / PostgreSQL (production). See `prisma/schema.prisma` for models.
+Uses Prisma ORM with PostgreSQL (local and production). See `prisma/schema.prisma` for models. Schema changes go through `npx prisma migrate dev`; `prisma/migrations/` holds the Postgres baseline (`init`) and later migrations. The old SQLite migrations are archived in `prisma/migrations_sqlite_archive/` (reference only).
 
 ---
 
@@ -286,7 +321,8 @@ npm run dev              # Start dev server (with HMR)
 npm run build            # Build for production
 npm run preview          # Preview production build
 npx prisma studio        # Open Prisma Studio (database GUI)
-npx prisma migrate dev   # Run database migrations
+npx prisma migrate dev   # Create/apply migrations to the local Postgres DB
+npm run seed:demo        # Dry run of the demo seed (add -- --apply to write)
 ```
 
 ---
@@ -311,10 +347,10 @@ npx prisma migrate dev   # Run database migrations
 2. **No Tailwind**: Custom SCSS with CSS Modules
 3. **CSS Modules**: Scoped styling with camelCase class names
 4. **Modern Sass**: Use `@use` syntax, not `@import`
-5. **Auto-Generation**: ISCI codes auto-generated on create (editable on edit)
+5. **Code assignment**: the server assigns ISCI codes on create (the form previews them); codes are locked on edit
 6. **Brand Codes**: Must be exactly 3 uppercase letters and unique
 7. **Database**: Uses Prisma ORM - modify schema in `prisma/schema.prisma`
-8. **ISCI Code Format**: `[BRAND(3)][PLACEMENT(1)][YEAR][NUMBER]` format enforced
+8. **ISCI Code Format**: `CLIENT + MEDIA TYPE + "-" + YY + SEQ` (+ `H` for broadcast), see ISCI Code Format
 9. **Component Structure**: Components (presentational) vs Containers (logic)
 10. **Theme**: Light (default) and dark, toggled in the header; see Theming & Design System
 11. **Form Behavior**: ISCIForm adapts to create/edit/view modes based on user role
@@ -334,7 +370,7 @@ npx prisma migrate dev   # Run database migrations
 
 ### Creating a New ISCI Code
 1. Navigate to `/` → Click "+ New ISCI Code"
-2. Select brand → Code auto-generates
+2. Select client and placement → the form previews the code; the server assigns it on save
 3. Fill required fields (Spot Title) → Submit
 4. New code saved to database
 
@@ -385,11 +421,24 @@ npx prisma migrate reset  # Reset database (destructive)
 npx prisma studio         # GUI to inspect database
 ```
 
+### Local database setup
+
+```bash
+brew install postgresql@16
+brew services start postgresql@16
+/opt/homebrew/opt/postgresql@16/bin/createdb isciz_dev
+# .env: DATABASE_URL="postgresql://<your-user>@localhost:5432/isciz_dev?schema=public"
+npx prisma migrate dev
+npm run seed:demo -- --apply
+```
+
+The Postgres binaries are keg-only: call them by full path (`/opt/homebrew/opt/postgresql@16/bin/psql`, `pg_dump`) or add that directory to `PATH`. The seed upserts demo users, agencies and placements (create-only) and reseeds brands and codes; see the header of `scripts/seedDemoData.js`.
+
 ---
 
 ## Production Deployment
 
-**Live URL**: http://54.158.87.192
+**Live URL**: https://54-158-87-192.sslip.io (Let's Encrypt cert via certbot; the bare IP returns 404)
 **Platform**: AWS EC2 (Ubuntu 24.04 LTS), PM2, Nginx
 
 **Quick Deploy**:
@@ -410,11 +459,12 @@ pm2 status && pm2 logs isci-mgmt
 - [ ] Dashboard analytics and reporting
 - [ ] Activity logs and audit trail
 - [ ] Email notifications for due dates
-- [ ] Batch operations (bulk edit/delete)
+- [x] Bulk edit (multi-select and an "Edit N codes" drawer)
+- [ ] Bulk delete
 - [ ] Brand usage statistics
 - [ ] Automatic year rollover handling
 - [x] Exportable Slate feature (1920x1080 JPG)
-- [ ] SSL/HTTPS setup
+- [x] SSL/HTTPS setup
 - [ ] S3 backups
 
 ---

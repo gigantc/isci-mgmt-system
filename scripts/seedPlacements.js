@@ -4,26 +4,21 @@ import { randomUUID } from "crypto";
 const prisma = new PrismaClient();
 
 const DEFAULT_PLACEMENTS = [
-  { name: "Broadcast", letter: "B" },
-  { name: "Social",    letter: "S" },
-  { name: "Digital",   letter: "D" },
-  { name: "Radio",     letter: "R" },
-  { name: "Print",     letter: "P" },
-  { name: "OOH",       letter: "O" },
-  { name: "Cinema",    letter: "C" },
-  { name: "Other",     letter: "X" },
+  { name: "Broadcast", mediaType: "T" },
+  { name: "Digital",   mediaType: "D" },
+  { name: "Radio",     mediaType: "R" },
 ];
 
 async function run() {
   const now = new Date();
   for (const p of DEFAULT_PLACEMENTS) {
     await prisma.placement.upsert({
-      where: { letter: p.letter },
-      update: { name: p.name, active: true, updatedAt: now },
+      where: { name: p.name },
+      update: { active: true, updatedAt: now },
       create: {
         id: randomUUID(),
         name: p.name,
-        letter: p.letter,
+        mediaType: p.mediaType,
         active: true,
         createdAt: now,
         updatedAt: now,

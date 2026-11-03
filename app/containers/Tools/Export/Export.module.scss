@@ -1,0 +1,139 @@
+@use "@/containers/Tools/tool";
+
+@include tool.tool;
+
+.cardGrow {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.emptyState {
+  padding: 5rem 1rem;
+  text-align: center;
+  color: var(--ink-1);
+
+  p { font-size: var(--text-md); margin: 0; }
+}
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--line);
+}
+
+.cardFootHint {
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+
+  strong { color: var(--ink); font-weight: 500; }
+}
+
+// ── Filter grid + fields ──────────────────────────────────────────────────────
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+// ── Preview table ─────────────────────────────────────────────────────────────
+
+.previewWrap {
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  margin: -0.125rem -0.125rem -0.125rem;
+  border-radius: var(--radius-sm);
+}
+
+.previewEmpty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  font-size: var(--text-md);
+  color: var(--ink-2);
+}
+
+.previewTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-md);
+  min-width: 720px;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--paper-1);
+    text-align: left;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink-2);
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+
+    &:first-child { padding-left: 1rem; }
+  }
+
+  thead th.numHeader { text-align: right; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--line);
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: var(--paper-1); }
+  }
+
+  tbody td {
+    padding: 0.75rem 0.75rem;
+    color: var(--ink-1);
+    white-space: nowrap;
+
+    &:first-child { padding-left: 1rem; }
+  }
+}
+
+.previewCode {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent-ink) !important;
+  letter-spacing: 0.02em;
+}
+
+.previewClient {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.clientDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.previewTitle {
+  color: var(--ink);
+  font-weight: 500;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.previewMuted {
+  color: var(--ink-1);
+}
+
+.previewNum {
+  color: var(--ink-1);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

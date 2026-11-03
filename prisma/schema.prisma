@@ -51,7 +51,7 @@ model Agency {
 model Placement {
   id        String   @id
   name      String   @unique
-  letter    String   @unique // single uppercase A–Z
+  mediaType String   @default("D") // "T" (broadcast) | "D" (digital) | "R" (radio); 4th character of the ISCI code
   active    Boolean  @default(true)
   createdAt DateTime
   updatedAt DateTime
@@ -80,6 +80,7 @@ model ISCICode {
   musicRights      String?   // "Licensed" | "Original" | "None"
   agency           String?
   market           String?
+  platform         String?   // optional distribution platform (Comcast, Hulu, Meta...); not part of the filename
   createdBy        String?
   updatedBy        String?
   editHistory      String?   @default("[]")

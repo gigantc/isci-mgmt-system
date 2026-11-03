@@ -116,7 +116,8 @@ const useFetchData = (endpoint, options = {}) => {
     data,
     loading,
     error,
-    refetch: fetchData
+    refetch: fetchData,
+    setData
   };
 };
 

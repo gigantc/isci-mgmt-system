@@ -57,6 +57,16 @@ const Header = () => {
 
         {ready && !isViewer && (
           <Link
+            to="/tools"
+            className={`${styles.navLink} ${isActive("/tools") ? styles.active : ""}`}
+            onClick={(e) => handleNavClick(e, "/tools")}
+          >
+            Tools
+          </Link>
+        )}
+
+        {ready && !isViewer && (
+          <Link
             to="/reports"
             className={`${styles.navLink} ${isActive("/reports") ? styles.active : ""}`}
             onClick={(e) => handleNavClick(e, "/reports")}

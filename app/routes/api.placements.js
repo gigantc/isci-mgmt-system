@@ -1,11 +1,14 @@
 /**
  * API Route: /api/placements
  *
- * RESTful CRUD for placements. Each placement carries a single uppercase
- * letter that becomes the 4th character of every ISCI code created against it.
+ * RESTful CRUD for placements. Each placement carries a media type (T, D or R)
+ * that becomes the 4th character of every ISCI code created against it.
  */
 
 import { prisma } from "@/lib/prisma";
+import { MEDIA_TYPES } from "@/utils/isci";
+
+const isMediaType = (value) => MEDIA_TYPES.some((m) => m.value === value);
 
 export async function loader() {
   try {
@@ -26,18 +29,10 @@ export async function action({ request }) {
     if (method === "POST") {
       const data = await request.json();
 
-      const letter = String(data.letter || "").toUpperCase();
-      if (!/^[A-Z]$/.test(letter)) {
+      const mediaType = String(data.mediaType || "").toUpperCase();
+      if (!isMediaType(mediaType)) {
         return Response.json(
-          { success: false, error: "Letter must be a single A–Z character" },
-          { status: 400 }
-        );
-      }
-
-      const existingLetter = await prisma.placement.findUnique({ where: { letter } });
-      if (existingLetter) {
-        return Response.json(
-          { success: false, error: `Letter "${letter}" is already used by ${existingLetter.name}` },
+          { success: false, error: "Media type must be Broadcast, Digital or Radio" },
           { status: 400 }
         );
       }
@@ -54,7 +49,7 @@ export async function action({ request }) {
         data: {
           id: data.id,
           name: data.name,
-          letter,
+          mediaType,
           active: data.active !== undefined ? data.active : true,
           createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
           updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
@@ -67,23 +62,25 @@ export async function action({ request }) {
     if (method === "PUT") {
       const data = await request.json();
 
-      const letter = data.letter ? String(data.letter).toUpperCase() : undefined;
-      if (letter !== undefined && !/^[A-Z]$/.test(letter)) {
+      const mediaType = data.mediaType ? String(data.mediaType).toUpperCase() : undefined;
+      if (mediaType !== undefined && !isMediaType(mediaType)) {
         return Response.json(
-          { success: false, error: "Letter must be a single A–Z character" },
+          { success: false, error: "Media type must be Broadcast, Digital or Radio" },
           { status: 400 }
         );
       }
 
-      if (letter) {
-        const clash = await prisma.placement.findFirst({
-          where: { letter, NOT: { id: data.id } },
-        });
-        if (clash) {
-          return Response.json(
-            { success: false, error: `Letter "${letter}" is already used by ${clash.name}` },
-            { status: 400 }
-          );
+      // Existing codes carry the media type, so it is locked once any reference the placement.
+      if (mediaType) {
+        const current = await prisma.placement.findUnique({ where: { id: data.id } });
+        if (current && current.mediaType !== mediaType) {
+          const codeCount = await prisma.iSCICode.count({ where: { placementId: data.id } });
+          if (codeCount > 0) {
+            return Response.json(
+              { success: false, error: `Cannot change the media type: ${codeCount} ISCI codes use this placement` },
+              { status: 400 }
+            );
+          }
         }
       }
 
@@ -103,7 +100,7 @@ export async function action({ request }) {
         where: { id: data.id },
         data: {
           name: data.name,
-          ...(letter && { letter }),
+          ...(mediaType && { mediaType }),
           active: data.active,
           updatedAt: new Date(),
         },

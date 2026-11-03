@@ -9,6 +9,8 @@ import { IconCopy, IconEdit, IconLink } from "@/components/Icons";
 import { getUserSession, saveUserSession } from "@/utils/auth";
 import { useSession } from "@/hooks";
 import { formatAirDateDot } from "@/utils/dates";
+import { sameISCI } from "@/utils/isci";
+import { familyOf, jobOf } from "@/utils/families";
 
 /**
  * Detail Container
@@ -74,7 +76,7 @@ const Detail = () => {
       if (!response.ok) throw new Error("Failed to load ISCI codes");
       const data = await response.json();
       setAllCodes(data);
-      const found = data.find((c) => c.code === isciCode);
+      const found = data.find((c) => sameISCI(c.code, isciCode));
       if (!found) {
         setError(`ISCI code "${isciCode}" not found`);
         return;
@@ -87,6 +89,11 @@ const Detail = () => {
       setIsLoading(false);
     }
   };
+
+  // Bulk shortcuts: open the Dashboard with these codes selected and the editor ready.
+  const family = code ? familyOf(code, allCodes) : [];
+  const job = code ? jobOf(code, allCodes) : [];
+  const bulkEdit = (list) => navigate(`/?select=${list.map((c) => c.id).join(",")}&edit=1`);
 
   const subtitle = code
     ? `${code.brand}${code.campaignName ? ` · ${code.campaignName}` : ""}${code.createdAt ? ` · Created ${formatDate(code.createdAt)}` : ""}${code.createdBy ? ` by ${code.createdBy}` : ""}`
@@ -125,6 +132,16 @@ const Detail = () => {
             >
               <IconLink /> Share
             </button>
+            {userCanEdit && family.length > 1 && (
+              <button type="button" className="btn-secondary" onClick={() => bulkEdit(family)}>
+                Select family ({family.length})
+              </button>
+            )}
+            {userCanEdit && code.jobNumber && job.length > 1 && (
+              <button type="button" className="btn-secondary" onClick={() => bulkEdit(job)}>
+                Select all on this job ({job.length})
+              </button>
+            )}
             {userCanEdit && (
               <button
                 type="button"
